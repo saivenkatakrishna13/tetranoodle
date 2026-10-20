@@ -1,0 +1,87 @@
+{
+  "recordedAt": "2026-10-20T07:49:04.107Z",
+  "durationSeconds": 300,
+  "liveRecording": true,
+  "editedWaits": false,
+  "narration": "On-screen captions; no audio",
+  "scenes": [
+    {
+      "seconds": 0,
+      "title": "TETRANOODLE · REAL LOCAL DEMO",
+      "text": "Five AI specialists. One calm group conversation. This recording uses live Groq replies and actual saved web research."
+    },
+    {
+      "seconds": 30,
+      "title": "01 · ONE TURN AT A TIME",
+      "text": "Mira chooses a relevant speaker and one focused follow-up. The whole team does not ask competing questions."
+    },
+    {
+      "seconds": 48,
+      "title": "02 · FIVE DISTINCT RESPONSIBILITIES",
+      "text": "Profile → discovery → official-source checks → application writing → final review. Each specialist contributes an artifact."
+    },
+    {
+      "seconds": 65,
+      "title": "03 · RAHUL’S FICTIONAL DOCUMENTS",
+      "text": "These are real text PDFs. Extracted facts remain separate from assumptions. Rahul has no invented awards or project outcomes."
+    },
+    {
+      "seconds": 90,
+      "title": "04 · THE TEAM’S ACTUAL HANDOFFS",
+      "text": "This workspace contains saved live agent messages and tool activity. Research can continue while the browser reconnects."
+    },
+    {
+      "seconds": 108,
+      "title": "04 · RESEARCH PROGRESS",
+      "text": "Sources are actually fetched with Scrapling. Rate-limit retries and unavailable pages are shown honestly."
+    },
+    {
+      "seconds": 130,
+      "title": "05 · REAL OPPORTUNITIES",
+      "text": "Top five is a research shortlist. Conditional eligibility and unknown funding are clearly labelled; scores are not admission probabilities."
+    },
+    {
+      "seconds": 150,
+      "title": "06 · ELIGIBILITY, WITH GAPS",
+      "text": "The agent compares requirements with the student’s known facts. Missing language results, nationality or credits remain unknown."
+    },
+    {
+      "seconds": 173,
+      "title": "07 · CHECKABLE SOURCE EVIDENCE",
+      "text": "Every retained detailed claim has an excerpt, official URL and retrieval date. An excerpt match proves provenance, not guaranteed eligibility."
+    },
+    {
+      "seconds": 195,
+      "title": "08 · COMPARE POSSIBILITIES",
+      "text": "Compare funding, deadlines and fit side by side. The full report can be exported for review."
+    },
+    {
+      "seconds": 215,
+      "title": "09 · A DRAFT, NEVER A SUBMISSION",
+      "text": "Leo prepares a source-specific application draft. Missing personal stories and achievements stay as placeholders."
+    },
+    {
+      "seconds": 239,
+      "title": "10 · A DIFFERENT STUDENT, SAME SYSTEM",
+      "text": "Aisha studies economics and targets policy/development in Germany and the Netherlands. These are actual separate research results."
+    },
+    {
+      "seconds": 259,
+      "title": "10 · ADAPTATION AND EXCLUSIONS",
+      "text": "The system changes its searches and criteria with the profile. All researched includes rejected and expired candidates, with reasons."
+    },
+    {
+      "seconds": 278,
+      "title": "11 · A CHAT THAT FITS THE SCREEN",
+      "text": "The header and message box stay in place. Only the conversation scrolls. The same workspace works on a phone."
+    },
+    {
+      "seconds": 292,
+      "title": "TETRANOODLE · YOUR NEXT CHAPTER",
+      "text": "Real tools, sequential specialists, source-linked findings and a reviewable draft. All test students in this demo are fictional."
+    }
+  ],
+  "errors": [],
+  "captureSeconds": 302.932,
+  "trim": "Only the final 1.96 seconds of the closing hold were trimmed; no research waits were shortened."
+}

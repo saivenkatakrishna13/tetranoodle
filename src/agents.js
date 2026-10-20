@@ -1,0 +1,9 @@
+export const AGENTS = [
+  { id: 'mira', name: 'Mira', role: 'Team lead', initial: 'M', color: '#147c64', background: '#d8eee4', emoji: '✳', description: 'Connects the dots, coordinates the team, and keeps your next step clear.' },
+  { id: 'arjun', name: 'Arjun', role: 'Profile specialist', initial: 'A', color: '#ae7145', background: '#f3e3d4', emoji: '◈', description: 'Reads your documents and GitHub to understand the person behind the grades.' },
+  { id: 'nova', name: 'Nova', role: 'Opportunity scout', initial: 'N', color: '#5d68b4', background: '#e4e6f7', emoji: '✦', description: 'Searches the web for programs and funding that fit your ambitions.' },
+  { id: 'sage', name: 'Sage', role: 'Eligibility analyst', initial: 'S', color: '#a25a78', background: '#f2dfe7', emoji: '❋', description: 'Checks official requirements, deadlines, and the details that matter.' },
+  { id: 'leo', name: 'Leo', role: 'Application coach', initial: 'L', color: '#b18a2d', background: '#f5edce', emoji: '✺', description: 'Turns your real experience into an application that sounds like you.' },
+];
+export const byId = id => AGENTS.find(a => a.id === id) || AGENTS[0];
+export const welcome = () => [{ id: 'welcome', agent: 'mira', content: "Hey, welcome. 👋 I’m Mira, your team lead.\n\nArjun, Nova, Sage, and Leo will each help with a different part of your scholarship journey. I’ll keep things moving, one step at a time.\n\n**What are you studying right now?**", time: Date.now(), kind: 'message' }];

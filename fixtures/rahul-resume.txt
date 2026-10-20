@@ -1,0 +1,12 @@
+FICTIONAL HACKATHON TEST FIXTURE — NOT A REAL STUDENT RECORD
+Name: Rahul
+Location: Jalandhar
+Education: Final-year B.Tech in Computer Science
+Academic score: 8.2 CGPA on a 10-point scale
+Interests: Artificial intelligence; has built a few AI projects.
+Project names, code, individual contributions and outcomes: not supplied.
+Goal for this test scenario: a master's degree in Computer Science or Artificial Intelligence.
+Preferred countries: Canada, Germany, Singapore.
+Funding needs: family cannot afford expensive university fees; substantial funding needed.
+GitHub profile, language test scores, nationality, graduation date and target intake: not supplied.
+Do not add awards, publications, work experience or project outcomes that are not stated above.

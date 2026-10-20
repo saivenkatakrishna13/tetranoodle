@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+test-results/
+playwright-report/
+.DS_Store
+*.log
+.data/
+artifacts/raw-recordings/
+.tools/

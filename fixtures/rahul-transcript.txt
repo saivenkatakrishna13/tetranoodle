@@ -1,0 +1,7 @@
+FICTIONAL SUMMARY TRANSCRIPT — HACKATHON TEST DATA
+Student: Rahul
+Course: B.Tech Computer Science
+Study status: Final year
+Cumulative grade point average: 8.2 / 10
+Individual course grades, credit totals, class rank and degree completion date: not provided.
+This text fixture does not certify a degree or establish foreign degree equivalence.
