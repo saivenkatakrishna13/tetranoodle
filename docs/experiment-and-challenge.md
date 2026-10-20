@@ -21,3 +21,9 @@ The workflow is a durable job rather than one long browser request. Partial resu
 ## Demo integrity
 
 Test students and documents are explicitly fictional. Live validation reports contain actual returned findings; the app does not seed an invented scholarship catalog. The application is a draft with placeholders, and no submission takes place. The screen recording must be described honestly if waiting periods are shortened or previously completed live findings are demonstrated.
+
+## Blind-profile experiment
+
+Changing the student exposed assumptions that were easy to miss in the original Rahul scenario: master-only search language, old discovery receipts surviving a profile edit, non-verbatim country extraction and university aliases counting the same degree twice. The general fixes use an explicit research brief, original labelled facts, full invalidation of derived state and programme identity checks. No new profile selects a separate implementation or prepared opportunity list.
+
+The added live case changes the academic field to communication/interaction design, the destinations to Finland/Sweden/the Netherlands, the original grade to 8.6/10, and the funding and language details. It produced ten researched opportunities, five recommendations and a separate draft. The interface also restored Rahul's original documents after switching back. Automated checks cover other degree levels and block a late old-student reply from overwriting the current student. Results still need their displayed eligibility and funding gaps resolved.

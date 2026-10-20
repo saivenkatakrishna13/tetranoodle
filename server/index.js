@@ -7,8 +7,9 @@ import path from 'node:path';
 import { runSwarm, preview } from './agents.js';
 import { scraperReady, worker } from './tools.js';
 import { liveReady, agentKey, agentModel } from './groq.js';
-import { sessionFor, snapshot, saveSession, record } from './store.js';
-import { startResearch, pauseResearch, createDraft, reportMarkdown } from './research.js';
+import { sessionFor, snapshot, saveSession, record, listStudents, validId } from './store.js';
+import { startResearch, pauseResearch, stopResearch, createDraft, reportMarkdown } from './research.js';
+import {cleanProfile,changeProfile,parseStudentText} from './profile.js';
 
 const app = express(), port = Number(process.env.PORT || 3001), root = path.resolve(import.meta.dirname, '..');
 app.disable('x-powered-by');
@@ -20,12 +21,26 @@ app.use((req,res,next)=>{
 app.use(express.json({limit:'1mb'}));
 app.get('/api/status',async(req,res)=>res.json({live:liveReady(),agents:Object.fromEntries(['mira','arjun','nova','sage','leo'].map(id=>[id,!!agentKey(id)])),models:Object.fromEntries(['mira','arjun','nova','sage','leo'].map(id=>[id,agentModel(id)])),provider:'Groq',model:process.env.GROQ_MODEL||'openai/gpt-oss-120b',scrapling:await scraperReady(),storage:'local-disk'}));
 app.get('/api/sessions/:id',(req,res)=>res.json(snapshot(sessionFor(req.params.id))));
-app.patch('/api/sessions/:id/profile',(req,res)=>{
+app.get('/api/sessions',(req,res)=>res.json({students:listStudents(req.query.current)}));
+app.post('/api/sessions',async(req,res,next)=>{
+ try{
+  let parsed={profile:{},facts:[]};
+  if(req.body.profileText?.trim())parsed=await parseStudentText(req.body.profileText,{signal:AbortSignal.timeout(180000)});
+  const profile={...parsed.profile,...cleanProfile(req.body.profile||{})};
+  const session=sessionFor(randomUUID());session.listed=true;session.profile=profile;session.profileRevision=1;session.facts=parsed.facts;
+  if(parsed.facts.length)record(session,{type:'message',message:{agent:'arjun',content:`I’ve read this new student profile${profile.name?` for **${profile.name}**`:''}. ${profile.degree?`Current studies: ${profile.degree}. `:''}${profile.target_degree?`Next degree: ${profile.target_degree}. `:''}Missing details will stay unknown; this workspace has its own research and documents.`}});
+  saveSession(session,true);
+  if(validId(req.body.previousSessionId)&&req.body.previousSessionId!==session.id){const previous=sessionFor(req.body.previousSessionId);previous.listed=true;saveSession(previous,true);}
+  res.status(201).json(snapshot(session));
+ }catch(e){next(e);}
+});
+app.patch('/api/sessions/:id/profile',async(req,res)=>{
   const session=sessionFor(req.params.id);
-  const allowed=['name','degree','target_degree','cgpa','countries','budget','github','nationality','graduation','intake','language_scores','interests','career_goals','public_profiles'];
-  if(session.run?.status==='running')pauseResearch(session);
-  for(const [key,value]of Object.entries(req.body||{}))if(allowed.includes(key)&&typeof value==='string')session.profile[key]=value.slice(0,1000);
-  record(session,{type:'profile',profile:session.profile});saveSession(session,true);res.json({profile:session.profile});
+  if(session.chatBusy)return res.status(409).json({error:'Wait for the current reply before changing this student’s profile, or open a separate student workspace.'});
+  await stopResearch(session);
+  const changed=changeProfile(session,req.body||{});
+  if(changed)record(session,{type:'research_reset',reason:'The student profile changed. Previous matches and drafts need fresh research.'});
+  record(session,{type:'profile',profile:session.profile});saveSession(session,true);res.json({profile:session.profile,changed,...snapshot(session)});
 });
 app.get('/api/sessions/:id/report',(req,res)=>{
   const session=sessionFor(req.params.id);res.setHeader('Content-Disposition','attachment; filename="tetranoodle-research-report.md"');res.type('text/markdown').send(reportMarkdown(session));
@@ -47,7 +62,7 @@ app.post('/api/research',(req,res)=>{
   const session=sessionFor(req.body.sessionId);
   try{const run=startResearch(session,{resume:!!req.body.resume});res.status(202).json({run});}catch(e){res.status(409).json({error:e.message});}
 });
-app.post('/api/sessions/:id/pause',(req,res)=>{const session=sessionFor(req.params.id);const paused=pauseResearch(session);res.json({requested:paused,run:session.run});});
+app.post('/api/sessions/:id/pause',async(req,res)=>{const session=sessionFor(req.params.id);const paused=await stopResearch(session);res.json({requested:paused,run:session.run});});
 app.post('/api/sessions/:id/draft',async(req,res,next)=>{
   const session=sessionFor(req.params.id);
   if(session.chatBusy||session.run?.status==='running')return res.status(409).json({error:'Wait for the current task or pause research before generating another draft.'});
@@ -85,7 +100,7 @@ app.post('/api/chat',async(req,res)=>{
   if(typeof message!=='string'||!message.trim()||message.length>10000||!Array.isArray(history))return res.status(400).json({error:'Send between 1 and 10,000 characters.'});
   if(session.chatBusy)return res.status(409).json({error:'The team is still replying. You can send your next message in a moment.'});
   if(!Object.keys(session.profile).length)for(const[k,v]of Object.entries(profile))if(['name','degree','target_degree','cgpa','countries','budget','github','nationality','intake','language_scores','interests'].includes(k)&&typeof v==='string')session.profile[k]=v.slice(0,1000);
-  const prior=session.messages.length?session.messages.slice():history;
+  const prior=session.messages.slice();
   session.messages.push({id:req.body.messageId||randomUUID(),agent:'you',content:message.trim(),time:Date.now(),documents:req.body.documents||[]});
   session.chatBusy=true;saveSession(session);
   res.setHeader('Content-Type','text/event-stream');res.setHeader('Cache-Control','no-cache');res.setHeader('Connection','keep-alive');res.flushHeaders();

@@ -28,4 +28,4 @@ export const MessageBubble=React.memo(function MessageBubble({message:m,grouped,
     </div>
   </article>;
 });
-export function StatusPill({status}){const labels={conditional:'Needs your details',appears_eligible:'Meets checked criteria',not_eligible:'Requirement mismatch',met:'Met',not_met:'Not met',unknown:'Not confirmed'};return <span className={`status-pill ${status}`}>{labels[status]||status}</span>;}
+export function StatusPill({status}){const labels={outside_preferences:'Outside your preferences',conditional:'Needs your details',appears_eligible:'Meets checked criteria',not_eligible:'Requirement mismatch',met:'Met',not_met:'Not met',unknown:'Not confirmed'};return <span className={`status-pill ${status}`}>{labels[status]||status}</span>;}

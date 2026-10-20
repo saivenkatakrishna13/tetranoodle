@@ -12,4 +12,6 @@ test('drafts cannot certify grade conversion or eligibility',()=>{
  const result=guardDraft(draft);assert.ok(result.includes('8.2/10'));assert.ok(!result.includes('I meet'));assert.ok(result.includes('[Confirm academic equivalence'));assert.ok(result.includes('[Describe an actual project.]'));
  const academic=guardDraft('I completed my B.Sc. in Economics with a CGPA of 7.6/10. My undergraduate studies included econometrics and statistics.',{profile:{degree:'B.Sc. Economics',graduation:'2027'}});
  assert.ok(!academic.includes('I completed'));assert.ok(!academic.includes('included econometrics'));assert.ok(academic.includes('[Confirm degree completion'));
+ assert.ok(!guardDraft('It also covers digital media and introductory interaction design.').includes('covers digital media'));
+ assert.ok(!guardDraft('[Add only supported coursework here.] It also covers digital media.').includes('covers digital media'));
 });

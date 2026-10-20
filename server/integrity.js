@@ -13,11 +13,11 @@ export function deadlineState(claim, proposed, now=Date.now()) {
 
 // Even a source-supported admission rule cannot certify an individual applicant.
 export function guardDraft(content, {profile={},opportunity={}}={}) {
-  return String(content).split(/((?<=[.!?])\s+(?=[A-Z\[])|\n\n)/).map(part=>{
+  return String(content).split(/((?<=[.!?])\s+(?=[A-Z\[])|(?<=\])\s+(?=[A-Z])|\n\n)/).map(part=>{
     if(/^\s*\[/.test(part))return part;
     if(opportunity.type==='scholarship'&&/^\*\*Program(?:me)?:/i.test(part))return '**Programme:** [Confirm the exact eligible degree programme and admission status]';
     if(/\bI (?:have )?completed\b.*\b(?:degree|B\.Sc|B\.Tech|bachelor|master)/i.test(part)&&!/completed|graduated/i.test(profile.degree||''))return '[Confirm degree completion and graduation date. Current recorded degree: '+(profile.degree||'not supplied')+'.]';
-    if(/\b(?:curriculum|coursework)\b|\b(?:my|undergraduate) studies (?:included|covered|equipped|emphasised|emphasized)|\b(?:strong|solid|rigorous) (?:analytical )?foundation\b/i.test(part))return '[Add only transcript-supported coursework and academic preparation here.]';
+    if(/\b(?:curriculum|coursework)\b|\b(?:my|undergraduate) studies (?:included|covered|equipped|emphasised|emphasized)|\bIt also (?:covers|includes|covered|included)\b|\b(?:strong|solid|rigorous) (?:analytical )?foundation\b/i.test(part))return '[Add only transcript-supported coursework and academic preparation here.]';
     if(!profile.career_goals&&/\bI (?:envision|aim|intend|plan|hope)\b/i.test(part))return '[Add your own confirmed career or research goals here.]';
     if(/\b(?:I|we)\s+(?:already\s+)?(?:meet|satisfy|fulfil|fulfill)\b|\b(?:meeting|satisfying)\s+(?:the|all)\s+(?:scholarship|English|admission|academic|language).*requirement|\b(?:CGPA|grade).*\bequivalent\b|\bI am (?:fully )?eligible\b/i.test(part))return '[Confirm academic equivalence, language scores and eligibility with the institution before adding any claim that a requirement is met.]';
     return part;

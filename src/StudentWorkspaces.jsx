@@ -1,0 +1,29 @@
+import React,{useEffect,useRef,useState} from 'react';
+import {ArrowRight,Check,FileText,Loader2,Plus,Upload,Users} from 'lucide-react';
+import {Modal} from './ui';
+import {studentBookmarks} from './studentBookmarks';
+
+export default function StudentWorkspaces({currentId,onSwitch,onCreate,close}){
+ const[students,setStudents]=useState(studentBookmarks),[tab,setTab]=useState('saved'),[loading,setLoading]=useState(true),[saving,setSaving]=useState(false),[error,setError]=useState(''),[text,setText]=useState(''),[files,setFiles]=useState([]);
+ const importInput=useRef(null);
+ useEffect(()=>{const controller=new AbortController();fetch(`/api/sessions?current=${encodeURIComponent(currentId)}`,{signal:controller.signal}).then(async r=>{const data=await r.json();if(!r.ok)throw Error(data.error);setStudents([...new Map([...studentBookmarks(),...(data.students||[])].map(s=>[s.sessionId,s])).values()].sort((a,b)=>b.updatedAt-a.updatedAt));}).catch(e=>{if(e.name!=='AbortError')setError('Saved students could not be loaded. You can still create a new workspace.');}).finally(()=>setLoading(false));return()=>controller.abort();},[currentId]);
+ async function submit(event){
+  event.preventDefault();setError('');const profile=Object.fromEntries([...new FormData(event.currentTarget)].filter(([,v])=>typeof v==='string'&&v.trim()).map(([k,v])=>[k,v.trim()]));
+  if(!Object.keys(profile).length&&!text.trim()&&!files.length){setError('Enter, paste or upload the new student’s profile.');return;}
+  setSaving(true);try{await onCreate({profile,profileText:text,files});}catch(e){setError(e.message||'The student could not be created. Please retry.');}finally{setSaving(false);}
+ }
+ async function importProfile(event){const file=event.target.files?.[0];if(!file)return;if(file.size>100000){setError('Use a profile text or JSON file smaller than 100 KB.');return;}setText(await file.text());setError('');event.target.value='';}
+ return <Modal title="Student workspaces" subtitle="A new student. A fresh search. The same team." close={()=>{if(!saving)close();}} wide>
+  <div className="student-tabs" role="group" aria-label="Student workspace options"><button className={tab==='saved'?'selected':''} onClick={()=>setTab('saved')} disabled={saving}><Users size={16}/>Saved students</button><button className={tab==='new'?'selected':''} onClick={()=>{setTab('new');setError('');}} disabled={saving}><Plus size={16}/>New student</button></div>
+  {error&&<p className="student-error" role="alert">{error}</p>}
+  {tab==='saved'?<><div className="saved-students">{loading?<p><Loader2 size={16} className="spin"/>Loading student workspaces…</p>:students.map(student=><button className={`saved-student ${student.sessionId===currentId?'current':''}`} key={student.sessionId} disabled={student.sessionId===currentId} onClick={()=>onSwitch(student.sessionId)}><span className="student-initial">{student.name[0]?.toUpperCase()||'S'}</span><span><strong>{student.name}</strong><small>{student.target_degree||student.degree||'Profile not shared yet'}</small><small>{student.countries||'Countries not shared'} · {student.opportunities} researched{student.status==='running'?' · Research in progress':''}</small></span>{student.sessionId===currentId?<span className="current-student-label"><Check size={14}/>Current</span>:<ArrowRight size={17}/>}</button>)}</div><button className="primary-button new-student-button" onClick={()=>setTab('new')}><Plus size={16}/>Add a different student</button><p className="student-help">Each student keeps their own documents, conversation, research and draft. Switching back restores their saved work.</p></>:<form onSubmit={submit} className="new-student-form">
+   <div className="new-student-fields">{[['name','Student name','What should we call you?'],['degree','Current degree / education','B.Sc. Biology, final year'],['target_degree','Intended degree and subject','PhD in Environmental Science'],['countries','Preferred countries','Sweden, Finland']].map(([name,label,placeholder])=><label key={name}>{label}<input name={name} placeholder={placeholder} maxLength={1000} disabled={saving}/></label>)}</div>
+   <label className="student-brief-label">Or paste the profile supplied during the demo<textarea aria-label="New student profile" value={text} onChange={e=>setText(e.target.value)} placeholder="Paste any student’s background, intended course, original grades, countries and funding needs. Plain text and profile JSON are supported." maxLength={20000} disabled={saving}/></label>
+   <div className="student-imports"><button type="button" className="secondary-button" onClick={()=>importInput.current?.click()} disabled={saving}><Upload size={16}/>Import profile text / JSON</button><label className={`secondary-button student-file-picker ${saving?'disabled':''}`}><FileText size={16}/>{files.length?`${files.length} document${files.length===1?'':'s'} selected`:'Add resume / transcript'}<input type="file" aria-label="New student documents" accept=".pdf,.docx,.txt,.md" multiple disabled={saving} onChange={e=>setFiles(Array.from(e.target.files||[]))}/></label></div>
+   <input type="file" accept=".json,.txt,.md" hidden ref={importInput} onChange={importProfile}/>
+   {files.length>0&&<p className="student-help">{files.map(f=>f.name).join(' · ')}</p>}
+   <p className="student-help">Arjun reads the supplied details. Nova builds a search for this student’s subject, study level and countries. No previous student’s facts or matches are copied.</p>
+   <footer><span>{saving?'Arjun is preparing the new student workspace…':'Missing details stay unknown. You can review the profile before starting research.'}</span><button className="primary-button" type="submit" disabled={saving}>{saving?<Loader2 size={16} className="spin"/>:<Plus size={16}/>}Create student workspace</button></footer>
+  </form>}
+ </Modal>;
+}

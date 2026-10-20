@@ -1,0 +1,13 @@
+FICTIONAL STUDENT FOR LIVE ADAPTATION VALIDATION
+Name: Meera (fictional demo student)
+Current education: Final-year Bachelor of Design in Communication Design.
+Intended degree: Master's in Interaction Design.
+Preferred countries: Finland, Sweden, Netherlands.
+Academic result: 8.6 / 10 CGPA, on the original university scale. No official grade conversion has been supplied.
+Nationality: Indian.
+Expected graduation: June 2027.
+Target intake: 2027 entry.
+English test: IELTS overall 7.0; component scores have not been supplied.
+Funding need: Substantial scholarship support is needed. The student can contribute EUR 4000 per year.
+Academic interests: Interaction design, human-computer interaction, user experience and accessible digital products.
+No portfolio, public GitHub profile, individual project descriptions, work history, awards or publications have been supplied. These are unknown, not evidence that no such experience exists.

@@ -58,6 +58,16 @@ Clearly fictional test documents are in [fixtures](fixtures/). The PDF fixtures 
 
 Without configured keys the app explicitly enters guided preview and does not pretend that canned onboarding or research is live AI.
 
+## Live demo: introduce a different student
+
+Open **Chat menu → Switch student → New student**. Enter the basics, paste the supplied brief, import a text/JSON profile, or attach the new student's documents. Review the extracted profile, then click **Find opportunities** or ask the team to begin research.
+
+Each student has a separate saved conversation, documents, search state, eligibility decisions and draft. **Saved students** restores previous work. Subject, intended study level, supplied interests and countries drive the research; the engine does not default to Rahul, Computer Science or a master's. Missing essential preferences prompt one question. Wrong study levels and opportunities outside the preferred countries are excluded from recommendations.
+
+Editing a student's existing profile stops its active run and clears derived matches, search receipts, public-profile enrichment and draft before fresh research. Use **New student** for another person so their original documents and conversation remain separate.
+
+See [the live profile demo guide](docs/live-profile-demo.md) and [the adaptation validation](artifacts/adaptation-validation.json). The fictional design profile is input data in `fixtures/unseen-design-student.txt`; no opportunity catalog is bundled into the student-creation flow.
+
 ## Light and dark mode
 
 Use the sun/moon button in the chat header to switch instantly on desktop or phone. Open **Chat menu → Appearance** (or Appearance in the desktop sidebar) for **Light**, **Dark** or **System**. System follows device changes automatically. Your choice persists across refreshes and workspaces.
@@ -120,7 +130,7 @@ The final live checks on 20 October 2026 produced:
 | Rahul, Computer Science | 10 | 5 | Ready |
 | Aisha, Economics / Public Policy | 11 | 5 | Ready |
 
-All recommendations are conditional. Many award amounts, current intake deadlines and eligibility details remain unconfirmed; the reports expose those gaps. These results demonstrate the complete workflow, not guaranteed funding. The final automated validation passed **17 backend checks and 7 browser checks**, the production build, and the dependency audit (zero reported vulnerabilities).
+All recommendations are conditional. Many award amounts, current intake deadlines and eligibility details remain unconfirmed; the reports expose those gaps. These results demonstrate the complete workflow, not guaranteed funding. The final automated validation passed **27 backend checks and 9 browser checks**, the production build, and the dependency audit (zero reported vulnerabilities).
 
 Submission material:
 

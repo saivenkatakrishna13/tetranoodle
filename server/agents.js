@@ -1,6 +1,7 @@
 import { completion } from './groq.js';
 import { tools, executeTool, relevantText } from './tools.js';
-import { enrichProfile, startResearch } from './research.js';
+import {changeProfile,cleanProfile,missingEssentials} from './profile.js';
+import { enrichProfile, startResearch, stopResearch } from './research.js';
 
 export const ROLES = {
   mira: { name: 'Mira', role: 'Team lead', instruction: 'Coordinate the team, synthesize peer findings, explain next steps and ask the most useful unanswered question. Be warm and direct. Do not repeat another agent’s questions. Never guarantee admission or funding.', tools: [] },
@@ -18,7 +19,7 @@ export async function planTurn(session, history, message, signal, emit) {
   const result = await completion([{ role: 'system', content: `You coordinate a natural WhatsApp-style scholarship group chat. Return JSON only: {"profile":{explicit student facts},"speaker":"mira|arjun|nova|sage|leo","task":"specific next reply","question_key":"one field key or null","action":"none|start_research"}.
 Only ONE agent speaks per user turn. Never make everyone introduce themselves or ask questions at once. Choose the relevant specialist and keep the rest quiet. Answer the user's question before asking at most ONE focused question. Do not ask for anything already supplied, and don't ask another question if the previous question has not been answered unless the user changes the topic.
 Roles: Mira welcomes/co-ordinates; Arjun academic background and documents; Nova countries and program search; Sage eligibility/tests/nationality/intake; Leo goals and drafts. An introduction is Mira alone, two warm sentences, then ONE useful next question. The website has Start research for the complete 10-opportunity workflow. When the student explicitly asks you to find/research scholarships or programs, and degree/field and country preferences are known, set action=start_research. Otherwise action=none and ask only one missing essential field. Do not start research for questions about how research works. Never duplicate a full search in ordinary chat tools. Focused single-source checks may use Sage. During an active research job, answer progress queries briefly and do not duplicate searches.
-Allowed profile fields: name, degree, target_degree, cgpa, countries, budget, github, nationality, graduation, intake, language_scores, interests, career_goals, public_profiles. Values must be strings and explicitly supplied by the student; never infer nationality, grades, or achievements. Extract only from student messages or document-supported current profile.
+Allowed profile fields: name, degree, target_degree, cgpa, countries, budget, github, nationality, graduation, intake, language_scores, interests, career_goals, public_profiles. Values must be strings and explicitly supplied by the student; never infer nationality, grades, or achievements. Extract new profile changes ONLY from the LATEST student message. Earlier messages are context, not permission to restore an older profile or preference. The current saved profile is authoritative. Never carry facts from another student.
 Current profile: ${JSON.stringify(session.profile)}.
 Pending question: ${JSON.stringify(session.pendingQuestion || null)}.
 Current research: ${JSON.stringify(session.run ? {status:session.run.status,stage:session.run.stage,reviewed:session.opportunities.length} : null)}.
@@ -26,7 +27,7 @@ Ask for current degree/field first if missing, then intended study level, countr
   const plan = JSON.parse(result.content);
   const allowedKeys = ['name','degree','target_degree','cgpa','countries','budget','github','nationality','graduation','intake','language_scores','interests','career_goals','public_profiles'];
   const patch = Object.fromEntries(Object.entries(plan.profile || {}).filter(([key,value])=>allowedKeys.includes(key)&&typeof value==='string'&&value.trim()).map(([key,value])=>[key,value.slice(0,1000)]));
-  Object.assign(session.profile,patch);emit({type:'profile',profile:session.profile});
+  if(Object.entries(cleanProfile(patch)).some(([k,v])=>session.profile[k]!==v)){await stopResearch(session);if(changeProfile(session,patch))emit({type:'research_reset',reason:'Your profile changed; fresh research will use the updated preferences.'});}emit({type:'profile',profile:session.profile});
   let id=ROLES[plan.speaker]?plan.speaker:'mira';
   if (/what.*app.*for|what can.*help|who.*team|how.*app.*work/i.test(message)) { id='mira'; plan.task='Answer the student’s question by explaining that this is an AI scholarship finder with five specialists who understand the profile, research real programs and funding, verify eligibility, and prepare a draft. Use two warm sentences.'; plan.question_key=['degree','target_degree','countries','budget'].find(key=>!session.profile[key]) || null; }
   session.requestedAction=plan.action==='start_research'?'start_research':null;
@@ -84,7 +85,7 @@ export async function runSwarm(session, history, message, emit, signal) {
   const conversation = [...history.slice(-24), { role: 'user', content: message }];
   const plan = await planTurn(session, history, message, signal, emit);
   emit({ type: 'activity', agent: 'mira', label: `Mira coordinated ${plan.map(a => ROLES[a.id].name).join(' → ')}` });
-  if(session.requestedAction==='start_research' && session.profile.degree && session.profile.countries){
+  if(session.requestedAction==='start_research' && !missingEssentials(session.profile).length){
     if(session.run?.status!=='running')startResearch(session,{resume:!!session.run&&session.run.status!=='completed'});
     emit({type:'message',message:{agent:'mira',content:'I’m coordinating the full research run now. Arjun will confirm your profile, Nova will discover opportunities, Sage will check and rank them, and Leo will prepare a draft. You can follow the saved progress below and keep chatting here.'}});
     return;

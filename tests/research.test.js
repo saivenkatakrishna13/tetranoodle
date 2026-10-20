@@ -54,3 +54,12 @@ test('an unquoted intake year cannot become a verified deadline',()=>{
  const result=validateReview({name:'MSc',url},{...base,deadline:{value:'1 May 2027',quote:identity.quote,url},deadline_state:'upcoming'},evidence);
  assert.equal(result.claims.deadline,null);assert.equal(result.deadline_state,'unknown');
 });
+
+test('institution aliases cannot double-count the same displayed programme',()=>{
+ const common={name:'MSc Design for Interaction',university:'TU Delft',country:'Netherlands',eligibility:'conditional',score:60};
+ const result=rankOpportunities([{...common,id:'first',url:'https://example.edu/program',dedupe_institution:'TU Delft'},{...common,id:'second',url:'https://example.edu/program/admission',dedupe_institution:'TUDelft'}]);assert.equal(result.length,1);
+});
+
+test('an opportunity outside the requested countries is not recommended even with a high score',()=>{
+ const result=rankOpportunities([{name:'Outside program',university:'Outside University',score:100,preference_mismatch:true,eligibility:'conditional'},{name:'Requested program',university:'Requested University',score:40,eligibility:'conditional'}]);assert.equal(result[0].name,'Requested program');assert.equal(result.find(o=>o.preference_mismatch).recommended,false);
+});
