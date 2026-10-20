@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { AGENTS, byId } from './agents';
 export const timeLabel = time => new Date(time).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
 export function IconButton({title,children,className='',...props}){return <button type="button" title={title} aria-label={title} className={`icon-button ${className}`} {...props}>{children}</button>;}
-export function Avatar({agent,size='',online=false}){return <span className={`avatar ${size}`} style={{background:agent.background,color:agent.color}}><span>{agent.name[0]}</span>{online&&<i/>}</span>;}
+export function Avatar({agent,size='',online=false}){return <span className={`avatar ${size}`} style={{'--agent-background':agent.background,'--agent-color':agent.color}}><span>{agent.name[0]}</span>{online&&<i/>}</span>;}
 export function TeamMark({large=false}){return <span className={`team-mark ${large?'large':''}`}><Users size={large?42:25}/><i><span>✦</span></i></span>;}
 export function Markdown({children}){return <ReactMarkdown remarkPlugins={[remarkGfm]} components={{a:({children,href})=><a href={href} target="_blank" rel="noopener noreferrer">{children}<ExternalLink size={11}/></a>}}>{children}</ReactMarkdown>;}
 export function Modal({title,subtitle,children,close,wide=false}){
@@ -19,7 +19,7 @@ export const MessageBubble=React.memo(function MessageBubble({message:m,grouped,
   return <article className={`message-row ${mine?'mine':''} ${grouped?'grouped':''}`} id={`message-${m.id}`}>
     {!mine&&<span className={grouped?'invisible':''}><Avatar agent={agent} size="message-avatar"/></span>}
     <div className={`bubble ${mine?'outgoing':''} ${m.kind==='error'?'error-bubble':''}`}>
-      {!mine&&!grouped&&<div className="message-author" style={{color:agent.color}}>{agent.name}<span>{agent.role}</span></div>}
+      {!mine&&!grouped&&<div className="message-author" style={{'--agent-color':agent.color}}>{agent.name}<span>{agent.role}</span></div>}
       {m.replyTo&&<div className="quoted-message"><strong>{m.replyTo.agent==='you'?'You':byId(m.replyTo.agent).name}</strong><p>{m.replyTo.content.slice(0,180)}</p></div>}
       {m.documents?.map(d=><div className="attachment" key={d.id}><span><FileText size={27}/></span><div><strong>{d.name}</strong><small>{Math.max(1,Math.round(d.size/1024))} KB · Document</small></div></div>)}
       <div className="message-text"><Markdown>{m.content}</Markdown></div>

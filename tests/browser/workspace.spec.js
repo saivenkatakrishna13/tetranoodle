@@ -48,3 +48,31 @@ test('research recommendations expose requirements, source proof, application st
 test('invalid uploads report a readable error',async({page})=>{
  await page.goto('/');await page.locator('input[type=file]').setInputFiles({name:'scan.pdf',mimeType:'application/pdf',buffer:Buffer.from('not a valid PDF')});await expect(page.getByRole('alert')).toContainText('could not be read');
 });
+test('appearance is accessible on phones and persists across reloads and workspaces',async({page})=>{
+ await isolate(page);await page.emulateMedia({colorScheme:'light'});await page.goto('/');
+ await page.getByRole('button',{name:'Switch to dark mode',exact:true}).click();
+ await expect(page.locator('.app-shell')).toHaveClass(/theme-dark/);
+ await expect(page.locator('html')).toHaveCSS('color-scheme','dark');
+ await page.reload();await expect(page.locator('.app-shell')).toHaveClass(/theme-dark/);
+ await page.goto('/?workspace=appearance-second-workspace-2026');await expect(page.locator('.app-shell')).toHaveClass(/theme-dark/);
+ await page.setViewportSize({width:320,height:667});
+ await expect(page.getByRole('button',{name:'Switch to light mode',exact:true})).toBeInViewport();
+ await page.getByRole('button',{name:'Chat menu',exact:true}).click();await page.locator('.chat-menu').getByRole('button',{name:/^Appearance/}).click();
+ await page.getByRole('radio',{name:'Light',exact:true}).click();await expect(page.locator('.app-shell')).not.toHaveClass(/theme-dark/);
+ await page.getByRole('button',{name:'Done',exact:true}).click();await page.reload();
+ await expect(page.getByRole('button',{name:'Switch to dark mode',exact:true})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await expect(page.getByRole('textbox',{name:'Message your team'})).toBeInViewport();
+});
+test('System appearance follows device changes, while an explicit choice overrides them',async({page})=>{
+ await isolate(page);await page.emulateMedia({colorScheme:'dark'});await page.goto('/');
+ await expect(page.locator('.app-shell')).toHaveClass(/theme-dark/);
+ await page.getByRole('button',{name:'Appearance',exact:true}).click();
+ await expect(page.getByRole('radio',{name:'System',exact:true})).toHaveAttribute('aria-checked','true');
+ await page.getByRole('radio',{name:'System',exact:true}).press('ArrowLeft');
+ await expect(page.getByRole('radio',{name:'Dark',exact:true})).toHaveAttribute('aria-checked','true');
+ await page.emulateMedia({colorScheme:'light'});await expect(page.locator('.app-shell')).toHaveClass(/theme-dark/);
+ await page.getByRole('radio',{name:'System',exact:true}).click();await expect(page.locator('.app-shell')).not.toHaveClass(/theme-dark/);
+ await page.emulateMedia({colorScheme:'dark'});await expect(page.locator('.app-shell')).toHaveClass(/theme-dark/);
+ await page.getByRole('button',{name:'Done',exact:true}).click();await page.reload();await expect(page.locator('.app-shell')).toHaveClass(/theme-dark/);
+});

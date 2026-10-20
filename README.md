@@ -58,6 +58,12 @@ Clearly fictional test documents are in [fixtures](fixtures/). The PDF fixtures 
 
 Without configured keys the app explicitly enters guided preview and does not pretend that canned onboarding or research is live AI.
 
+## Light and dark mode
+
+Use the sun/moon button in the chat header to switch instantly on desktop or phone. Open **Chat menu → Appearance** (or Appearance in the desktop sidebar) for **Light**, **Dark** or **System**. System follows device changes automatically. Your choice persists across refreshes and workspaces.
+
+![Dark appearance](artifacts/ui-dark-desktop.png)
+
 ## How the agents contribute
 
 | Agent | Responsibility | Actual capabilities |
@@ -114,7 +120,7 @@ The final live checks on 20 October 2026 produced:
 | Rahul, Computer Science | 10 | 5 | Ready |
 | Aisha, Economics / Public Policy | 11 | 5 | Ready |
 
-All recommendations are conditional. Many award amounts, current intake deadlines and eligibility details remain unconfirmed; the reports expose those gaps. These results demonstrate the complete workflow, not guaranteed funding. The final automated validation passed **17 backend checks and 5 browser checks**, the production build, and the dependency audit (zero reported vulnerabilities).
+All recommendations are conditional. Many award amounts, current intake deadlines and eligibility details remain unconfirmed; the reports expose those gaps. These results demonstrate the complete workflow, not guaranteed funding. The final automated validation passed **17 backend checks and 7 browser checks**, the production build, and the dependency audit (zero reported vulnerabilities).
 
 Submission material:
 

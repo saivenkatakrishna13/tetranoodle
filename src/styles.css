@@ -15,3 +15,47 @@
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 .main-panel:has(.run-strip) .jump-to-latest{bottom:187px}.group-created>.team-mark{color:#27997c}.theme-dark .group-created>.team-mark{color:#79cdb6}.theme-dark .workspace-note{box-shadow:none}
 @media(max-width:700px){.main-panel:has(.run-strip) .jump-to-latest{bottom:172px}}
+
+/* Appearance applies to every workspace, including native form controls. */
+:root[data-theme="dark"]{background:#111b21;color:#e9edef}
+:root[data-theme="light"]{background:#f0f2f5;color:#111b21}
+.avatar{background:var(--agent-background);color:var(--agent-color)}
+.message-author{color:var(--agent-color)}
+.appearance-menu-choice{margin-left:auto;color:var(--subtle);font-size:10px}
+.appearance-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:25px}
+.appearance-option{position:relative;padding:9px;border:2px solid var(--line);border-radius:10px;text-align:center;background:var(--bg);min-width:0}
+.appearance-option:hover{background:var(--hover)}
+.appearance-option.is-selected{border-color:var(--accent)}
+.appearance-preview{height:89px;display:block;position:relative;border-radius:5px;overflow:hidden;background:#efeae2;border:1px solid #111b2115}
+.preview-header{position:absolute;left:0;right:0;top:0;height:20px;display:flex;align-items:center;gap:5px;padding:5px;background:#f0f2f5}
+.preview-header>i:first-child{width:10px;height:10px;border-radius:50%;background:#94c9b5}
+.preview-header>i:last-child{height:3px;width:28px;border-radius:2px;background:#a8b3b8}
+.preview-message{position:absolute;top:30px;left:9px;width:55%;height:12px;border-radius:0 4px 4px 4px;background:white}
+.outgoing-preview{left:auto;right:9px;top:49px;background:#c8ecc4;border-radius:4px 0 4px 4px;width:47%}
+.preview-composer{position:absolute;bottom:6px;left:6px;right:6px;height:12px;border-radius:8px;background:white}
+.preview-dark{background:#0b141a}.preview-dark .preview-header{background:#202c33}
+.preview-dark .preview-message,.preview-dark .preview-composer{background:#2b3b44}.preview-dark .outgoing-preview{background:#005c4b}
+.preview-system{background:linear-gradient(90deg,#efeae2 50%,#0b141a 50%)}
+.preview-system .preview-header{background:linear-gradient(90deg,#f0f2f5 50%,#202c33 50%)}
+.preview-system .preview-composer{background:linear-gradient(90deg,white 50%,#2b3b44 50%)}
+.preview-system .outgoing-preview{background:#005c4b}
+.appearance-option-label{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;margin-top:12px;margin-bottom:3px;font-weight:500}
+.appearance-check{position:absolute;right:4px;top:4px;width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--accent);color:white;visibility:hidden}
+.is-selected .appearance-check{visibility:visible}
+.appearance-help{color:var(--muted);font-size:12px;line-height:1.8;margin:21px 0 4px}
+.theme-dark .avatar{background:color-mix(in srgb,var(--agent-color) 22%,#18252c);color:color-mix(in srgb,var(--agent-color) 60%,white)}
+.theme-dark .message-author{color:color-mix(in srgb,var(--agent-color) 60%,white)}
+.theme-dark .message-text a,.theme-dark .application-paper a{color:#68c8ee}
+.theme-dark .user-avatar,.theme-dark .you-avatar{background:#1d4437;color:#8ad1b3}
+.theme-dark .missing-box>strong,.theme-dark .missing-box ul{color:#d2b87c}
+.theme-dark .upload-zone>span{background:#1e4436;color:#82cba3}
+.theme-dark .file-icon{background:#3d292d;color:#eea0a0}
+.theme-dark .quoted-message,.theme-dark .attachment{background:#ffffff08}
+.theme-dark .conversation-starters>button{border-color:var(--line)}
+.theme-dark .chat-scroll{scrollbar-color:#37464f transparent}
+.composer textarea::placeholder,.profile-form input::placeholder{color:var(--subtle);opacity:1}
+@media(max-width:700px){.header-actions .header-appearance{width:32px;height:36px}.appearance-options{gap:8px}.appearance-option{padding:7px}.appearance-option-label{gap:5px;font-size:11px}.appearance-option-label>svg{width:14px;height:14px}.appearance-preview{height:82px}}
+@media(max-width:370px){.header-actions>.header-appearance{display:inline-flex}}
+
+.typing-bubble>span,.about-team strong{color:var(--agent-color)}
+.theme-dark .typing-bubble>span,.theme-dark .about-team strong{color:color-mix(in srgb,var(--agent-color) 60%,white)}
