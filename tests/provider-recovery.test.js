@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {completion,structured,clearBudgetBackoffs} from '../server/groq.js';
+import {completion,structured,clearBudgetBackoffs,quotaType} from '../server/groq.js';
 test('daily model exhaustion switches models once and preserves the agent request',async()=>{
  clearBudgetBackoffs();
  const originalFetch=globalThis.fetch,previous=process.env.GROQ_DAILY_FALLBACK_MODEL,calls=[],events=[];
@@ -9,9 +9,13 @@ test('daily model exhaustion switches models once and preserves the agent reques
   globalThis.fetch=async(_url,options)=>{const body=JSON.parse(options.body);calls.push(body);return calls.length===1?new Response(JSON.stringify({error:{message:'Rate limit reached: tokens per day (TPD)'}}),{status:429}):new Response(JSON.stringify({choices:[{message:{content:'{"ok":true}'}}]}),{status:200});};
   const result=await completion([{role:'user',content:'Check the supplied source.'}],{agent:'mira',modelOverride:'openai/gpt-oss-120b',json:true,maxTokens:100,emit:e=>events.push(e)});
   assert.equal(calls.length,2);assert.equal(calls[1].model,'qwen/qwen3.8-27b');assert.deepEqual(calls[0].messages,calls[1].messages);assert.equal(result.content,'{"ok":true}');assert.ok(events.some(e=>e.label.includes('daily allowance')));
+  const notice=events.find(e=>e.limitReached);assert.equal(notice.agent,'mira');assert.equal(notice.limitType,'tokens per day');assert.equal(notice.keySetting,'GROQ_API_KEY_MIRA');assert.equal(notice.model,'openai/gpt-oss-120b');assert.ok(!JSON.stringify(notice).includes('Bearer'));
   clearBudgetBackoffs();calls.length=0;globalThis.fetch=async()=>{calls.push(true);return new Response(JSON.stringify({error:{message:'tokens per day (TPD) exhausted'}}),{status:429});};
   await assert.rejects(completion([{role:'user',content:'Check source.'}],{agent:'mira',modelOverride:'openai/gpt-oss-120b',maxTokens:100}),/daily allowance is exhausted/);assert.equal(calls.length,2);
  }finally{clearBudgetBackoffs();globalThis.fetch=originalFetch;if(previous===undefined)delete process.env.GROQ_DAILY_FALLBACK_MODEL;else process.env.GROQ_DAILY_FALLBACK_MODEL=previous;}
+});
+test('quota warnings distinguish request size, minute and daily limits without guessing unknown types',()=>{
+ assert.equal(quotaType('tokens per minute (TPM) reached'),'tokens per minute');assert.equal(quotaType('requests per day (RPD) exhausted'),'requests per day');assert.equal(quotaType('Request too large for tokens per minute'),'request size');assert.equal(quotaType('Too many requests'),'rate limit (type not specified)');
 });
 test('a rejected JSON generation is repaired instead of terminating the research job',async()=>{
  const original=globalThis.fetch;let calls=0;

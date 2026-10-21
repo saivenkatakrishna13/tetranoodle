@@ -7,7 +7,7 @@ import path from 'node:path';
 import { runSwarm, preview } from './agents.js';
 import { scraperReady, worker } from './tools.js';
 import { liveReady, agentKey, agentModel } from './groq.js';
-import { sessionFor, snapshot, saveSession, record, listStudents, validId } from './store.js';
+import { sessionFor, snapshot, saveSession, record, listStudents, validId, deleteSession, deletedStudentIds } from './store.js';
 import { startResearch, pauseResearch, stopResearch, createDraft, reportMarkdown } from './research.js';
 import {cleanProfile,changeProfile,parseStudentText,resetResearchData} from './profile.js';
 
@@ -21,7 +21,15 @@ app.use((req,res,next)=>{
 app.use(express.json({limit:'1mb'}));
 app.get('/api/status',async(req,res)=>res.json({live:liveReady(),agents:Object.fromEntries(['mira','arjun','nova','sage','leo'].map(id=>[id,!!agentKey(id)])),models:Object.fromEntries(['mira','arjun','nova','sage','leo'].map(id=>[id,agentModel(id)])),provider:'Groq',model:process.env.GROQ_MODEL||'openai/gpt-oss-120b',scrapling:await scraperReady(),storage:'local-disk'}));
 app.get('/api/sessions/:id',(req,res)=>res.json(snapshot(sessionFor(req.params.id))));
-app.get('/api/sessions',(req,res)=>res.json({students:listStudents(req.query.current)}));
+app.get('/api/sessions',(req,res)=>res.json({students:listStudents(req.query.current),deletedIds:deletedStudentIds()}));
+app.delete('/api/sessions/:id',async(req,res)=>{
+  const session=sessionFor(req.params.id);
+  if(session.chatBusy)return res.status(409).json({error:'Wait for the current reply or draft to finish before deleting this student.'});
+  await stopResearch(session);
+  // A chat may have started while cancellation was settling.
+  if(session.chatBusy)return res.status(409).json({error:'Wait for the current reply to finish before deleting this student.'});
+  deleteSession(session);res.json({deleted:true,sessionId:session.id});
+});
 app.post('/api/sessions',async(req,res,next)=>{
  try{
   let parsed={profile:{},facts:[]};
@@ -51,7 +59,7 @@ app.get('/api/sessions/:id/export',(req,res)=>{
 app.get('/api/sessions/:id/events',(req,res)=>{
   const session=sessionFor(req.params.id), after=Number(req.query.after||req.get('Last-Event-ID')||0);
   res.setHeader('Content-Type','text/event-stream');res.setHeader('Cache-Control','no-cache');res.setHeader('Connection','keep-alive');res.flushHeaders();
-  const send=event=>{if(!res.writableEnded)res.write(`id: ${event.sequence}\ndata: ${JSON.stringify(event)}\n\n`);};
+  const send=event=>{if(!res.writableEnded){res.write(`${event.sequence?`id: ${event.sequence}\n`:''}data: ${JSON.stringify(event)}\n\n`);if(event.type==='workspace_deleted')res.end();}};
   session.events.filter(e=>e.sequence>after).forEach(send);
   session.subscribers ||=new Set();session.subscribers.add(send);
   const heartbeat=setInterval(()=>{if(!res.writableEnded)res.write(': heartbeat\n\n');},15000);
@@ -137,5 +145,5 @@ app.post('/api/chat',async(req,res)=>{
 });
 app.use(express.static(path.join(root,'dist')));
 app.get('/{*path}',(req,res)=>{if(req.path.startsWith('/api/'))return res.status(404).json({error:'Not found'});res.sendFile(path.join(root,'dist/index.html'));});
-app.use((err,req,res,next)=>{if(res.headersSent)return next(err);res.status(err instanceof multer.MulterError?400:400).json({error:err instanceof multer.MulterError?err.code==='LIMIT_FILE_SIZE'?'That file is larger than 10 MB.':'Upload up to four files at a time.':err.message||'The request could not be completed.'});});
+app.use((err,req,res,next)=>{if(res.headersSent)return next(err);res.status(err.statusCode===410?410:400).json({error:err instanceof multer.MulterError?err.code==='LIMIT_FILE_SIZE'?'That file is larger than 10 MB.':'Upload up to four files at a time.':err.message||'The request could not be completed.'});});
 app.listen(port,'127.0.0.1',()=>console.log(`ScholarX ready · http://127.0.0.1:${port} · ${liveReady()?'Groq live':'guided preview'}`));

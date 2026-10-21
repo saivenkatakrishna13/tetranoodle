@@ -1,14 +1,19 @@
-import { mkdirSync, readFileSync, writeFileSync, renameSync, existsSync, readdirSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, renameSync, existsSync, readdirSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import {guardDraft} from './integrity.js';
 import {distinctProgramPages,researchCoverage} from './research-quality.js';
 const directory = process.env.TETRA_DATA_DIR||path.resolve(import.meta.dirname, '../.data/sessions');
 mkdirSync(directory, { recursive: true, mode: 0o700 });
+const deletedDirectory=path.join(directory,'.deleted');
+mkdirSync(deletedDirectory,{recursive:true,mode:0o700});
+const isDeleted=id=>existsSync(path.join(deletedDirectory,id));
+export const deletedStudentIds=()=>readdirSync(deletedDirectory).filter(validId);
 const cache = new Map(), timers = new Map();
 export const validId = id => typeof id === 'string' && /^[a-zA-Z0-9-]{12,80}$/.test(id);
 export function sessionFor(id) {
   if (!validId(id)) throw new Error('A valid workspace ID is required.');
+  if(isDeleted(id))throw Object.assign(new Error('This student workspace was deleted.'),{statusCode:410});
   if (cache.has(id)) return cache.get(id);
   const filename = path.join(directory, `${id}.json`);
   let data = {};
@@ -21,7 +26,9 @@ export function sessionFor(id) {
 }
 export function saveSession(session, immediate = false) {
   clearTimeout(timers.get(session.id));
+  if(isDeleted(session.id)){timers.delete(session.id);return;}
   const save = () => {
+    if(isDeleted(session.id)){timers.delete(session.id);return;}
     session.updatedAt=Date.now();
     const filename = path.join(directory, `${session.id}.json`), temporary = `${filename}.tmp`;
     const { chatBusy, controller, subscribers, ...data } = session;
@@ -31,6 +38,7 @@ export function saveSession(session, immediate = false) {
   if (immediate) save(); else timers.set(session.id, setTimeout(save, 150));
 }
 export function record(session, event) {
+  if(isDeleted(session.id))return {type:'workspace_deleted',sessionId:session.id};
   if (event.type === 'message') { event.message = { id: randomUUID(), time: Date.now(), ...event.message }; session.messages.push(event.message); }
   if (event.type === 'profile') Object.assign(session.profile, event.profile);
   if (event.type === 'opportunities') session.opportunities = event.opportunities;
@@ -40,6 +48,16 @@ export function record(session, event) {
   const stored = { ...structuredClone(event), sequence: (session.events.at(-1)?.sequence || 0) + 1, time: Date.now() };
   session.events.push(stored); if (session.events.length > 500) session.events.splice(0, session.events.length - 500);
   saveSession(session); session.subscribers?.forEach(send => send(stored)); return stored;
+}
+export function deleteSession(session){
+  // Keep only the ID as a tombstone so old tabs and late saves cannot recreate data.
+  writeFileSync(path.join(deletedDirectory,session.id),'',{mode:0o600});
+  clearTimeout(timers.get(session.id));timers.delete(session.id);
+  rmSync(path.join(directory,`${session.id}.json`),{force:true});
+  rmSync(path.join(directory,`${session.id}.json.tmp`),{force:true});
+  cache.delete(session.id);
+  session.subscribers?.forEach(send=>send({type:'workspace_deleted',sessionId:session.id}));
+  session.subscribers?.clear();
 }
 export function snapshot(session) {
   const opportunities=distinctProgramPages(session.opportunities);

@@ -1,13 +1,13 @@
 {
-  "checkedAt": "2026-10-21T09:10:51.465115+00:00",
+  "checkedAt": "2026-10-21T10:09:45.649013+00:00",
   "backend": {
     "command": "npm test",
-    "passed": 49,
+    "passed": 51,
     "failed": 0
   },
   "browser": {
     "command": "npm run test:ui",
-    "passed": 12,
+    "passed": 16,
     "controlledProviderResponses": true,
     "failed": 0
   },
@@ -16,7 +16,7 @@
     "passed": true
   },
   "productionRuntime": {
-    "checkedAt": "2026-10-21T09:04:21.487Z",
+    "checkedAt": "2026-10-21T10:08:38.233Z",
     "passed": true,
     "servesBuiltAssets": true,
     "brand": "ScholarX",
@@ -55,5 +55,21 @@
     "pauseBeforeStartChecked": true,
     "detailOnlyResearchChecked": true,
     "degreeAwareSourceSelectionChecked": true
+  },
+  "studentDeletion": {
+    "confirmationAndCancellation": true,
+    "activeAndLastStudent": true,
+    "restartAndDelayedSaveProtection": true,
+    "otherStudentsPreserved": true,
+    "unmockedBrowserDeletion": true,
+    "unmockedExternalDeletionNotification": true,
+    "staleDeletedUrlRecovery": true,
+    "testedOnlyWithDisposableFictionalStudents": true
+  },
+  "quotaNotifications": {
+    "agentAndKeySettingShown": true,
+    "exactTypeWhenReported": true,
+    "noSecretsExposed": true,
+    "controlledProviderResponseTest": true
   }
 }

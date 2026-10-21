@@ -15,6 +15,11 @@ const dailyBackoffs=new Map();
 export const clearBudgetBackoffs=()=>dailyBackoffs.clear();
 const requestWeight=(messages,maxTokens)=>JSON.stringify(messages).length+(maxTokens||2200)*4;
 export const agentModel = (agent='mira') => process.env[`GROQ_MODEL_${agent.toUpperCase()}`] || process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
+export function quotaType(message=''){
+  if(/request too large|expected output tokens exceed/i.test(message))return 'request size';
+  for(const [pattern,label]of [[/tokens per day|\bTPD\b/i,'tokens per day'],[/requests per day|\bRPD\b/i,'requests per day'],[/tokens per minute|\bTPM\b/i,'tokens per minute'],[/requests per minute|\bRPM\b/i,'requests per minute']])if(pattern.test(message))return label;
+  return 'rate limit (type not specified)';
+}
 export async function completion(messages, options = {}) {
   options.signal?.throwIfAborted();
   let model=options.modelOverride || agentModel(options.agent);
@@ -34,6 +39,7 @@ export async function completion(messages, options = {}) {
 }
 async function request(messages, { tools, json = false, signal, emit, agent = 'mira', modelOverride, fallbackUsed = false, maxTokens = json ? 2200 : 3500 } = {}) {
   const model = modelOverride || process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
+  let quotaNotified=false;
   for (let attempt = 0; attempt < 5; attempt++) {
     signal?.throwIfAborted();
     let response;
@@ -50,6 +56,11 @@ async function request(messages, { tools, json = false, signal, emit, agent = 'm
       const message = data.choices?.[0]?.message;
       if (!message || (!message.content && !message.tool_calls?.length)) throw new Error('Groq returned an empty response. Please retry this step.');
       return message;
+    }
+    if(response.status===429&&!quotaNotified){
+      quotaNotified=true;const limitType=quotaType(data.error?.message),keySetting=`GROQ_API_KEY_${agent.toUpperCase()}`;
+      const name=agent[0].toUpperCase()+agent.slice(1),retryAfter=Number(response.headers.get('retry-after'));
+      emit?.({type:'activity',agent,model,limitReached:true,limitType,keySetting,...(retryAfter>0?{retryAt:Date.now()+retryAfter*1000}:{}),label:`Groq limit reached for ${name}: ${limitType} on ${model}. Key setting: ${keySetting}. Your progress is saved.`});
     }
     if(response.status===400&&json&&/json_validate_failed|failed to generate json/i.test(`${data.error?.code} ${data.error?.message}`)){
       emit?.({type:'activity',agent,label:'The provider returned malformed JSON. Repairing the specialist response.'});

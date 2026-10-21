@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
-import {mkdtemp,rm,writeFile} from 'node:fs/promises';
+import {mkdtemp,rm,writeFile,access} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import net from 'node:net';
@@ -31,5 +31,16 @@ test('new student workspaces isolate profiles, documents, conversation and store
   const invalidated=await request(`/api/sessions/${seededId}`,undefined,'GET');assert.equal(invalidated.run,null);assert.equal(invalidated.draftDocument,'');assert.equal(invalidated.opportunities.length,0);assert.equal(invalidated.facts.length,0);assert.equal(invalidated.profile.cgpa,undefined);assert.equal(invalidated.profile.name,'Document Student');assert.equal(invalidated.documents.length,1);
   await request(`/api/sessions/${seededId}/documents/${invalidated.documents[0].id}`,undefined,'DELETE');
   assert.equal((await request(`/api/sessions/${seededId}`,undefined,'GET')).documents.length,0);
+  const turn=await fetch(base+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:first.sessionId,message:'Hi'})});
+  const blocked=await fetch(base+`/api/sessions/${first.sessionId}`,{method:'DELETE'});assert.equal(blocked.status,409,'active replies finish before student deletion');await turn.text();
+  const events=await fetch(base+`/api/sessions/${first.sessionId}/events?after=${restored.cursor}`),reader=events.body.getReader();
+  const removed=await request(`/api/sessions/${first.sessionId}`,undefined,'DELETE');assert.equal(removed.deleted,true);
+  let feed='';for(;;){const part=await reader.read();if(part.done)break;feed+=new TextDecoder().decode(part.value);}assert.match(feed,/workspace_deleted/);
+  await assert.rejects(access(path.join(directory,`${first.sessionId}.json`)));
+  assert.equal((await fetch(base+`/api/sessions/${first.sessionId}`)).status,410,'old URLs cannot recreate a deleted student');
+  assert.equal((await fetch(base+`/api/sessions/${first.sessionId}/profile`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'Resurrected'})})).status,410);
+  const afterDelete=await request(`/api/sessions?current=${first.sessionId}`,undefined,'GET');assert.ok(afterDelete.deletedIds.includes(first.sessionId));assert.ok(!afterDelete.students.some(s=>s.sessionId===first.sessionId));assert.ok(afterDelete.students.some(s=>s.sessionId===second.sessionId));
+  const secondAfter=await request(`/api/sessions/${second.sessionId}`,undefined,'GET');assert.equal(secondAfter.profile.name,'Second Student');assert.equal(secondAfter.profile.countries,'Germany');
+  const deletedAgain=await fetch(base+`/api/sessions/${first.sessionId}`,{method:'DELETE'});assert.equal(deletedAgain.status,410);
  }finally{server.kill();await new Promise(resolve=>server.once('close',resolve));await rm(directory,{recursive:true,force:true});}
 });

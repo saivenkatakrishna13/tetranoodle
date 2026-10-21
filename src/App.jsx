@@ -5,7 +5,7 @@ import {Avatar,TeamMark,IconButton,Modal,MessageBubble,Markdown,timeLabel}from'.
 import Matches from'./Matches';
 import Appearance from'./Appearance';
 import StudentWorkspaces from'./StudentWorkspaces';
-import {rememberStudent} from'./studentBookmarks';
+import {rememberStudent,forgetStudent} from'./studentBookmarks';
 import useAppearance from'./useAppearance';
 import {ResearchWelcome,WorkspaceProgress} from './ResearchWelcome';
 import './styles.css';
@@ -16,13 +16,13 @@ const saved=(()=>{const state=restored();const requested=new URLSearchParams(win
 const fieldList=[['name','Your name','What should we call you?'],['degree','Current degree & field','B.Tech Computer Science, final year'],['target_degree','Next degree / subject','Master’s in Computer Science'],['cgpa','Academic score & original scale','8.2 / 10'],['countries','Preferred countries','Canada, Germany, Singapore'],['budget','Budget & funding needs','Substantial funding needed'],['nationality','Nationality','Needed for scholarship eligibility'],['intake','Target intake','2027 entry'],['graduation','Graduation date','Expected month and year'],['language_scores','Language test results','IELTS / TOEFL scores, or not taken'],['github','Public GitHub profile','https://github.com/your-username'],['public_profiles','Other supplied public profiles','Portfolio, research profile, or website'],['interests','Academic interests','What would you like to explore?'],['career_goals','Goals after your next degree','What would you like to work on?']];
 const running=r=>r?.status==='running';
 const stageNames={profile:'Understanding your profile',discover:'Discovering opportunities',verify:'Checking official sources',details:'Checking application details',rank:'Ranking your matches',draft:'Preparing an application draft',review:'Mira is reviewing the research pack',done:'Research pack ready'};
-async function api(url,options){const r=await fetch(url,options);const d=await r.json();if(!r.ok)throw new Error(d.error||'The request could not be completed.');return d;}
+async function api(url,options){const r=await fetch(url,options);const d=await r.json();if(!r.ok)throw Object.assign(new Error(d.error||'The request could not be completed.'),{status:r.status});return d;}
 function download(content,name,type='text/markdown'){const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();URL.revokeObjectURL(url);}
 export default function App(){
  const{appearance,setAppearance,dark,toggleAppearance}=useAppearance();
  const[messages,setMessages]=useState(saved.messages||welcome),[profile,setProfile]=useState(saved.profile||{}),[documents,setDocuments]=useState(saved.documents||[]),[opportunities,setOpportunities]=useState(saved.opportunities||[]),[draftDocument,setDraftDocument]=useState(saved.draftDocument||''),[sessionId,setSessionId]=useState(saved.sessionId||crypto.randomUUID());
  const[run,setRun]=useState(saved.run||null),[activity,setActivity]=useState([]),[facts,setFacts]=useState([]),[typing,setTyping]=useState(null),[status,setStatus]=useState(null),[busy,setBusy]=useState(false),[uploading,setUploading]=useState(false),[draft,setDraft]=useState(''),[view,setView]=useState('chat'),[modal,setModal]=useState(null),[agentInfo,setAgentInfo]=useState(null),[rightOpen,setRightOpen]=useState(false),[mobileList,setMobileList]=useState(false),[chatSearch,setChatSearch]=useState(false),[query,setQuery]=useState(''),[showJump,setShowJump]=useState(false),[toast,setToast]=useState(''),[replyTo,setReplyTo]=useState(null),[starred,setStarred]=useState(saved.starred||[]),[menu,setMenu]=useState(false),[attachMenu,setAttachMenu]=useState(false),[emojis,setEmojis]=useState(false),[startAfterProfile,setStartAfterProfile]=useState(false),[draftBusy,setDraftBusy]=useState(false),[online,setOnline]=useState(true);
- const workspaceEpoch=useRef(0),finishing=useRef(false);
+ const workspaceEpoch=useRef(0),finishing=useRef(false),deletingStudent=useRef(null),workspaceDeleted=useRef(null);
  const [clock,setClock]=useState(Date.now);
  useEffect(()=>{if(!running(run))return;const timer=setInterval(()=>setClock(Date.now()),1000);return()=>clearInterval(timer);},[run?.status]);
  const welcomeOnly=view==='chat'&&messages.length===1&&messages[0]?.id==='welcome';
@@ -31,6 +31,7 @@ export default function App(){
  const add=useCallback(m=>setMessages(prev=>prev.some(x=>x.id===m.id)?prev:[...prev,{id:crypto.randomUUID(),time:Date.now(),...m}]),[]);
  const notify=useCallback(text=>setToast(text),[]);
  const apply=useCallback(event=>{
+  if(event.type==='workspace_deleted'){workspaceDeleted.current?.(event.sessionId);return;}
   if(event.type==='research_reset'){setOpportunities([]);setDraftDocument('');setRun(null);setFacts([]);setActivity([]);setTyping(null);}
   if(event.type==='message'){add(event.message);setTyping(null);setMessages(prev=>prev.map(m=>m.agent==='you'&&m.delivery!=='failed'?{...m,delivery:'read'}:m));}
   if(event.type==='typing')setTyping(event.agent);
@@ -39,9 +40,9 @@ export default function App(){
   if(event.type==='draft')setDraftDocument(event.content);
   if(event.type==='facts')setFacts(event.facts);
   if(event.type==='run')setRun(event.run);
-  if(event.type==='activity')setActivity(prev=>prev.some(a=>a.sequence&&a.sequence===event.sequence)?prev:[...prev.slice(-29),event]);
+  if(event.type==='activity'){setActivity(prev=>prev.some(a=>a.sequence&&a.sequence===event.sequence)?prev:[...prev.slice(-29),event]);if(event.limitReached)notify(event.label);}
   if(event.type==='error'){add({agent:'mira',kind:'error',content:event.error});setTyping(null);}
- },[add]);
+ },[add,notify]);
  useEffect(()=>{localStorage.setItem(key,JSON.stringify({messages,profile,documents,opportunities,draftDocument,sessionId,run,starred}));},[messages,profile,documents,opportunities,draftDocument,sessionId,run,starred]);
  useEffect(()=>{rememberStudent(sessionId,profile,opportunities.length,run?.status||'not_started');},[sessionId,profile,opportunities.length,run?.status]);
  useEffect(()=>{fetch('/api/status').then(r=>r.json()).then(setStatus).catch(()=>setStatus({live:false,offline:true}));},[modal]);
@@ -55,7 +56,7 @@ export default function App(){
    setRun(state.run||null);setOpportunities(state.opportunities||[]);setDraftDocument(state.draftDocument||'');
    source=new EventSource(`/api/sessions/${sessionId}/events?after=${state.cursor||0}`);eventsRef.current=source;
    source.onmessage=e=>{if(!cancelled&&epoch===workspaceEpoch.current)apply(JSON.parse(e.data));};source.onopen=()=>setOnline(true);source.onerror=()=>setOnline(false);
-  }).catch(()=>{if(!cancelled)setOnline(false);});
+  }).catch(error=>{if(!cancelled&&epoch===workspaceEpoch.current){if(error.status===410)workspaceDeleted.current?.(sessionId);else setOnline(false);}});
   return()=>{cancelled=true;source?.close();eventsRef.current=null;};
  },[sessionId,apply]);
  useEffect(()=>{if(welcomeOnly&&scroll.current){scroll.current.scrollTo({top:0,behavior:'instant'});return;}if(follow.current&&scroll.current)scroll.current.scrollTo({top:scroll.current.scrollHeight,behavior:messages.length>1?'smooth':'instant'});},[messages,typing,view,welcomeOnly]);
@@ -101,12 +102,25 @@ export default function App(){
  async function saveProfile(e){e.preventDefault();const epoch=workspaceEpoch.current;const values=Object.fromEntries(new FormData(e.currentTarget));try{const d=await api(`/api/sessions/${sessionId}/profile`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(values)});if(epoch!==workspaceEpoch.current)return;setProfile(d.profile);profileRef.current=d.profile;if(d.changed){setOpportunities([]);setDraftDocument('');setRun(null);setFacts([]);setActivity([]);}setModal(null);notify('Your profile is saved.');if(startAfterProfile){setStartAfterProfile(false);setTimeout(()=>startResearch(false),100);}}catch(err){notify(err.message);}}
  async function removeDocument(id){const epoch=workspaceEpoch.current;try{const d=await api(`/api/sessions/${sessionId}/documents/${id}`,{method:'DELETE'});if(epoch===workspaceEpoch.current)setDocuments(d.documents);}catch(e){notify(e.message);}}
  const copy=useCallback(async text=>{try{await navigator.clipboard.writeText(text);notify('Copied to clipboard.');}catch{notify('Clipboard access is unavailable in this browser.');}},[notify]);
- function switchStudent(id){
+ function switchStudent(id,rememberCurrent=true){
   if(id===sessionId){setModal(null);return;}
-  rememberStudent(sessionId,profile,opportunities.length,run?.status||'not_started');
+  if(rememberCurrent)rememberStudent(sessionId,profile,opportunities.length,run?.status||'not_started');
   workspaceEpoch.current++;abort.current?.abort();eventsRef.current?.close();sending.current=false;
   setMessages(welcome());setProfile({});profileRef.current={};setDocuments([]);setOpportunities([]);setDraftDocument('');setRun(null);runRef.current=null;setActivity([]);setFacts([]);setStarred([]);setReplyTo(null);setQuery('');setDraft('');setTyping(null);setBusy(false);setUploading(false);setDraftBusy(false);setStartAfterProfile(false);setRightOpen(false);setChatSearch(false);setAttachMenu(false);setEmojis(false);setSessionId(id);setView('chat');setModal(null);setMenu(false);setMobileList(false);follow.current=true;
   const url=new URL(window.location.href);url.searchParams.set('workspace',id);window.history.replaceState(null,'',url);
+ }
+ workspaceDeleted.current=id=>{
+  if(id!==sessionId||deletingStudent.current===id)return;
+  forgetStudent(id);switchStudent(crypto.randomUUID(),false);notify('This student workspace was deleted. A fresh workspace is open.');
+ };
+ async function deleteStudent(id,remaining){
+  const epoch=workspaceEpoch.current;deletingStudent.current=id;
+  try{
+   await api(`/api/sessions/${id}`,{method:'DELETE'});forgetStudent(id);
+   if(epoch!==workspaceEpoch.current)return;
+   if(id===sessionId)switchStudent(remaining[0]?.sessionId||crypto.randomUUID(),false);
+   notify('Student workspace deleted.');
+  }finally{deletingStudent.current=null;}
  }
  async function createStudent({profile={},profileText='',files=[]}={}){
   const state=await api('/api/sessions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profile,profileText,previousSessionId:sessionId})});
@@ -138,7 +152,7 @@ export default function App(){
  </main>
  {rightOpen&&<div className="drawer-scrim" onClick={()=>setRightOpen(false)}/>}{rightOpen&&<aside className="details-panel"><header><IconButton title="Close details" onClick={()=>setRightOpen(false)}><X size={23}/></IconButton><span>Group info</span></header><section className="group-info"><TeamMark large/><h2>Scholarship squad</h2><p>Group · 6 participants</p><span>A personal scholarship team that researches, checks, and drafts with you. AI agents, real sources.</span></section><section className="group-profile"><div className="section-heading"><h3>Your profile</h3><IconButton title="Edit profile" onClick={()=>setModal('profile')}><Pencil size={16}/></IconButton></div><dl><dt>Education</dt><dd>{profile.degree||'Not shared yet'}</dd><dt>Academic score</dt><dd>{profile.cgpa||'Not shared yet'}</dd><dt>Preferred countries</dt><dd>{profile.countries||'Not shared yet'}</dd><dt>Funding needs</dt><dd>{profile.budget||'Not shared yet'}</dd></dl></section><section className="group-members"><h3>6 participants</h3>{AGENTS.map(a=><button key={a.id} onClick={()=>setAgentInfo(a)}><Avatar agent={a}/><div><strong>{a.name}<span>AI agent</span></strong><small>{a.role}</small></div></button>)}<button onClick={()=>setModal('profile')}><span className="you-avatar">{profile.name?.[0]||'Y'}</span><div><strong>{profile.name||'You'}</strong><small>Your next chapter</small></div></button></section><button className="drawer-link" onClick={()=>{setView('files');setRightOpen(false);}}><Paperclip size={18}/>Shared documents<span>{documents.length}<ChevronRight size={16}/></span></button><button className="drawer-link" onClick={()=>{setView('starred');setRightOpen(false);}}><Star size={18}/>Starred messages<span>{starred.length}<ChevronRight size={16}/></span></button><section className="activity-log"><h3>Research activity</h3>{activity.slice(-15).map((a,i)=><div key={a.sequence||i}><span style={{background:byId(a.agent).color}}/><p>{a.label}</p></div>)}{!activity.length&&<p>Agent tool activity will appear here when research begins.</p>}</section></aside>}
  <input ref={fileInput} type="file" hidden multiple accept=".pdf,.docx,.txt,.md" onChange={e=>upload(e.target.files)}/>
- {modal==='students'&&<StudentWorkspaces currentId={sessionId} onSwitch={switchStudent} onCreate={createStudent} close={()=>setModal(null)}/>}
+ {modal==='students'&&<StudentWorkspaces currentId={sessionId} onSwitch={switchStudent} onCreate={createStudent} onDelete={deleteStudent} close={()=>setModal(null)}/>}
  {modal==='appearance'&&<Appearance value={appearance} onChange={setAppearance} close={()=>setModal(null)}/>}
  {modal==='profile'&&<Modal title="Your student profile" subtitle="Share what you know. The agents will keep the rest as unknown." close={()=>{setModal(null);setStartAfterProfile(false);}} wide><form className="profile-form" onSubmit={saveProfile}>{fieldList.map(([name,label,placeholder])=><label key={name}>{label}<input name={name} defaultValue={profile[name]||''} placeholder={placeholder} maxLength={1000}/></label>)}<footer><span><ShieldCheck size={14}/>Saved locally · Sent to Groq for research</span><button className="primary-button" type="submit">{startAfterProfile?'Save & start research':'Save profile'}<Check size={17}/></button></footer></form></Modal>}
  {modal==='settings'&&<Modal title="Your team’s connection" subtitle="Groq powers the agents. Scrapling reads the sources." close={()=>setModal(null)}><div className="connection-card"><span className={`connection-light ${status?.live?'live':''}`}/><div><strong>{status?.live?'All five agent keys configured':'Groq keys needed'}</strong><p>{status?.model||'Checking the connection…'}</p></div></div><div className="agent-connections">{AGENTS.map(a=><div key={a.id}><Avatar agent={a} size="tiny"/><span>{a.name}</span><strong>{status?.agents?.[a.id]?'Configured':'Missing key'}</strong></div>)}</div><div className="service-status"><span><Globe2 size={17}/>Scrapling reader</span><strong>{status?.scrapling?'Ready':'Setup required'}</strong></div><div className="service-status"><span><FileText size={17}/>Local persistent workspace</span><strong>On this computer</strong></div><p className="settings-note">Keys stay in the project’s <code>.env</code> file. Use the <code>GROQ_API_KEY_MIRA</code>, <code>GROQ_API_KEY_ARJUN</code>, <code>GROQ_API_KEY_NOVA</code>, <code>GROQ_API_KEY_SAGE</code>, and <code>GROQ_API_KEY_LEO</code> variables. Restart the server after changes. Never put secrets in a chat.</p><a className="secondary-button" href="https://console.groq.com/keys" target="_blank" rel="noreferrer">Groq console <ExternalLink size={15}/></a></Modal>}

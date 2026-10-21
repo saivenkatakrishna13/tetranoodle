@@ -189,3 +189,16 @@
 .research-gaps { flex-wrap: wrap; align-items: center; }
 .research-gaps > span { flex: 1 1 240px; min-width: 0; }
 .research-gaps > button { flex-shrink: 0; white-space: normal; }
+
+.saved-student-row{display:flex;align-items:stretch;gap:6px;min-width:0}
+.saved-student-row .saved-student{flex:1;min-width:0}
+.delete-student-button{display:flex;align-items:center;justify-content:center;width:40px;flex-shrink:0;border:1px solid var(--line);border-radius:9px;color:var(--muted)}
+.delete-student-button:hover{color:#c84646;border-color:#c84646;background:rgba(200,70,70,.08)}
+.delete-student-confirmation{padding:16px 0;line-height:1.6}
+.delete-student-icon{display:inline-flex;padding:12px;border-radius:50%;color:#c84646;background:rgba(200,70,70,.1)}
+.delete-student-confirmation h3{font-size:20px;margin:12px 0;overflow-wrap:anywhere}
+.delete-student-confirmation p{color:var(--muted);font-size:13px;margin:10px 0}
+.delete-student-confirmation>div{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:24px}
+.danger-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 14px;border-radius:9px;background:#b93636;color:#fff;font-weight:600;font-size:12px}
+.danger-button:disabled{opacity:.6}
+@media(max-width:400px){.delete-student-confirmation>div>button{width:100%}.saved-student-row .saved-student{padding:10px;gap:7px}}

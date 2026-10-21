@@ -133,3 +133,49 @@ test('a late reply from a previous student cannot overwrite the newly selected s
  await page.goto(`/?workspace=${first}`);await expect(page.locator('.student-workspace-button')).toContainText('Rahul');await page.getByRole('textbox',{name:'Message your team'}).fill('Review my studies');await page.getByRole('button',{name:'Send message',exact:true}).click();
  await page.getByRole('button',{name:'Chat menu',exact:true}).click();await page.getByRole('button',{name:'Switch student',exact:true}).click();await page.locator('.saved-student').filter({hasText:'Meera'}).click();release();await expect(page.locator('.student-workspace-button')).toContainText('Meera');await page.waitForTimeout(200);await expect(page.getByText('OLD STUDENT PRIVATE FACT',{exact:true})).not.toBeVisible();await expect(page.getByRole('textbox',{name:'Message your team'})).toBeEnabled();await expect(page.getByRole('button',{name:'Stop responding',exact:true})).not.toBeVisible();
 });
+
+test('deleting another student requires confirmation, handles rejection and removes the saved bookmark',async({page})=>{
+ const current='delete-current-student-2026',other='delete-other-student-2026';
+ const base={documents:[],messages:[welcome],opportunities:[],draftDocument:'',facts:[],run:null,activity:[],cursor:0};
+ let removed=false,rejectDelete=true,deletes=0;
+ await isolate(page);
+ await page.route(`**/api/sessions/${current}`,route=>route.fulfill({json:{...base,sessionId:current,profile:{name:'Rahul',degree:'B.Tech CS'}}}));
+ await page.route('**/api/sessions?*',route=>route.fulfill({json:{students:[{sessionId:current,name:'Rahul',opportunities:0},...removed?[]:[{sessionId:other,name:'Meera',opportunities:0}]],deletedIds:removed?[other]:[]}}));
+ await page.route(`**/api/sessions/${other}`,route=>{deletes++;if(rejectDelete)return route.fulfill({status:409,json:{error:'Wait for the current reply to finish before deleting this student.'}});removed=true;return route.fulfill({json:{deleted:true,sessionId:other}});});
+ await page.goto(`/?workspace=${current}`);await page.getByRole('button',{name:'Chat menu',exact:true}).click();await page.getByRole('button',{name:'Switch student',exact:true}).click();
+ await page.setViewportSize({width:320,height:667});await page.getByRole('button',{name:'Delete Meera',exact:true}).click();await expect(page.getByRole('heading',{name:'Delete Meera?',exact:true})).toBeVisible();await page.getByRole('button',{name:'Cancel deletion'}).click();expect(deletes).toBe(0);
+ await page.getByRole('button',{name:'Delete Meera',exact:true}).click();await page.getByRole('button',{name:'Delete student permanently'}).click();await expect(page.locator('.student-error')).toContainText('Wait for the current reply');
+ rejectDelete=false;await page.getByRole('button',{name:'Delete student permanently'}).click();await expect(page.getByRole('button',{name:'Delete Meera',exact:true})).toHaveCount(0);await expect(page.locator('.student-workspace-button')).toContainText('Rahul');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.getByRole('button',{name:'Close dialog',exact:true}).click();await page.reload();await page.getByRole('button',{name:'Chat menu',exact:true}).click();await page.getByRole('button',{name:'Switch student',exact:true}).click();await expect(page.getByRole('button',{name:'Delete Meera',exact:true})).toHaveCount(0);
+});
+
+test('deleting the active and last student opens a safe remaining or fresh workspace',async({page})=>{
+ const first='delete-active-first-2026',second='delete-active-second-2026';
+ const deleted=new Set(),students=[{sessionId:first,name:'Rahul',opportunities:0},{sessionId:second,name:'Meera',opportunities:0}];
+ await isolate(page);
+ await page.route('**/api/sessions?*',route=>route.fulfill({json:{students:students.filter(s=>!deleted.has(s.sessionId)),deletedIds:[...deleted]}}));
+ for(const student of students)await page.route(`**/api/sessions/${student.sessionId}`,route=>{if(route.request().method()==='DELETE'){deleted.add(student.sessionId);return route.fulfill({json:{deleted:true,sessionId:student.sessionId}});}return route.fulfill({json:{sessionId:student.sessionId,profile:{name:student.name,degree:'B.Des'},documents:[],messages:[{id:'private-'+student.sessionId,agent:'arjun',content:student.name+' private conversation',time:Date.now()}],opportunities:[],draftDocument:'',facts:[],run:null,activity:[],cursor:0}});});
+ await page.goto(`/?workspace=${first}`);
+ for(const [name,next]of [['Rahul','Meera'],['Meera',null]]){
+  await page.getByRole('button',{name:'Chat menu',exact:true}).click();await page.getByRole('button',{name:'Switch student',exact:true}).click();await page.getByRole('button',{name:'Delete '+name,exact:true}).click();await page.getByRole('button',{name:'Delete student permanently'}).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);await expect(page.getByText(name+' private conversation',{exact:true})).toHaveCount(0);
+  if(next)await expect(page.locator('.student-workspace-button')).toContainText(next);else{await expect(page.locator('.student-workspace-button')).toContainText('Your journey');expect(new URL(page.url()).searchParams.get('workspace')).not.toBe(second);}
+ }
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('tetranoodle.students.v1')||'[]').some(s=>['delete-active-first-2026','delete-active-second-2026'].includes(s.sessionId)))).toBe(false);
+});
+
+test('provider limit events notify the user with the agent and key setting',async({page})=>{
+ await isolate(page,{messages:[welcome]});const label='Groq limit reached for Sage: tokens per day on openai/gpt-oss-120b. Key setting: GROQ_API_KEY_SAGE. Your progress is saved.';
+ await page.route('**/api/chat',route=>route.fulfill({contentType:'text/event-stream',body:`data: ${JSON.stringify({type:'activity',agent:'sage',limitReached:true,limitType:'tokens per day',keySetting:'GROQ_API_KEY_SAGE',label})}\n\ndata: ${JSON.stringify({type:'done'})}\n\n`}));
+ await page.goto('/');await page.getByRole('textbox',{name:'Message your team'}).fill('Check the saved evidence');await page.getByRole('button',{name:'Send message',exact:true}).click();await expect(page.getByRole('alert')).toContainText('Groq limit reached for Sage');await expect(page.getByRole('alert')).toContainText('GROQ_API_KEY_SAGE');
+ await page.getByRole('button',{name:'Dismiss notification'}).click();await page.getByRole('button',{name:'Group details',exact:true}).click();await expect(page.locator('.activity-log')).toContainText(label);
+});
+
+test('opening a deleted student URL clears stale browser data and starts a fresh workspace',async({page})=>{
+ const id='deleted-url-student-2026';
+ await isolate(page);await page.addInitScript(id=>localStorage.setItem('tetranoodle.workspace.v1',JSON.stringify({sessionId:id,profile:{name:'Deleted private name'},messages:[{id:'old-private',agent:'arjun',content:'DELETED PRIVATE FACTS',time:Date.now()}],documents:[{id:'old-file',name:'deleted-private-transcript.txt'}]})),id);
+ await page.route(`**/api/sessions/${id}`,route=>route.fulfill({status:410,json:{error:'This student workspace was deleted.'}}));
+ await page.goto(`/?workspace=${id}`);await expect(page).not.toHaveURL(new RegExp(id));await expect(page.locator('.student-workspace-button')).toContainText('Your journey');await expect(page.getByText('DELETED PRIVATE FACTS',{exact:true})).toHaveCount(0);
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('tetranoodle.workspace.v1')));expect(saved.profile.name).toBeUndefined();expect(saved.documents).toEqual([]);
+});
