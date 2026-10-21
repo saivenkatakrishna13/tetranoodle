@@ -1,0 +1,33 @@
+{
+  "checkedAt": "2026-10-21T10:22:22.006Z",
+  "realGroqReplies": true,
+  "mockedRoutes": false,
+  "fictionalStudentOnly": true,
+  "checks": [
+    {
+      "check": "incomplete profile asks Arjun before searching",
+      "passed": true
+    },
+    {
+      "check": "asks only target_degree after saving reply",
+      "passed": true,
+      "publicSpeakers": [
+        "arjun"
+      ]
+    },
+    {
+      "check": "asks only countries after saving reply",
+      "passed": true,
+      "publicSpeakers": [
+        "arjun"
+      ]
+    },
+    {
+      "check": "automatically starts research after final required answer",
+      "passed": true,
+      "publicSpeakers": [
+        "arjun"
+      ]
+    }
+  ]
+}

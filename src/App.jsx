@@ -89,7 +89,6 @@ export default function App(){
  async function startResearch(resume=false,mode='research'){
   const epoch=workspaceEpoch.current;
   if(!status?.live){setModal('settings');return;}
-  if(!profileRef.current.degree&&!documents.length || !profileRef.current.countries){setStartAfterProfile(true);setModal('profile');return;}
   try{const d=await api('/api/research',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId,resume,mode})});if(epoch!==workspaceEpoch.current)return;setRun(d.run);setView('chat');setMobileList(false);follow.current=true;}catch(e){if(epoch===workspaceEpoch.current)notify(e.message);}
  }
  async function pauseResearch(){try{await api(`/api/sessions/${sessionId}/pause`,{method:'POST'});notify('Pausing research. Your findings are saved.');}catch(e){notify(e.message);}}
@@ -99,7 +98,7 @@ export default function App(){
   catch(e){if(epoch===workspaceEpoch.current)notify(e.message);}finally{finishing.current=false;}
  }
  async function prepareDraft(opportunity){const epoch=workspaceEpoch.current;setDraftBusy(true);setView('applications');try{const d=await api(`/api/sessions/${sessionId}/draft`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({opportunityId:opportunity.id})});if(epoch===workspaceEpoch.current)setDraftDocument(d.content);}catch(e){if(epoch===workspaceEpoch.current)notify(e.message);}finally{if(epoch===workspaceEpoch.current)setDraftBusy(false);}}
- async function saveProfile(e){e.preventDefault();const epoch=workspaceEpoch.current;const values=Object.fromEntries(new FormData(e.currentTarget));try{const d=await api(`/api/sessions/${sessionId}/profile`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(values)});if(epoch!==workspaceEpoch.current)return;setProfile(d.profile);profileRef.current=d.profile;if(d.changed){setOpportunities([]);setDraftDocument('');setRun(null);setFacts([]);setActivity([]);}setModal(null);notify('Your profile is saved.');if(startAfterProfile){setStartAfterProfile(false);setTimeout(()=>startResearch(false),100);}}catch(err){notify(err.message);}}
+ async function saveProfile(e){e.preventDefault();const epoch=workspaceEpoch.current;const values=Object.fromEntries(new FormData(e.currentTarget));try{const d=await api(`/api/sessions/${sessionId}/profile`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(values)});if(epoch!==workspaceEpoch.current)return;setProfile(d.profile);profileRef.current=d.profile;if(d.changed){setOpportunities(d.opportunities||[]);setDraftDocument(d.draftDocument||'');setRun(d.run||null);setFacts(d.facts||[]);setActivity(d.activity||[]);}setModal(null);notify('Your profile is saved.');if(startAfterProfile){setStartAfterProfile(false);setTimeout(()=>startResearch(false),100);}}catch(err){notify(err.message);}}
  async function removeDocument(id){const epoch=workspaceEpoch.current;try{const d=await api(`/api/sessions/${sessionId}/documents/${id}`,{method:'DELETE'});if(epoch===workspaceEpoch.current)setDocuments(d.documents);}catch(e){notify(e.message);}}
  const copy=useCallback(async text=>{try{await navigator.clipboard.writeText(text);notify('Copied to clipboard.');}catch{notify('Clipboard access is unavailable in this browser.');}},[notify]);
  function switchStudent(id,rememberCurrent=true){

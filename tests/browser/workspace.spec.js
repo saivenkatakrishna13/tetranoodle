@@ -179,3 +179,11 @@ test('opening a deleted student URL clears stale browser data and starts a fresh
  await page.goto(`/?workspace=${id}`);await expect(page).not.toHaveURL(new RegExp(id));await expect(page.locator('.student-workspace-button')).toContainText('Your journey');await expect(page.getByText('DELETED PRIVATE FACTS',{exact:true})).toHaveCount(0);
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('tetranoodle.workspace.v1')));expect(saved.profile.name).toBeUndefined();expect(saved.documents).toEqual([]);
 });
+
+test('starting with an incomplete profile opens Arjun intake in chat instead of the profile form',async({page})=>{
+ await isolate(page,{messages:[welcome],profile:{name:'Fictional student'}});
+ let requested;await page.route('**/api/research',route=>{requested=route.request().postDataJSON();return route.fulfill({status:202,json:{run:{status:'needs_input',stage:'profile',progress:5,message:'Arjun is waiting for your current studies.'}}});});
+ await page.route('**/api/chat',route=>route.fulfill({contentType:'text/event-stream',body:[{type:'profile',profile:{name:'Fictional student',degree:'B.Sc Biology'}},{type:'message',message:{id:'intake-next',agent:'arjun',content:'Thanks, I’ve saved your current studies. What degree and subject would you like to pursue next?',time:Date.now()}},{type:'done'}].map(e=>`data: ${JSON.stringify(e)}\n\n`).join('')}));
+ await page.goto('/');await page.getByRole('button',{name:'Start scholarship research',exact:true}).click();expect(requested.mode).toBe('research');await expect(page.getByRole('dialog')).toHaveCount(0);await expect(page.locator('.run-strip strong')).toHaveText('A little more context is needed');
+ await page.getByRole('textbox',{name:'Message your team'}).fill('B.Sc Biology');await page.getByRole('button',{name:'Send message',exact:true}).click();await expect(page.locator('#message-intake-next')).toContainText('Arjun');await expect(page.locator('#message-intake-next')).toContainText('What degree and subject');
+});

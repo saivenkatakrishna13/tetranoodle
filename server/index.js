@@ -10,6 +10,7 @@ import { liveReady, agentKey, agentModel } from './groq.js';
 import { sessionFor, snapshot, saveSession, record, listStudents, validId, deleteSession, deletedStudentIds } from './store.js';
 import { startResearch, pauseResearch, stopResearch, createDraft, reportMarkdown } from './research.js';
 import {cleanProfile,changeProfile,parseStudentText,resetResearchData} from './profile.js';
+import {advanceIntake} from './intake.js';
 
 const app = express(), port = Number(process.env.PORT || 3001), root = path.resolve(import.meta.dirname, '..');
 app.disable('x-powered-by');
@@ -48,7 +49,9 @@ app.patch('/api/sessions/:id/profile',async(req,res)=>{
   await stopResearch(session);
   const changed=changeProfile(session,req.body||{});
   if(changed)record(session,{type:'research_reset',reason:'The student profile changed. Previous matches and drafts need fresh research.'});
-  record(session,{type:'profile',profile:session.profile});saveSession(session,true);res.json({profile:session.profile,changed,...snapshot(session)});
+  record(session,{type:'profile',profile:session.profile});
+  if(session.intake?.active&&advanceIntake(session,event=>record(session,event)))startResearch(session);
+  saveSession(session,true);res.json({profile:session.profile,changed,...snapshot(session)});
 });
 app.get('/api/sessions/:id/report',(req,res)=>{
   const session=sessionFor(req.params.id);res.setHeader('Content-Disposition','attachment; filename="scholarx-research-report.md"');res.type('text/markdown').send(reportMarkdown(session));
@@ -129,7 +132,7 @@ app.post('/api/chat',async(req,res)=>{
   if(!Object.keys(session.profile).length)for(const[k,v]of Object.entries(profile))if(['name','degree','target_degree','cgpa','countries','budget','github','nationality','intake','language_scores','interests'].includes(k)&&typeof v==='string')session.profile[k]=v.slice(0,1000);
   const prior=session.messages.slice();
   session.messages.push({id:req.body.messageId||randomUUID(),agent:'you',content:message.trim(),time:Date.now(),documents:req.body.documents||[]});
-  session.chatBusy=true;saveSession(session);
+  session.chatBusy=true;session.autoResearch=null;saveSession(session);
   res.setHeader('Content-Type','text/event-stream');res.setHeader('Cache-Control','no-cache');res.setHeader('Connection','keep-alive');res.flushHeaders();
   const controller=new AbortController(),signal=controller.signal;
   const emit=event=>{if(!signal.aborted&&!res.writableEnded){const saved=record(session,event);res.write(`data: ${JSON.stringify(saved)}\n\n`);}};
@@ -141,7 +144,12 @@ app.post('/api/chat',async(req,res)=>{
     if(liveReady())await runSwarm(session,cleanHistory,message,emit,signal);else await preview(session,cleanHistory,message,emit,signal);
     emit({type:'done'});
   }catch(e){if(!signal.aborted)emit({type:'error',error:e.message||'The team was interrupted. Please retry.'});}
-  finally{clearInterval(heartbeat);clearTimeout(deadline);session.chatBusy=false;saveSession(session,true);res.end();}
+  finally{
+    clearInterval(heartbeat);clearTimeout(deadline);session.chatBusy=false;
+    const next=session.autoResearch;session.autoResearch=null;
+    if(next&&!signal.aborted)try{startResearch(session,next);}catch(e){record(session,{type:'error',error:e.message});}
+    saveSession(session,true);res.end();
+  }
 });
 app.use(express.static(path.join(root,'dist')));
 app.get('/{*path}',(req,res)=>{if(req.path.startsWith('/api/'))return res.status(404).json({error:'Not found'});res.sendFile(path.join(root,'dist/index.html'));});

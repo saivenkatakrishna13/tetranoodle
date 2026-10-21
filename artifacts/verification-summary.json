@@ -1,13 +1,13 @@
 {
-  "checkedAt": "2026-10-21T10:09:45.649013+00:00",
+  "checkedAt": "2026-10-21T10:23:24.378121+00:00",
   "backend": {
     "command": "npm test",
-    "passed": 51,
+    "passed": 55,
     "failed": 0
   },
   "browser": {
     "command": "npm run test:ui",
-    "passed": 16,
+    "passed": 17,
     "controlledProviderResponses": true,
     "failed": 0
   },
@@ -16,7 +16,7 @@
     "passed": true
   },
   "productionRuntime": {
-    "checkedAt": "2026-10-21T10:08:38.233Z",
+    "checkedAt": "2026-10-21T10:22:30.754Z",
     "passed": true,
     "servesBuiltAssets": true,
     "brand": "ScholarX",
@@ -71,5 +71,13 @@
     "exactTypeWhenReported": true,
     "noSecretsExposed": true,
     "controlledProviderResponseTest": true
+  },
+  "requiredProfileIntake": {
+    "artifact": "intake-validation.json",
+    "realGroqReplies": true,
+    "singleSpeakerArjun": true,
+    "sequentialRequiredQuestions": true,
+    "noDiscoveryBeforeReady": true,
+    "automaticResearchHandoff": true
   }
 }

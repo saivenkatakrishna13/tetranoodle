@@ -58,3 +58,9 @@ A research pass allows eight minutes for provider and web work, followed by at m
 Verify missing details starts a separate bounded pass over the saved shortlist rather than candidate discovery. Completed recommendations are skipped; missing funding, dates, admission requirements and application instructions receive specific official-domain searches. The search vocabulary follows bachelor, master or doctorate goals. Previously retrieved supporting pages remain available to the independent reviewer. Incomplete detail reviews are no longer cached as finished for 24 hours.
 
 Starting research while chat is active is rejected. Pausing before the queued job begins propagates the cancellation before any profile or internet call. Counts distinguish independently checked opportunities from pending leads.
+
+## Required-profile conversation
+
+Start research checks uploaded documents and required preferences before discovery. A persisted intake state lets Arjun collect current education, intended degree/subject and destinations through one focused question per turn. Incoming answers are extracted by Arjun and accepted only when their values and supporting quotes occur in the student’s latest message. Existing details are not re-asked, unknown answers are not fabricated, and optional eligibility facts remain unconfirmed.
+
+When the last required answer is saved, the chat route clears its busy flag before launching the background research job. This avoids starting a job while a specialist reply is still active. The same handoff works when the remaining details are entered through the profile form. Intake can be paused, survives refreshes and remains isolated to the current student.

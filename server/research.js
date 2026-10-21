@@ -1,4 +1,5 @@
 import {researchBudgetMs,draftBudgetMs,needsMoreCandidates,withinBudget,profileDraft} from './research-delivery.js';
+import {advanceIntake} from './intake.js';
 import { randomUUID, createHash } from 'node:crypto';
 import { structured } from './groq.js';
 import { executeTool, relevantText } from './tools.js';
@@ -309,10 +310,12 @@ export async function runResearch(session, emit, parentSignal, resume=false, fin
       clearTimeout(timer);await finalizeResearchPack(session,emit,parentSignal,'The saved shortlist’s application details have been rechecked.');return;
     }
     stage(session,emit,'profile',5,'Understanding your academic background and goals.');
+    if(!session.documents.length&&missingEssentials(session.profile).length){advanceIntake(session,emit);return;}
     if(!resume || !session.run.profileReviewed){await enrichProfile(session,emit,signal);session.run.profileReviewed=true;}
     if(session.profileConflicts?.length){session.run.status='needs_input';stage(session,emit,'profile',5,'Resolve the conflicting student facts before research.');return;}
     const missing=missingEssentials(session.profile);
-    if(missing.length){stage(session,emit,'profile',5,'One essential preference is still needed.');session.run.status='needs_input';const questions={degree:'What are you studying right now?',target_degree:'What degree and subject would you like to pursue next?',countries:'Which countries would you like us to focus on?'};say(emit,'mira',questions[missing[0]]);emit({type:'run',run:session.run});return;}
+    if(missing.length){advanceIntake(session,emit);return;}
+    session.intake=null;
     session.researchBrief=researchBrief(session.profile);session.run.researchBrief=session.researchBrief;
     label(emit,'mira',`Research plan: ${session.researchBrief.goal} · ${session.researchBrief.destinations.join(', ')}. Eligibility will use this student’s own grades, nationality and funding needs.`);
     session.run.profileFingerprint=fingerprint(session.profile);session.run.profileSnapshot={...session.profile};

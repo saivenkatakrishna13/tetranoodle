@@ -1,7 +1,8 @@
 import { completion } from './groq.js';
 import { tools, executeTool, relevantText } from './tools.js';
 import {changeProfile,cleanProfile,missingEssentials} from './profile.js';
-import { enrichProfile, startResearch, stopResearch } from './research.js';
+import { enrichProfile, stopResearch } from './research.js';
+import {advanceIntake,readIntakeAnswer} from './intake.js';
 
 export const ROLES = {
   mira: { name: 'Mira', role: 'Team lead', instruction: 'Coordinate the team, synthesize peer findings, explain next steps and ask the most useful unanswered question. Be warm and direct. Do not repeat another agent’s questions. Never guarantee admission or funding.', tools: [] },
@@ -87,11 +88,24 @@ export function focusedReply(content,followup){
 }
 
 export async function runSwarm(session, history, message, emit, signal) {
+  if(session.intake?.active){
+    if(/^(?:stop|cancel|pause|not now)[.!\s]*$/i.test(message.trim())){session.intake=null;session.pendingQuestion=null;if(session.run){session.run.status='paused';session.run.message='Profile collection paused.';emit({type:'run',run:session.run});}emit({type:'message',message:{agent:'arjun',content:'I’ve paused profile collection. Your saved details are still here; click Start research when you’re ready.'}});return;}
+    emit({type:'typing',agent:'arjun'});
+    const documentReply=session.documents.length&&/upload|resume|transcript|document|marksheet/i.test(message);
+    if(documentReply)await enrichProfile(session,emit,signal);
+    if(session.profileConflicts?.length)return;
+    const answer=documentReply&&/^I uploaded /i.test(message)?{profile:{},reply:''}:await readIntakeAnswer(session,message,{signal,emit});signal.throwIfAborted();
+    if(changeProfile(session,answer.profile))emit({type:'research_reset',reason:'Arjun saved your supplied profile details.'});
+    emit({type:'profile',profile:session.profile});
+    if(advanceIntake(session,emit,{reply:answer.reply}))session.autoResearch={resume:false};
+    return;
+  }
   const conversation = [...history.slice(-24), { role: 'user', content: message }];
   const plan = await planTurn(session, history, message, signal, emit);
   emit({ type: 'activity', agent: 'mira', label: `Mira coordinated ${plan.map(a => ROLES[a.id].name).join(' → ')}` });
-  if(session.requestedAction==='start_research' && !missingEssentials(session.profile).length){
-    if(session.run?.status!=='running')startResearch(session,{resume:!!session.run&&session.run.status!=='completed'});
+  if(session.requestedAction==='start_research'){
+    if(missingEssentials(session.profile).length){advanceIntake(session,emit);return;}
+    if(session.run?.status!=='running')session.autoResearch={resume:!!session.run&&session.run.status!=='completed'};
     emit({type:'message',message:{agent:'mira',content:'I’m coordinating the full research run now. Arjun will confirm your profile, Nova will discover opportunities, Sage will check and rank them, and Leo will prepare a draft. You can follow the saved progress below and keep chatting here.'}});
     return;
   }

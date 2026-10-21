@@ -127,7 +127,7 @@ Live smoke tests use actual provider calls and real official pages. `scripts/liv
 
 The current live audit uses Rahul’s Computer Science profile and a separately supplied Communication Design → Interaction Design profile. Their saved workspaces use the same engine with different subjects and destinations. See [the current requirements audit](docs/requirements-audit.md) for actual counts, status, evidence gaps and draft checks. The older economics profile is retained as historical demonstration data.
 
-Recommendations remain conditional. Unpublished intake dates, unconfirmed award coverage and missing student details keep a pack partial. The automated validation passed **51 backend checks and 16 browser checks**, the production build, and the dependency audit (zero reported vulnerabilities). A separate unmocked browser walkthrough checks real uploads, Groq replies, student switching, phone layout, downloads and refresh.
+Recommendations remain conditional. Unpublished intake dates, unconfirmed award coverage and missing student details keep a pack partial. The automated validation passed **55 backend checks and 17 browser checks**, the production build, and the dependency audit (zero reported vulnerabilities). A separate unmocked browser walkthrough checks real uploads, Groq replies, student switching, phone layout, downloads and refresh.
 
 Submission material:
 
@@ -160,3 +160,5 @@ Run `node scripts/live-run.mjs --details` to verify fictional Rahul’s saved sh
 Delete a student through **Chat menu → Switch student → trash icon**, then confirm the named student. This removes that workspace’s profile, documents, messages, source evidence and draft; another saved student or a fresh workspace opens when the active student is deleted. Existing downloaded exports and manual backups are separate. Deleted IDs cannot be recreated by old URLs or delayed saves.
 
 When a Groq request hits a limit, ScholarX shows an in-app notification naming the agent, model, reported limit type and matching `.env` setting. The warning also appears in Group info → Research activity. Warnings are triggered by actual requests; this is not a background account-usage monitor.
+
+If required profile details are missing, **Start research** opens Arjun’s questions in the group chat. He asks for current studies, intended degree and subject, and preferred countries one at a time, saves explicit answers, and starts the research job automatically after the final required answer. Uploaded documents are checked first when available. Other missing facts remain unknown. You can also fill the profile form, refresh midway, or say “not now” to pause collection. [Live intake validation](artifacts/intake-validation.json).
