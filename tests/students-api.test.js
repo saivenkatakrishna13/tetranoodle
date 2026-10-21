@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
-import {mkdtemp,rm} from 'node:fs/promises';
+import {mkdtemp,rm,writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import net from 'node:net';
@@ -22,5 +22,12 @@ test('new student workspaces isolate profiles, documents, conversation and store
   const list=await request(`/api/sessions?current=${second.sessionId}`,undefined,'GET');assert.equal(list.students.length,2);assert.ok(list.students.some(s=>s.name==='First Student'));assert.ok(list.students.some(s=>s.name==='Second Student'));
   const changed=await request(`/api/sessions/${second.sessionId}/profile`,{countries:'Germany'},'PATCH');assert.equal(changed.changed,true);assert.equal(changed.profileRevision,2);assert.equal(changed.run,null);assert.equal(changed.profile.name,'Second Student');
   const exported=await request(`/api/sessions/${second.sessionId}/export`,undefined,'GET');assert.equal(exported.profile.countries,'Germany');assert.equal(exported.documents.length,0);
+  const seededId='document-change-test-student';
+  await writeFile(path.join(directory,`${seededId}.json`),JSON.stringify({profile:{name:'Document Student',cgpa:'8.2 / 10'},documentProfileFields:{cgpa:'8.2 / 10'},documents:[],opportunities:[{name:'Stale match'}],draft:'Stale draft',run:{status:'completed'},facts:[{value:'Stale fact'}],evidence:[]}));
+  const replacement=new FormData();replacement.append('sessionId',seededId);replacement.append('files',new Blob(['Fictional corrected transcript. Academic result: 8.7 / 10.']),'corrected-transcript.txt');
+  assert.equal((await fetch(base+'/api/documents',{method:'POST',body:replacement})).status,200);
+  const invalidated=await request(`/api/sessions/${seededId}`,undefined,'GET');assert.equal(invalidated.run,null);assert.equal(invalidated.draftDocument,'');assert.equal(invalidated.opportunities.length,0);assert.equal(invalidated.facts.length,0);assert.equal(invalidated.profile.cgpa,undefined);assert.equal(invalidated.profile.name,'Document Student');assert.equal(invalidated.documents.length,1);
+  await request(`/api/sessions/${seededId}/documents/${invalidated.documents[0].id}`,undefined,'DELETE');
+  assert.equal((await request(`/api/sessions/${seededId}`,undefined,'GET')).documents.length,0);
  }finally{server.kill();await new Promise(resolve=>server.once('close',resolve));await rm(directory,{recursive:true,force:true});}
 });

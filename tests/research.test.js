@@ -21,7 +21,7 @@ test('an evidenced unmet criterion overrides the model score',()=>{
  assert.equal(result.eligibility,'not_eligible');assert.ok(result.score<=20);
 });
 test('ten candidates yield at most five recommendations; expired or ineligible candidates are excluded',()=>{
- const items=Array.from({length:10},(_,i)=>({id:`c${i}`,name:`Program ${i}`,university:`University ${i}`,score:100-i,eligibility:i===0?'not_eligible':'conditional',deadline_state:i===1?'expired':'upcoming'}));
+ const items=Array.from({length:10},(_,i)=>({integrity_checked:true,id:`c${i}`,name:`Program ${i}`,university:`University ${i}`,score:100-i,eligibility:i===0?'not_eligible':'conditional',deadline_state:i===1?'expired':'upcoming'}));
  const ranked=rankOpportunities(items);assert.equal(ranked.filter(x=>x.recommended).length,5);assert.equal(ranked.find(x=>x.id==='c0').recommended,false);assert.equal(ranked.find(x=>x.id==='c1').recommended,false);
  assert.equal(rankOpportunities([...items,items[2]]).length,10);
 });

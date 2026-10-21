@@ -1,8 +1,8 @@
-# TetraNoodle — your scholarship squad
+# ScholarX — your scholarship squad
 
 A working AI scholarship finder presented as a WhatsApp-style group chat. Five specialist agents use real web research, official-source evidence and a student’s own documents to build a researched shortlist and an application draft.
 
-![WhatsApp-style scholarship workspace](artifacts/ui-desktop.png)
+![WhatsApp-style scholarship workspace](artifacts/e2e-live-chat.png)
 
 ![Agent architecture](docs/architecture.svg)
 
@@ -64,7 +64,7 @@ Open **Chat menu → Switch student → New student**. Enter the basics, paste t
 
 Each student has a separate saved conversation, documents, search state, eligibility decisions and draft. **Saved students** restores previous work. Subject, intended study level, supplied interests and countries drive the research; the engine does not default to Rahul, Computer Science or a master's. Missing essential preferences prompt one question. Wrong study levels and opportunities outside the preferred countries are excluded from recommendations.
 
-Editing a student's existing profile stops its active run and clears derived matches, search receipts, public-profile enrichment and draft before fresh research. Use **New student** for another person so their original documents and conversation remain separate.
+Adding or removing a document clears previous research and any profile fields that were extracted from the old documents. A conflicting document and saved profile pauses research for clarification. Editing a student's existing profile stops its active run and clears derived matches, search receipts, public-profile enrichment and draft before fresh research. Use **New student** for another person so their original documents and conversation remain separate.
 
 See [the live profile demo guide](docs/live-profile-demo.md) and [the adaptation validation](artifacts/adaptation-validation.json). The fictional design profile is input data in `fixtures/unseen-design-student.txt`; no opportunity catalog is bundled into the student-creation flow.
 
@@ -96,7 +96,9 @@ Role models are configurable using `GROQ_MODEL_MIRA`, `GROQ_MODEL_ARJUN`, `GROQ_
 
 The workflow distinguishes **specific university degree programs** from **scholarship awards**. A valid degree program can remain a conditional candidate even when funding is unknown. A funding page does not establish admission, and tuition-free study does not establish living-cost support.
 
-A saved detailed claim needs a matching excerpt from a successfully retrieved page. Excerpts with omissions are accepted only when every retained fragment appears in order. Mira independently reviews whether the excerpt actually supports the claim, downgrades unsupported grade assumptions and checks institution identity. Explicit dated deadlines are checked against the calendar rather than trusting the model’s open/expired label. The application draft receives a separate factual review before it is saved. Every retained excerpt includes its URL and retrieval date. Unsupported funding, deadlines and requirements stay unknown. Official ownership, degree level, nationality, academic requirements, language tests, work experience, current intake and award coverage must be considered separately. Unknown nationality is not inferred from the student’s city.
+A second research pass follows relevant official funding, graduate-admissions and intake pages for up to eight promising leads. It uses a stronger verifier that selects numbered source passages; the server attaches their actual text and URLs. Each practical application step has its own evidence. Long navigation menus no longer crowd out facts at the end of a page.
+
+A saved detailed claim needs a matching excerpt from a successfully retrieved page. Excerpts with omissions are accepted only when every retained fragment appears in order. Mira independently reviews whether the excerpt actually supports the claim, downgrades unsupported grade assumptions and checks institution identity. Explicit dated deadlines are checked against the calendar rather than trusting the model’s open/expired label. The application draft receives a separate factual review before it is saved. Completion requires ten distinct opportunities, five non-excluded recommendations, a draft, and verified funding, intake/deadline information, requirements and application instructions for all five. Otherwise the pack is explicitly partial, with a per-opportunity list of gaps. An annual day/month alone does not establish a current intake year. Every retained excerpt includes its URL and retrieval date. Unsupported funding, deadlines and requirements stay unknown. Official ownership, degree level, nationality, academic requirements, language tests, work experience, current intake and award coverage must be considered separately. Unknown nationality is not inferred from the student’s city.
 
 Quote matching establishes provenance, not perfect semantic interpretation. Full eligibility and competitive award decisions still belong to the institution/provider. The interface exposes conditional verdicts, missing information and financial caveats rather than admission or scholarship guarantees.
 
@@ -123,14 +125,9 @@ Backend tests exercise source provenance, unsupported claims, eligibility downgr
 
 Live smoke tests use actual provider calls and real official pages. `scripts/live-run.mjs` runs the complete fictional Rahul scenario; `--alternate` uses the economics/public-policy profile. `TETRA_URL` and `TETRA_WORKSPACE_ID` can select an isolated local test server/workspace. Generated validation snapshots and research reports are in `artifacts/` when a live run finishes.
 
-The final live checks on 20 October 2026 produced:
+The current live audit uses Rahul’s Computer Science profile and a separately supplied Communication Design → Interaction Design profile. Their saved workspaces use the same engine with different subjects and destinations. See [the current requirements audit](docs/requirements-audit.md) for actual counts, status, evidence gaps and draft checks. The older economics profile is retained as historical demonstration data.
 
-| Fictional profile | Researched opportunities | Recommendations | Checked draft |
-| --- | ---: | ---: | --- |
-| Rahul, Computer Science | 10 | 5 | Ready |
-| Aisha, Economics / Public Policy | 11 | 5 | Ready |
-
-All recommendations are conditional. Many award amounts, current intake deadlines and eligibility details remain unconfirmed; the reports expose those gaps. These results demonstrate the complete workflow, not guaranteed funding. The final automated validation passed **27 backend checks and 9 browser checks**, the production build, and the dependency audit (zero reported vulnerabilities).
+Recommendations remain conditional. Unpublished intake dates, unconfirmed award coverage and missing student details keep a pack partial. The automated validation passed **38 backend checks and 9 browser checks**, the production build, and the dependency audit (zero reported vulnerabilities). A separate unmocked browser walkthrough checks real uploads, Groq replies, student switching, phone layout, downloads and refresh.
 
 Submission material:
 
@@ -138,7 +135,14 @@ Submission material:
 - Architecture: [diagram](docs/architecture.svg) and [explanation](docs/architecture.md).
 - Experiment and biggest technical challenge: [short note](docs/experiment-and-challenge.md).
 - Fictional profiles and actual text-PDF fixtures: [fixtures](fixtures/).
-- Five-minute screen recording: [demo video](artifacts/tetranoodle-5-minute-demo.webm) (on-screen captions, no audio).
+- Five-minute screen recording: [demo video](artifacts/scholarx-5-minute-demo.webm) (on-screen captions, no audio).
 - Actual live validation reports and application drafts: [artifacts](artifacts/README.md).
 
-A run is marked complete only after it has at least ten distinct researched opportunities, five non-excluded recommendations, and a saved draft. If searches or providers fail, the run honestly reports partial/interrupted status and preserves progress for Resume.
+A run is marked complete only after it has at least ten distinct researched opportunities, five non-excluded recommendations, a saved draft, and verified practical application details for the top five. Yearless dates and missing source evidence keep the pack partial. If searches or providers fail, the run honestly reports partial/interrupted status and preserves progress for Resume.
+
+
+Built for the **TetraNoodle AI Hackathon 2026**. The product is named **ScholarX**; existing workspace storage identifiers are retained so saved students and appearance preferences survive the rename.
+
+Run `node scripts/check-live-ui.mjs` for the unmocked website walkthrough, `node scripts/check-github.mjs` for the public API/fallback check, and `node scripts/audit-requirements.mjs` for the current evidence audit. See [the requirements audit](docs/requirements-audit.md).
+
+Daily token/request exhaustion switches once to `GROQ_DAILY_FALLBACK_MODEL` (the checked configuration uses `qwen/qwen3.8-27b`). The same role, input and saved evidence continue on that model. If both budgets are unavailable, the run saves progress and reports the limitation instead of retrying indefinitely. Unreviewed leads cannot enter the top five or generate an application draft. The independent reviewer checks official publisher ownership and requirement meaning before recommendations are published.

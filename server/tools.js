@@ -82,13 +82,21 @@ export async function executeTool(name, args, session, emit, agent, signal) {
   }
   if (name === 'github_profile') {
     if (!/^[a-zA-Z0-9-]{1,39}$/.test(args.username)) throw new Error('Provide a valid GitHub username.');
-    const results = await Promise.all([`https://api.github.com/users/${args.username}`, `https://api.github.com/users/${args.username}/repos?sort=updated&per_page=15`].map(async url => {
-      const r = await fetch(url, { headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'TetraNoodle-Scholarship-Research' }, signal: AbortSignal.any([signal, AbortSignal.timeout(15000)]) });
+    const githubHeaders={'User-Agent':'ScholarX-Scholarship-Research',...(process.env.GITHUB_TOKEN?{Authorization:`Bearer ${process.env.GITHUB_TOKEN.trim()}`}:{})};
+    let results;
+    try{results = await Promise.all([`https://api.github.com/users/${args.username}`, `https://api.github.com/users/${args.username}/repos?sort=updated&per_page=15`].map(async url => {
+      const r = await fetch(url, { headers: { Accept: 'application/vnd.github+json', ...githubHeaders }, signal: AbortSignal.any([signal, AbortSignal.timeout(15000)]) });
       if (!r.ok) throw new Error(`GitHub returned ${r.status}. Ask for a corrected link or try later.`); return r.json();
-    }));
+    }));}catch(error){
+      if(signal.aborted)throw error;
+      emit({type:'activity',agent,label:'GitHub API unavailable. Reading the supplied public GitHub page with Scrapling.'});
+      const page=await worker('read_page',{url:`https://github.com/${args.username}`},signal);
+      session.evidence?.set(page.url,page);
+      return {provider:'GitHub public page via Scrapling',profile:{url:page.url,name:null,bio:null,public_repos:null},repositories:[],readmes:[],public_page:{url:page.url,text:relevantText(page.text,7000),retrieved_at:page.retrieved_at},note:'The GitHub API was unavailable. This is real fetched public-page text, not API repository metadata. Summarize only explicit visible facts; repository authorship, skills and proficiency remain unverified.'};
+    }
     const [p, repos] = results;
     const readmes=await Promise.allSettled(repos.filter(r=>!r.fork).slice(0,3).map(async r=>{
-      const response=await fetch(`https://api.github.com/repos/${args.username}/${encodeURIComponent(r.name)}/readme`,{headers:{Accept:'application/vnd.github.raw+json','User-Agent':'TetraNoodle-Scholarship-Research'},signal:AbortSignal.any([signal,AbortSignal.timeout(10000)])});
+      const response=await fetch(`https://api.github.com/repos/${args.username}/${encodeURIComponent(r.name)}/readme`,{headers:{Accept:'application/vnd.github.raw+json',...githubHeaders},signal:AbortSignal.any([signal,AbortSignal.timeout(10000)])});
       if(!response.ok)return {repository:r.name,url:r.html_url,readme:null};
       return {repository:r.name,url:r.html_url,readme:(await response.text()).slice(0,5000)};
     }));

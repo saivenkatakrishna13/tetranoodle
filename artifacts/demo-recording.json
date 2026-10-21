@@ -1,87 +1,92 @@
 {
-  "recordedAt": "2026-10-20T07:49:04.107Z",
-  "durationSeconds": 300,
+  "recordedAt": "2026-10-21T04:54:06.180Z",
+  "openingChatWorkspace": "recording-chat-1792557121975",
+  "openingChatPreparedAt": "2026-10-21T04:33:03.813Z",
+  "openingChatReused": true,
+  "introPreparedBeforeCapture": true,
+  "durationSeconds": 300.0,
   "liveRecording": true,
   "editedWaits": false,
   "narration": "On-screen captions; no audio",
   "scenes": [
     {
       "seconds": 0,
-      "title": "TETRANOODLE · REAL LOCAL DEMO",
-      "text": "Five AI specialists. One calm group conversation. This recording uses live Groq replies and actual saved web research."
+      "title": "SCHOLARX \u00b7 REAL LOCAL DEMO",
+      "text": "Five AI specialists. One calm group conversation. The opening reply, research and tool activity come from real saved Groq runs."
     },
     {
       "seconds": 30,
-      "title": "01 · ONE TURN AT A TIME",
+      "title": "01 \u00b7 ONE TURN AT A TIME",
       "text": "Mira chooses a relevant speaker and one focused follow-up. The whole team does not ask competing questions."
     },
     {
       "seconds": 48,
-      "title": "02 · FIVE DISTINCT RESPONSIBILITIES",
-      "text": "Profile → discovery → official-source checks → application writing → final review. Each specialist contributes an artifact."
+      "title": "02 \u00b7 FIVE DISTINCT RESPONSIBILITIES",
+      "text": "Profile \u2192 discovery \u2192 official-source checks \u2192 application writing \u2192 final review. Each specialist contributes an artifact."
     },
     {
       "seconds": 65,
-      "title": "03 · RAHUL’S FICTIONAL DOCUMENTS",
+      "title": "03 \u00b7 RAHUL\u2019S FICTIONAL DOCUMENTS",
       "text": "These are real text PDFs. Extracted facts remain separate from assumptions. Rahul has no invented awards or project outcomes."
     },
     {
       "seconds": 90,
-      "title": "04 · THE TEAM’S ACTUAL HANDOFFS",
+      "title": "04 \u00b7 THE TEAM\u2019S ACTUAL HANDOFFS",
       "text": "This workspace contains saved live agent messages and tool activity. Research can continue while the browser reconnects."
     },
     {
       "seconds": 108,
-      "title": "04 · RESEARCH PROGRESS",
+      "title": "04 \u00b7 RESEARCH PROGRESS",
       "text": "Sources are actually fetched with Scrapling. Rate-limit retries and unavailable pages are shown honestly."
     },
     {
       "seconds": 130,
-      "title": "05 · REAL OPPORTUNITIES",
+      "title": "05 \u00b7 REAL OPPORTUNITIES",
       "text": "Top five is a research shortlist. Conditional eligibility and unknown funding are clearly labelled; scores are not admission probabilities."
     },
     {
       "seconds": 150,
-      "title": "06 · ELIGIBILITY, WITH GAPS",
-      "text": "The agent compares requirements with the student’s known facts. Missing language results, nationality or credits remain unknown."
+      "title": "06 \u00b7 ELIGIBILITY, WITH GAPS",
+      "text": "The agent compares requirements with the student\u2019s known facts. Missing language results, nationality or credits remain unknown."
     },
     {
       "seconds": 173,
-      "title": "07 · CHECKABLE SOURCE EVIDENCE",
+      "title": "07 \u00b7 CHECKABLE SOURCE EVIDENCE",
       "text": "Every retained detailed claim has an excerpt, official URL and retrieval date. An excerpt match proves provenance, not guaranteed eligibility."
     },
     {
       "seconds": 195,
-      "title": "08 · COMPARE POSSIBILITIES",
+      "title": "08 \u00b7 COMPARE POSSIBILITIES",
       "text": "Compare funding, deadlines and fit side by side. The full report can be exported for review."
     },
     {
       "seconds": 215,
-      "title": "09 · A DRAFT, NEVER A SUBMISSION",
+      "title": "09 \u00b7 A DRAFT, NEVER A SUBMISSION",
       "text": "Leo prepares a source-specific application draft. Missing personal stories and achievements stay as placeholders."
     },
     {
       "seconds": 239,
-      "title": "10 · A DIFFERENT STUDENT, SAME SYSTEM",
-      "text": "Aisha studies economics and targets policy/development in Germany and the Netherlands. These are actual separate research results."
+      "title": "10 \u00b7 A DIFFERENT STUDENT, SAME SYSTEM",
+      "text": "Switch student restores Meera\u2019s interaction-design research in Finland, Sweden and the Netherlands. These are separate real results."
     },
     {
       "seconds": 259,
-      "title": "10 · ADAPTATION AND EXCLUSIONS",
-      "text": "The system changes its searches and criteria with the profile. All researched includes rejected and expired candidates, with reasons."
+      "title": "10 \u00b7 LIGHT, DARK OR SYSTEM",
+      "text": "Appearance follows your preference across student workspaces. Research uses each student\u2019s own subject, study level and destinations."
     },
     {
       "seconds": 278,
-      "title": "11 · A CHAT THAT FITS THE SCREEN",
+      "title": "11 \u00b7 A CHAT THAT FITS THE SCREEN",
       "text": "The header and message box stay in place. Only the conversation scrolls. The same workspace works on a phone."
     },
     {
       "seconds": 292,
-      "title": "TETRANOODLE · YOUR NEXT CHAPTER",
+      "title": "SCHOLARX \u00b7 YOUR NEXT CHAPTER",
       "text": "Real tools, sequential specialists, source-linked findings and a reviewable draft. All test students in this demo are fictional."
     }
   ],
   "errors": [],
-  "captureSeconds": 302.932,
-  "trim": "Only the final 1.96 seconds of the closing hold were trimmed; no research waits were shortened."
+  "captureDurationSeconds": 303.088,
+  "containerDurationVerified": true,
+  "trim": "Only the closing hold was trimmed to exactly 300 seconds; scene waits remain in real time."
 }

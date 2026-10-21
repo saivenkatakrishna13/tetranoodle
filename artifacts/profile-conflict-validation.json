@@ -1,0 +1,109 @@
+{
+  "checkedAt": "2026-10-20T15:37:32.844Z",
+  "fictionalTest": true,
+  "injectedContradiction": "Self-reported 9.8 / 10 versus uploaded transcript 8.2 / 10",
+  "passed": true,
+  "snapshot": {
+    "sessionId": "ba574986-9fa3-4cfc-bfeb-63cb87e9e532",
+    "profile": {
+      "name": "Rahul",
+      "degree": "Final-year B.Tech Computer Science",
+      "target_degree": "Master of Computer Science",
+      "cgpa": "9.8 / 10",
+      "countries": "Canada"
+    },
+    "profileRevision": 1,
+    "researchBrief": null,
+    "profileConflicts": [
+      {
+        "key": "cgpa",
+        "document_value": "8.2 / 10",
+        "source": "rahul-transcript.pdf",
+        "quote": "Cumulative grade point average: 8.2 / 10",
+        "profile_value": "9.8 / 10"
+      }
+    ],
+    "documents": [
+      {
+        "id": "c86c01d4-0989-495f-8672-b318da659160",
+        "name": "rahul-transcript.pdf",
+        "size": 999,
+        "characters": 345
+      }
+    ],
+    "messages": [
+      {
+        "id": "a1ddd709-62ce-4ea3-88b4-979da8b0ce0f",
+        "time": 1792510652155,
+        "agent": "arjun",
+        "content": "You have provided your name, current degree, target degree, CGPA (9.8/10) and preferred country (Canada). However, your transcript shows a different CGPA of 8.2/10, which conflicts with the earlier figure. Additional details such as budget, GitHub, nationality, graduation date, intake term, language test scores, interests, career goals, and other public profiles are missing.\n\nDetails still needed: budget; github; nationality; graduation; intake."
+      },
+      {
+        "id": "ec1805e8-7786-4059-80ee-bb356184dd41",
+        "time": 1792510652155,
+        "agent": "arjun",
+        "content": "Your saved cgpa is **9.8 / 10**, but rahul-transcript.pdf states **8.2 / 10**. Please correct the profile or replace the document before research. Which value belongs to this student?"
+      }
+    ],
+    "opportunities": [],
+    "draftDocument": "",
+    "facts": [
+      {
+        "key": "name",
+        "value": "Rahul",
+        "source": "student profile",
+        "confidence": "self-reported"
+      },
+      {
+        "key": "degree",
+        "value": "Final-year B.Tech Computer Science",
+        "source": "student profile",
+        "confidence": "self-reported"
+      },
+      {
+        "key": "target_degree",
+        "value": "Master of Computer Science",
+        "source": "student profile",
+        "confidence": "self-reported"
+      },
+      {
+        "key": "cgpa",
+        "value": "9.8 / 10",
+        "source": "student profile",
+        "confidence": "self-reported"
+      },
+      {
+        "key": "countries",
+        "value": "Canada",
+        "source": "student profile",
+        "confidence": "self-reported"
+      }
+    ],
+    "run": {
+      "id": "67f8c958-dadb-44cf-ac07-51e4a28c71f7",
+      "status": "needs_input",
+      "stage": "profile",
+      "progress": 5,
+      "target": 10,
+      "startedAt": 1792510582703,
+      "queries": [],
+      "candidates": [],
+      "attempted": [],
+      "failures": [],
+      "discoveryCount": 0,
+      "message": "Resolve the conflicting student facts before research.",
+      "updatedAt": 1792510652155,
+      "profileReviewed": true
+    },
+    "activity": [
+      {
+        "type": "activity",
+        "agent": "arjun",
+        "label": "Arjun is extracting facts from 1 uploaded document(s).",
+        "sequence": 9,
+        "time": 1792510582704
+      }
+    ],
+    "cursor": 16
+  }
+}

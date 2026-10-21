@@ -63,7 +63,8 @@ export function discoveryQueries(queries,brief,limit=9){
   const country=brief.destinations[index%brief.destinations.length];
   const hints=String(query).toLowerCase().match(/scholarships?|funding|stipend|tuition|fees|assistantships?|studentships?|admission|requirements?|eligibility|research|vacancies|positions?|financial|aid/g)||[];
   const terms=[...new Set(hints)].slice(0,4).join(' ');
-  return `${subject} ${levelWord} ${terms|| (index%2?'scholarship funding':'program admission')} ${country}${domains[country.toLowerCase()]?` site:${domains[country.toLowerCase()]}`:''}`.replace(/\s+/g,' ').trim();
+  const cycle=brief.intake?.match(/\b20\d{2}\b/)?.[0]||String(new Date().getUTCFullYear()+1);
+  return `${subject} ${levelWord} ${terms|| (index%2?'scholarship funding':'program admission')} ${cycle} ${country}${domains[country.toLowerCase()]?` site:${domains[country.toLowerCase()]}`:''}`.replace(/\s+/g,' ').trim();
  });
 }
 export function resetResearchData(session){

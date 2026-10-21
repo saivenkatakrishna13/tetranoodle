@@ -1,6 +1,8 @@
 import { mkdirSync, readFileSync, writeFileSync, renameSync, existsSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
+import {guardDraft} from './integrity.js';
+import {distinctProgramPages,researchCoverage} from './research-quality.js';
 const directory = process.env.TETRA_DATA_DIR||path.resolve(import.meta.dirname, '../.data/sessions');
 mkdirSync(directory, { recursive: true, mode: 0o700 });
 const cache = new Map(), timers = new Map();
@@ -40,12 +42,15 @@ export function record(session, event) {
   saveSession(session); session.subscribers?.forEach(send => send(stored)); return stored;
 }
 export function snapshot(session) {
-  return { sessionId: session.id, profile: session.profile, profileRevision:session.profileRevision,researchBrief:session.researchBrief||null,profileConflicts:session.profileConflicts||[],documents: session.documents.map(({ text, ...d }) => d), messages: session.messages, opportunities: session.opportunities, draftDocument: session.draft, facts: session.facts, run: session.run, activity: session.events.filter(e => e.type === 'activity').slice(-30), cursor: session.events.at(-1)?.sequence || 0 };
+  const opportunities=distinctProgramPages(session.opportunities);
+  const run=session.run?.coverage?{...session.run,coverage:researchCoverage(opportunities,!!session.draft)}:session.run;
+  const draft=guardDraft(session.draft||'',{profile:session.profile,opportunity:session.opportunities.find(o=>o.id===session.draftMeta?.opportunityId)});
+  return { sessionId: session.id, profile: session.profile, profileRevision:session.profileRevision,researchBrief:session.researchBrief||null,profileConflicts:session.profileConflicts||[],documents: session.documents.map(({ text, ...d }) => d), messages: session.messages, opportunities, draftDocument: draft, facts: session.facts, run, activity: session.events.filter(e => e.type === 'activity').slice(-30), cursor: session.events.at(-1)?.sequence || 0 };
 }
 export function listStudents(currentId){
  const ids=new Set(readdirSync(directory).filter(f=>f.endsWith('.json')).map(f=>f.slice(0,-5)));
  if(validId(currentId))ids.add(currentId);
  const result=[];
- for(const id of ids){try{const session=cache.get(id)||JSON.parse(readFileSync(path.join(directory,`${id}.json`),'utf8'));if(!session.listed&&id!==currentId)continue;result.push({sessionId:id,name:session.profile?.name||'Unnamed student',degree:session.profile?.degree||'',target_degree:session.profile?.target_degree||'',countries:session.profile?.countries||'',updatedAt:session.updatedAt||session.createdAt||0,status:session.run?.status||'not_started',opportunities:session.opportunities?.length||0});}catch{/* Ignore an unreadable unrelated workspace. */}}
+ for(const id of ids){try{const session=cache.get(id)||JSON.parse(readFileSync(path.join(directory,`${id}.json`),'utf8'));if(!session.listed&&id!==currentId)continue;result.push({sessionId:id,name:session.profile?.name||'Unnamed student',degree:session.profile?.degree||'',target_degree:session.profile?.target_degree||'',countries:session.profile?.countries||'',updatedAt:session.updatedAt||session.createdAt||0,status:session.run?.status||'not_started',opportunities:distinctProgramPages(session.opportunities||[]).length});}catch{/* Ignore an unreadable unrelated workspace. */}}
  return result.sort((a,b)=>b.updatedAt-a.updatedAt);
 }

@@ -3,6 +3,8 @@ import { structured } from './groq.js';
 import { executeTool, relevantText } from './tools.js';
 import { record, saveSession } from './store.js';
 import { deadlineState, guardDraft } from './integrity.js';
+import {deepenReview} from './research-details.js';
+import {evidenceCoverage,researchCoverage,distinctProgramPages} from './research-quality.js';
 import {PROFILE_FIELDS,researchBrief,missingEssentials,discoveryQueries,resetResearchData,studyLevels,countryPreferenceMatch} from './profile.js';
 
 const active = new Map();
@@ -19,7 +21,7 @@ const sourceKey=value=>{try{const u=new URL(value);u.hash='';u.pathname=u.pathna
 export function supportedClaim(claim, evidence) {
   if (!claim || typeof claim !== 'object' || !claim.value || !claim.quote || !claim.url) return null;
   const page = evidence.get(claim.url)||[...evidence.values()].find(p=>sourceKey(p.url)===sourceKey(claim.url));
-  const quote=String(claim.quote).trim().replace(/^[\"“”]|[\"“”]$/g,'');
+  const quote=String(claim.quote).trim().replace(/^[\"“”]|[\"“”]$/g,'').replace(/\[(?:\u2026|\.{3})\]/g,'\u2026');
   if (!page || norm(quote).length < 16) return null;
   if (!norm(page.text).includes(norm(quote))) {
     // Omitted passages are allowed only when every retained fragment occurs in order.
@@ -64,13 +66,16 @@ export function validateReview(candidate, review, evidence, brief=null) {
   if (!claims.funding) score = Math.min(score,65);
   if (!claims.requirements) score = Math.min(score,55);
   const checkedDeadline=deadlineState(claims.deadline,review.deadline_state);
+  const applicationProof=(Array.isArray(review.application_steps)?review.application_steps:[]).map(step=>supportedClaim(step,evidence)).filter(Boolean);
+  // Legacy prose steps were not independently evidenced. Never copy them blindly.
+  if(!applicationProof.length&&claims.application)applicationProof.push(claims.application);
   const preferenceMismatch=brief?countryPreferenceMatch(review.country||candidate.country,brief.destinations)==='outside_preferences':false;
   if (checkedDeadline === 'expired') score = Math.min(score,30);
   if (eligible === 'not_eligible') score = Math.min(score,20);
   return {
-    id: randomUUID(), name: String(review.name || candidate.name).slice(0,250), university: String(institution || `Official provider at ${new URL(source.url).hostname}`).slice(0,200), dedupe_institution:String(dedupeInstitution||source.url), country: String(review.country || candidate.country || '').slice(0,100), type: review.type === 'scholarship' ? 'scholarship' : 'program', level: String(review.level || '').slice(0,100), url: source.url, identity, claims,
-    funding: claims.funding?.value || 'Funding not confirmed from official sources', deadline: claims.deadline?.value || 'Current deadline not confirmed', deadline_state: checkedDeadline, eligibility: eligible, criteria, missing_information: gaps, funding_status: claims.funding ? (['full','partial','none'].includes(review.funding_status) ? review.funding_status : 'unknown') : 'unknown',
-    reason: String(review.reason || candidate.reason || '').slice(0,1400), funding_caveat: String(review.funding_caveat || 'Check what tuition and living expenses are actually covered.').slice(0,1000), application_steps: claims.application ? (Array.isArray(review.application_steps) ? review.application_steps.map(String).slice(0,8) : [claims.application.value]) : ['Open the official source and confirm application instructions for your intake.'],
+    id: randomUUID(),integrity_checked:review.integrity_version===2, name: String(review.name || candidate.name).slice(0,250), university: String(institution || `Official provider at ${new URL(source.url).hostname}`).slice(0,200), dedupe_institution:String(dedupeInstitution||source.url), country: String(review.country || candidate.country || '').slice(0,100), type: review.type === 'scholarship' ? 'scholarship' : 'program', level: String(review.level || '').slice(0,100), url: source.url, identity, claims,
+    funding: claims.funding?.value || 'Funding not confirmed from official sources', deadline: claims.deadline ? `${claims.deadline.value}${checkedDeadline==='unknown'&&!/20\d{2}/.test(claims.deadline.quote)?' — intake year / current call not confirmed':''}` : 'Current deadline not confirmed', deadline_state: checkedDeadline, eligibility: eligible, criteria, missing_information: gaps, funding_status: claims.funding ? (['full','partial','none'].includes(review.funding_status) ? review.funding_status : 'unknown') : 'unknown',
+    reason: String(review.reason || candidate.reason || '').slice(0,1400), funding_caveat: String(review.funding_caveat || 'Check what tuition and living expenses are actually covered.').slice(0,1000), application_steps: claims.application ? applicationProof.map(s=>s.value).slice(0,8) : ['Application instructions are not yet verified. Check the official admissions page.'],application_step_evidence:claims.application?applicationProof.slice(0,8):[],
     preference_mismatch:preferenceMismatch,exclusion_reason:preferenceMismatch?`Outside your preferred countries: ${brief.destinations.join(', ')}.`:null,score: Math.round(score), score_explanation: String(review.score_explanation || 'Research priority based on academic fit, funding, preferences, and evidence. This is not an admission probability.').slice(0,1000), reviewed_at: Date.now(), retrieved_at: source.retrieved_at, official_reason: String(review.official_reason || '').slice(0,500), sources: unique([source, ...Object.values(claims).filter(Boolean).map(c => evidence.get(c.url)).filter(Boolean)]).map(({url,title,retrieved_at})=>({url,title,retrieved_at})), quotes: Object.fromEntries(Object.entries(claims).map(([key,claim])=>[key,claim?.quote || null])),
   };
 }
@@ -84,30 +89,32 @@ export function rankOpportunities(items) {
   };
   const quality=o=>Object.values(o.claims||{}).filter(Boolean).length+(o.criteria||[]).filter(c=>c.evidence).length;
   const deduped=[];
-  for(const item of items){const index=deduped.findIndex(o=>same(o,item));if(index<0)deduped.push(item);else{const old=deduped[index];if(item.eligibility==='not_eligible' || old.eligibility!=='not_eligible'&&quality(item)>quality(old))deduped[index]=item;}}
+  for(const item of distinctProgramPages(items)){const index=deduped.findIndex(o=>same(o,item));if(index<0)deduped.push(item);else{const old=deduped[index];if(item.eligibility==='not_eligible' || old.eligibility!=='not_eligible'&&quality(item)>quality(old))deduped[index]=item;}}
   const sorted = deduped.sort((a,b) => {
     const bad = o => o.eligibility === 'not_eligible' || o.deadline_state === 'expired' || !!o.preference_mismatch;
-    return Number(bad(a))-Number(bad(b)) || b.score-a.score;
+    return Number(bad(a))-Number(bad(b)) || Number(b.integrity_checked===true)-Number(a.integrity_checked===true) || Number(evidenceCoverage(b).complete)-Number(evidenceCoverage(a).complete) || b.score-a.score;
   });
-  return sorted.map((o,index)=>({...o,rank:index+1,recommended:index<5 && o.eligibility!=='not_eligible' && o.deadline_state!=='expired'&&!o.preference_mismatch}));
+  return sorted.map((o,index)=>({...o,rank:index+1,recommended:index<5 && o.integrity_checked===true && o.eligibility!=='not_eligible' && o.deadline_state!=='expired'&&!o.preference_mismatch}));
 }
 export async function enrichProfile(session, emit, signal) {
   emit({type:'typing',agent:'arjun'});
   if (session.documents.length) {
     label(emit,'arjun',`Arjun is extracting facts from ${session.documents.length} uploaded document(s).`);
-    const data = await structured('arjun', `Extract a student profile using ONLY explicit facts. Return {fields:[{key,value,source,quote}],missing_information:[string],summary:string}. Address the student DIRECTLY as you in the summary, not in the third person. Do not ask a list of questions; mention gaps as a short note. Allowed field keys: ${fields.join(', ')}. For source use the exact uploaded filename or "student profile". Quotes must be verbatim supporting document text; do not infer nationality from location, convert CGPA, or invent achievements. Source "student profile" can repeat already provided facts. Missing language results, credit totals and dates must stay unknown.`, { current_profile:session.profile, documents:contextDocuments(session.documents,12000) },{emit,signal,maxTokens:3000});
+    const data = await structured('arjun', `Extract a student profile using ONLY explicit facts. Return {fields:[{key,value,source,quote}],conflicts:[{key,document_value,source,quote}],missing_information:[string],summary:string}. Address the student DIRECTLY as you in the summary, not in the third person. Do not ask a list of questions; mention gaps as a short note. Allowed field keys: ${fields.join(', ')}. For source use the exact uploaded filename or "student profile". Quotes must be verbatim supporting document text; do not infer nationality from location, convert CGPA, or invent achievements. Source "student profile" can repeat already provided facts. Report a conflict ONLY if the document explicitly contradicts the existing name, academic result, degree or other supplied fact; different wording or a missing field is not a conflict. Each conflict requires its exact filename and verbatim supporting quote. Missing language results, credit totals and dates must stay unknown.`, { current_profile:session.profile, documents:contextDocuments(session.documents,12000) },{emit,signal,maxTokens:3000});
     const facts=[];
     for(const fact of data.fields || []) {
       if(!fields.includes(fact.key)||typeof fact.value!=='string')continue;
       const doc=session.documents.find(d=>d.name===fact.source);
       const valid=doc && norm(fact.quote).length>=6 && norm(doc.text).includes(norm(fact.quote));
-      if(valid){if(!session.profile[fact.key])session.profile[fact.key]=fact.value.slice(0,1000);facts.push({...fact,confidence:'document-supported'});}
+      if(valid){if(!session.profile[fact.key]){session.profile[fact.key]=fact.value.slice(0,1000);session.documentProfileFields||={};session.documentProfileFields[fact.key]=session.profile[fact.key];}facts.push({...fact,confidence:'document-supported'});}
       else if(fact.source==='student profile' && session.profile[fact.key])facts.push({key:fact.key,value:session.profile[fact.key],source:'student profile',confidence:'self-reported'});
     }
+    session.profileConflicts=(data.conflicts||[]).filter(c=>fields.includes(c.key)&&session.profile[c.key]&&session.documents.some(d=>d.name===c.source&&norm(c.quote).length>=6&&norm(d.text).includes(norm(c.quote)))).map(c=>({...c,profile_value:session.profile[c.key]}));
     emit({type:'profile',profile:session.profile});emit({type:'facts',facts});
     session.profileGaps=(data.missing_information||[]).map(String).slice(0,12);
     say(emit,'arjun',`${data.summary || 'I have extracted your documented academic background.'}\n\n${session.profileGaps.length ? `Details still needed: ${session.profileGaps.slice(0,5).join('; ')}.` : 'I’ll pass this profile to Nova.'}`);
   } else say(emit,'arjun','I’m using the details you shared as self-reported facts. You can add your resume and transcript for a document-based review; missing scores, credits, and achievements will stay unknown.');
+  if(session.profileConflicts?.length){const c=session.profileConflicts[0];say(emit,'arjun',`Your saved ${c.key.replaceAll('_',' ')} is **${c.profile_value}**, but ${c.source} states **${c.document_value}**. Please correct the profile or replace the document before research. Which value belongs to this student?`);return;}
   if(session.profile.github) {
     const match=String(session.profile.github).match(/(?:github\.com\/)?([a-zA-Z0-9-]{1,39})\/?$/);
     if(match)try {
@@ -138,9 +145,10 @@ async function discover(session, emit, signal, target=20, extra=false) {
     if((session.run.queries||[]).includes(query))continue;
     try{const found=await executeTool('search_web',{query,limit:8},session,emit,'nova',signal);results.push(...(found.results||[]));session.searchResults[query]=found.results||[];session.run.queries=[...(session.run.queries||[]),query];saveSession(session);}catch(e){if(signal.aborted)throw e;label(emit,'nova',`Search failed; trying a different query. ${e.message}`);}
   }
-  const found=unique(results.filter(r=>isPublicWeb(r.url)&&!attemptedUrls.has(r.url))).slice(0,60);
+  const found=unique(results.reverse().filter(r=>isPublicWeb(r.url)&&!attemptedUrls.has(r.url))).slice(0,30).map(r=>({...r,snippet:r.snippet?.slice(0,220)}));
+  while(found.length>1&&JSON.stringify({profile:session.profile,research_brief:brief,results:found}).length>12500)found.pop();
   if(!found.length)throw new Error('Search providers returned no usable sources. Resume later or configure TAVILY_API_KEY.');
-  const shortlist=await structured('nova',`Select up to ${target} DISTINCT real programs/scholarships from these search results for this student. Return {candidates:[{name,university,country,url,reason}],rejected:[{url,reason}]}. BOTH university degree PROGRAMS and scholarship AWARDS qualify. A program does NOT need confirmed funding to be a valid candidate: select relevant programs at the student’s requested level even when the result is just a program description; Sage will investigate funding separately. Do NOT reject a program because it is not a scholarship. You MUST copy each URL exactly from a supplied result. Prefer official academic, government and scholarship-provider sources. Exclude ranking articles, agencies, aggregators except official DAAD, and broad homepages without a specific opportunity. Each name must refer to a specific program or award identified by its result. Prefer a useful variety of funding pathways. Select all relevant specific degree programs up to the limit rather than only scholarship listings. Do not silently switch the student's field or study level. Keep conditional candidates when unknown criteria need checking.`,{profile:session.profile,research_brief:session.researchBrief,results:found.map(r=>({...r,snippet:r.snippet?.slice(0,450)}))},{signal,emit,maxTokens:6000});
+  const shortlist=await structured('nova',`Select up to ${target} DISTINCT real programs/scholarships from these search results for this student. Return {candidates:[{name,university,country,url,reason}],rejected:[{url,reason}]}. BOTH university degree PROGRAMS and scholarship AWARDS qualify. A program does NOT need confirmed funding to be a valid candidate: select relevant programs at the student’s requested level even when the result is just a program description; Sage will investigate funding separately. Do NOT reject a program because it is not a scholarship. You MUST copy each URL exactly from a supplied result. Prefer official academic, government and scholarship-provider sources. Exclude ranking articles, agencies, aggregators except official DAAD, and broad homepages without a specific opportunity. Each name must refer to a specific program or award identified by its result. Prefer a useful variety of funding pathways. Select all relevant specific degree programs up to the limit rather than only scholarship listings. Do not silently switch the student's field or study level. Keep conditional candidates when unknown criteria need checking.`,{profile:session.profile,research_brief:session.researchBrief,results:found.map(r=>({...r,snippet:r.snippet?.slice(0,450)}))},{signal,emit,maxTokens:target>10?3000:2000});
   const urls=new Set(found.map(r=>r.url));
   const selected=unique((shortlist.candidates||[]).filter(c=>urls.has(c.url)&&c.name)).slice(0,target);
   session.run.discoveryCount=(session.run.discoveryCount||0)+selected.length;
@@ -181,20 +189,28 @@ The FIRST page is the primary opportunity source. Use that page to identify the 
   session.reviewAudit ||= []; session.reviewAudit.push({candidate,review,at:Date.now()});
   return validateReview(candidate,review,session.evidence,session.researchBrief);
 }
+export function integrityContext(session,items){
+  const passages=[],seen=new Map();
+  const proof=claim=>{if(!claim)return null;const key=claim.url+'\n'+claim.quote;let id=seen.get(key);if(!id){id=`e${passages.length+1}`;seen.set(key,id);passages.push({id,url:claim.url,quote:claim.quote});}return {value:claim.value,evidence_id:id};};
+  return {student:session.profile,items:items.map(o=>({id:o.id,name:o.name,university:o.university,country:o.country,identity:proof(o.identity),claims:Object.fromEntries(Object.entries(o.claims||{}).map(([key,c])=>[key,proof(c)])),application_step_evidence:(o.application_step_evidence||[]).map(proof),criteria:(o.criteria||[]).map(c=>({...c,evidence:proof(c.evidence)})),source:{url:o.url,title:session.evidence.get(o.url)?.title,text:session.evidence.get(o.url)?.text.slice(0,1500)}})),passages};
+}
 export async function auditPack(session, emit, signal) {
   const profileKey=fingerprint(session.profile);
-  const pending=session.opportunities.filter(o=>!session.reviewAudit?.some(a=>sourceKey(a.candidate.url)===sourceKey(o.url)&&a.review.integrity_profile===profileKey&&a.review.integrity_version===1));
-  for(let offset=0;offset<pending.length;offset+=3){
-    const batch=pending.slice(offset,offset+3);
-    label(emit,'mira',`Mira is checking claim meaning, grade assumptions and source identity (${Math.min(offset+3,pending.length)}/${pending.length}).`);
-    const audit=await structured('mira',`Independently fact-check these researched opportunities. Matching words is NOT sufficient: each value must be entailed by its quoted excerpt. Return {items:[{id,institution_supported:boolean,institution:{value,quote,url}|null,unsupported_fields:["funding"|"deadline"|"requirements"|"application"],criteria:[{index,status:"met"|"not_met"|"unknown",reason}],reason:string,issues:[string]}]}. Include every id and every criterion index. Do not add new claims or URLs. Mark a field unsupported when ANY material detail in its value is absent from its quote. An excellence criterion does not prove full funding. A tuition waiver does not prove living support. No absence of funding information proves that funding is unavailable. An 8.2/10 CGPA does not prove equivalence to 77%, A-, excellent standing, or another institution's grading system. A final-year degree is not a completed degree. Missing work experience, age, nationality, language components or credits means UNKNOWN, not not_met. A 7.6/10 academic result does not establish a Dutch-grade equivalence. Only known contrary facts establish not_met. Do not assume subject-specific prerequisite courses from a degree title. For institution_supported, verify the supplied institution against the primary source text/title; if false give an exact quoted replacement only if explicit, otherwise null. The reason must discuss field/country fit and the ACTUAL verified limits without unsupported financial promises. Keep reason to 2 sentences. Preserve competitive uncertainty.`,{student:session.profile,items:batch.map(o=>({id:o.id,name:o.name,university:o.university,country:o.country,identity:o.identity,claims:o.claims,criteria:o.criteria,source:{url:o.url,title:session.evidence.get(o.url)?.title,text:session.evidence.get(o.url)?.text.slice(0,1800)}}))},{signal,emit,maxTokens:2700});
+  const pending=session.opportunities.filter(o=>{const latest=[...(session.reviewAudit||[])].reverse().find(a=>sourceKey(a.candidate.url)===sourceKey(o.url));return !latest||latest.review.integrity_profile!==profileKey||latest.review.integrity_version!==2;});
+  for(let offset=0;offset<pending.length;offset+=1){
+    const batch=pending.slice(offset,offset+1);
+    label(emit,'mira',`Mira is checking claim meaning, grade assumptions and source identity (${Math.min(offset+1,pending.length)}/${pending.length}).`);
+    const audit=await structured('mira',`Independently fact-check these researched opportunities. Matching words is NOT sufficient: each value must be entailed by its quoted excerpt. Return {items:[{id,publisher_is_official:boolean,specific_opportunity_supported:boolean,institution_supported:boolean,institution:{value,quote,url}|null,unsupported_fields:["funding"|"deadline"|"requirements"|"application"],unsupported_step_indices:[number],criteria:[{index,status:"met"|"not_met"|"unknown",requirement_supported:boolean,student_value:string,reason}],reason:string,issues:[string]}]}. Each evidence_id refers to a supplied source passage. Include every id and every criterion index. Independently verify PRIMARY SOURCE ownership from its hostname, title and source text. An article about DAAD on a scholarship blog is NOT a DAAD official source, even when all article claims are accurate; return publisher_is_official=false. University/government/funder ownership, not a scholarship keyword in the hostname, establishes official status. Return specific_opportunity_supported=false for broad directories that establish no specific degree or identifiable award. Check EACH application_step_evidence value against its own quote and return unsupported_step_indices for any material unsupported detail. Do not add new claims or URLs. Mark a field unsupported when ANY material detail in its value is absent from its quote. An excellence criterion does not prove full funding. A tuition waiver does not prove living support. No absence of funding information proves that funding is unavailable. An 8.2/10 CGPA does not prove equivalence to 77%, A-, excellent standing, or another institution's grading system. A final-year degree is not a completed degree. Missing work experience, age, nationality, language components or credits means UNKNOWN, not not_met. A 7.6/10 academic result does not establish a Dutch-grade equivalence. Only known contrary facts establish not_met. For every criterion return requirement_supported=false if its required value is not entailed by the evidence passage. Correct invented student_value text using the canonical profile; use Not supplied for missing scores, courses, credits or achievements. Do not assume subject-specific prerequisite courses from a degree title. For institution_supported, verify the supplied institution against the primary source text/title; if false give an exact quoted replacement only if explicit, otherwise null. The reason must discuss field/country fit and the ACTUAL verified limits without unsupported financial promises. Keep reason to 2 sentences. Preserve competitive uncertainty.`,integrityContext(session,batch),{signal,emit,maxTokens:1500,validate:data=>Array.isArray(data.items)&&data.items.length===batch.length&&data.items.every(d=>typeof d.publisher_is_official==='boolean'&&typeof d.specific_opportunity_supported==='boolean'&&Array.isArray(d.criteria))});
     for(const item of batch){
-      const decision=(audit.items||[]).find(d=>d.id===item.id);if(!decision)throw new Error('The integrity review was incomplete. Resume to retry.');
+      const decision=(audit.items||[]).find(d=>d.id===item.id)||(batch.length===1&&audit.items?.length===1?audit.items[0]:null);if(!decision)throw new Error('The integrity review was incomplete. Resume to retry.');
       const originals=(session.reviewAudit||[]).filter(a=>sourceKey(a.candidate.url)===sourceKey(item.url));
       for(const original of originals){
         const review=original.review;
+        if(decision.publisher_is_official===false)review.publisher_is_official=false;
+        if(decision.specific_opportunity_supported===false)review.source_kind='directory';
+        if(decision.unsupported_step_indices?.length)review.application_steps=(review.application_steps||[]).filter((_,i)=>!decision.unsupported_step_indices.includes(i));
         for(const key of decision.unsupported_fields||[])if(['funding','deadline','requirements','application'].includes(key))review[key]=null;
-        for(const c of decision.criteria||[]){const criterion=review.criteria?.[c.index];if(criterion&&['unknown','not_met'].includes(c.status))criterion.status=c.status;}
+        for(const c of decision.criteria||[]){const criterion=review.criteria?.[c.index];if(criterion){if(c.requirement_supported===false){criterion.quote='';criterion.status='unknown';}else if(['unknown','not_met'].includes(c.status))criterion.status=c.status;if(typeof c.student_value==='string')criterion.student_value=c.student_value.slice(0,500);}}
         if(decision.institution_supported===false){
           const page=session.evidence.get(item.url),text=norm(`${page?.title||''} ${page?.text||''}`);
           const known=[review.university,original.candidate.university].find(v=>v&&norm(v).length>=6&&text.includes(norm(v)));
@@ -203,7 +219,7 @@ export async function auditPack(session, emit, signal) {
           review.university=known||(quoted?proposed.value:`Official provider at ${new URL(item.url).hostname}`);
         }
         if(decision.reason)review.reason=String(decision.reason).slice(0,1200);
-        review.integrity_profile=profileKey;review.integrity_version=1;review.integrity_issues=decision.issues||[];
+        review.integrity_profile=profileKey;review.integrity_version=2;review.integrity_issues=decision.issues||[];
       }
     }
     const refreshed=[];
@@ -212,21 +228,42 @@ export async function auditPack(session, emit, signal) {
   }
 }
 export async function createDraft(session, opportunity, emit, signal) {
-  if(!opportunity || !session.evidence.has(opportunity.url))throw new Error('Choose an opportunity with a successfully reviewed source first.');
+  if(!opportunity || opportunity.integrity_checked!==true || !session.evidence.has(opportunity.url))throw new Error('Choose an opportunity with a successfully reviewed source first.');
   emit({type:'typing',agent:'leo'});label(emit,'leo',`Leo is tailoring a draft to ${opportunity.name}.`);
   const result=await structured('leo',`Prepare an opportunity-specific SOP or motivation letter as JSON {title:string,content:string,used_facts:[string],placeholders:[string]}. content must be a polished Markdown DRAFT of roughly 450-650 words (shorter if little evidence), not an application submission. State the selected opportunity and source link. Use ONLY provided student facts/verified document achievements. Public GitHub metadata is not proof of authorship. No invented names, grades, project outcomes, publications, employment, motivations, financial amounts, awards or personal histories. Mark missing personal motivations, project details, university-specific research interests and experiences as explicit [placeholders]. Do not fabricate particular labs/faculty/courses. End with a checklist of missing details and a reminder to check the official requirements. Respond in the student's first person only within the draft, with no claim that it has been submitted.`,{profile:session.profile,facts:session.facts,github:session.enrichment,public_profile_facts:session.publicProfileFacts,opportunity:{name:opportunity.name,university:opportunity.university,country:opportunity.country,url:opportunity.url,requirements:opportunity.claims?.requirements,application:opportunity.claims?.application},documents:contextDocuments(session.documents,9000)},{signal,emit,maxTokens:3800});
   if(!result.content||result.content.length<300)throw new Error('The draft was incomplete. Resume to retry writing.');
   label(emit,'mira','Mira is checking the draft against the student’s actual facts.');
   const checked=await structured('mira',`Edit this application draft for factual integrity. Return {content:string,removed_claims:[string],placeholders:[string]}. Preserve a polished first-person Markdown draft, but remove or replace with explicit [placeholders] EVERY unsupported autobiographical claim. A degree title does not prove specific coursework, class rank, strong marks in particular years, project outcomes, career plans, personal motivations, or achieved skills. A final-year or expected-2027 degree is not completed. Never claim CGPA equivalence to 77%, A-, upper second class or Dutch grades. Never claim the applicant meets admission, scholarship or language requirements; exact scores can be stated but equivalence/eligibility remain for the institution to confirm. Do not describe unverified faculty, labs, curriculum or funding. Do not invent an MA programme title from the student's desired subject: use the verified opportunity name and mark the precise intended degree as a placeholder if not established. Use only the supplied facts. Replace every remaining inference with a clear placeholder. Keep the draft useful, concise and source-specific.`,{draft:result.content,profile:session.profile,document_facts:session.facts,opportunity:{name:opportunity.name,university:opportunity.university,url:opportunity.url,claims:opportunity.claims}},{signal,emit,maxTokens:3300});
   if(!checked.content||checked.content.length<300)throw new Error('The fact-checked draft was incomplete. Resume to retry.');
-  session.draftMeta={title:result.title,opportunityId:opportunity.id,url:opportunity.url,createdAt:Date.now(),used_facts:result.used_facts||[],placeholders:checked.placeholders||[],integrity_version:1,removed_claims:checked.removed_claims||[]};
+  session.draftMeta={title:result.title,opportunityId:opportunity.id,url:opportunity.url,createdAt:Date.now(),used_facts:result.used_facts||[],placeholders:checked.placeholders||[],integrity_version:2,removed_claims:checked.removed_claims||[]};
   emit({type:'draft',content:`# DRAFT — ${result.title || opportunity.name}\n\n${guardDraft(checked.content,{profile:session.profile,opportunity})}`});
   say(emit,'leo',`Your draft for **${opportunity.name}** is ready in Applications. I’ve kept missing details as placeholders so you can add your own story. Nothing has been submitted.\n\n[Review the official opportunity](${opportunity.url})`);
 }
+async function deepenPack(session,emit,signal,checked){
+    stage(session,emit,'details',80,'Checking the practical details needed to apply.');
+    const detailed=session.opportunities.filter(o=>!checked.has(sourceKey(o.url))&&o.eligibility!=='not_eligible'&&!o.preference_mismatch&&o.deadline_state!=='expired').slice(0,8);
+    for(const item of detailed){
+      const original=[...(session.reviewAudit||[])].reverse().find(a=>sourceKey(a.candidate.url)===sourceKey(item.url));
+      if(!original)continue;checked.add(sourceKey(item.url));
+      const namedAwardGap=/scholarship|award|fellowship/i.test(original.review.name||'')&&norm(original.review.name)!==norm(original.candidate.name)&&!item.claims.funding&&original.review.details_identity!==original.review.name;
+      if(!namedAwardGap&&original.review.details_profile===session.run.profileFingerprint&&((original.review.details_version>=2&&evidenceCoverage(item).complete)||(original.review.details_version>=3&&Date.now()-(original.review.details_at||original.at)<86400000)))continue;
+      try{
+        const review=await deepenReview(original.candidate,original.review,session,emit,signal);
+        original.review=review;
+        const refreshed=validateReview(original.candidate,review,session.evidence,session.researchBrief);
+        if(refreshed){refreshed.id=item.id;session.opportunities=session.opportunities.map(o=>o.id===item.id?refreshed:o);}
+        emit({type:'opportunities',opportunities:session.opportunities});saveSession(session,true);
+      }catch(e){if(signal.aborted||/Groq|rate limit|readable result/i.test(e.message))throw e;label(emit,'sage',`Detail research for ${item.name} was incomplete; its gaps remain visible.`);}
+    }
+    await auditPack(session,emit,signal);
+    session.opportunities=rankOpportunities(session.opportunities);emit({type:'opportunities',opportunities:session.opportunities});
+}
+
 export async function runResearch(session, emit, signal, resume=false) {
   try {
     stage(session,emit,'profile',5,'Understanding your academic background and goals.');
     if(!resume || !session.run.profileReviewed){await enrichProfile(session,emit,signal);session.run.profileReviewed=true;}
+    if(session.profileConflicts?.length){session.run.status='needs_input';stage(session,emit,'profile',5,'Resolve the conflicting student facts before research.');return;}
     const missing=missingEssentials(session.profile);
     if(missing.length){stage(session,emit,'profile',5,'One essential preference is still needed.');session.run.status='needs_input';const questions={degree:'What are you studying right now?',target_degree:'What degree and subject would you like to pursue next?',countries:'Which countries would you like us to focus on?'};say(emit,'mira',questions[missing[0]]);emit({type:'run',run:session.run});return;}
     session.researchBrief=researchBrief(session.profile);session.run.researchBrief=session.researchBrief;
@@ -250,13 +287,14 @@ export async function runResearch(session, emit, signal, resume=false) {
       for(const candidate of candidates){
         signal.throwIfAborted();
         if(attempted.has(candidate.url))continue;
-        if(session.opportunities.length>=10&&rankOpportunities(session.opportunities).filter(o=>o.recommended).length>=5)break;
+        if(researchCoverage(session.opportunities,true).suitable>=10&&rankOpportunities(session.opportunities).filter(o=>o.recommended).length>=5)break;
         stage(session,emit,'verify',25+Math.min(session.opportunities.length,10)*5,`Reviewing ${candidate.name} · ${session.opportunities.length}/10 researched.`);
         try {
           const result=await reviewCandidate({...candidate},session,emit,signal);
           if(result){
             session.opportunities=rankOpportunities([...session.opportunities,result]);
             emit({type:'opportunities',opportunities:session.opportunities});
+            await auditPack(session,emit,signal);
             label(emit,'sage',`${result.name}: ${result.eligibility.replaceAll('_',' ')} · ${result.missing_information.length} missing detail(s).`);
           }else label(emit,'sage',`Excluded ${candidate.name}: source did not establish an official specific opportunity.`);
           attempted.add(candidate.url);session.run.attempted=[...attempted];saveSession(session);
@@ -267,25 +305,43 @@ export async function runResearch(session, emit, signal, resume=false) {
           label(emit,'sage',`Could not confirm ${candidate.name}. Continuing with another candidate.`);
         }
       }
-      if(session.opportunities.length>=10&&rankOpportunities(session.opportunities).filter(o=>o.recommended).length>=5)break;
+      if(researchCoverage(session.opportunities,true).suitable>=10&&rankOpportunities(session.opportunities).filter(o=>o.recommended).length>=5)break;
       say(emit,'nova',`We have ${session.opportunities.length} reviewed opportunities so far. I’m widening the search to replace unavailable or unsuitable sources.`);
       candidates=await discover(session,emit,signal,15,true);
     }
     stage(session,emit,'review',78,'Mira is checking whether claims are supported in meaning, not just quoted words.');
     await auditPack(session,emit,signal);
     session.opportunities=rankOpportunities(session.opportunities);emit({type:'opportunities',opportunities:session.opportunities});
+    const checkedDetails=new Set();
+    await deepenPack(session,emit,signal,checkedDetails);
+    // Replace closed or thinly evidenced leads after following the provider's own call.
+    if(researchCoverage(session.opportunities,true).ready<5||researchCoverage(session.opportunities,true).suitable<10){
+      say(emit,'nova','Some promising leads still lack current application evidence. I’m looking for additional official alternatives before the final shortlist.');
+      const alternatives=await discover(session,emit,signal,10,true);
+      let added=0;
+      for(const candidate of alternatives){
+        if(attempted.has(candidate.url))continue;
+        if(added>=6)break;
+        attempted.add(candidate.url);session.run.attempted=[...attempted];
+        try{const result=await reviewCandidate({...candidate},session,emit,signal);if(result){session.opportunities=rankOpportunities([...session.opportunities,result]);emit({type:'opportunities',opportunities:session.opportunities});added++;saveSession(session,true);}}
+        catch(e){if(signal.aborted||/Groq|rate limit|readable result/i.test(e.message))throw e;label(emit,'sage',`An alternative source was unavailable. Keeping its claims unconfirmed.`);}
+      }
+      await auditPack(session,emit,signal);
+      await deepenPack(session,emit,signal,checkedDetails);
+    }
     const top=session.opportunities.filter(o=>o.recommended).slice(0,5);
     session.run.topFiveIds=top.map(o=>o.id);session.run.reviewedCount=session.opportunities.length;
     stage(session,emit,'rank',82,`Comparing academic fit, funding, preferences, and source evidence.`);
     say(emit,'sage',`I reviewed **${session.opportunities.length} distinct opportunities** against official sources. ${top.length} are ranked as the strongest available conditional matches. Unknown requirements remain visible; a shortlist is not an admission or funding guarantee.\n\n${top.map((o,i)=>`${i+1}. **[${o.name}](${o.url})**, ${o.university} — ${o.reason}\n   Funding: ${o.funding}\n   Deadline: ${o.deadline}\n   Gaps: ${o.missing_information.slice(0,3).join('; ')||'Check full official criteria.'}`).join('\n\n')}`);
-    if(top.length && (!session.draft || session.draftMeta?.integrity_version!==1 || session.draftMeta?.opportunityId!==top[0].id)){stage(session,emit,'draft',90,`Leo is preparing your first application draft.`);await createDraft(session,top[0],emit,signal);}
+    if(top.length && (!session.draft || session.draftMeta?.integrity_version!==2 || session.draftMeta?.opportunityId!==top[0].id)){stage(session,emit,'draft',90,`Leo is preparing your first application draft.`);await createDraft(session,top[0],emit,signal);}
     stage(session,emit,'review',97,'Mira is checking the team’s final research pack.');
     const lead=await structured('mira','Review the specialists’ work and write a concise student-facing handoff. Return {summary:string,critical_gaps:[string],next_question:string|null}. Mention the real counts supplied. Never call conditional matches guaranteed eligibility or funding. Flag unknown funding, expired deadlines, or missing nationality/tests. Ask at most ONE focused next question, if needed. Keep summary to 2-4 sentences; no duplicate introductions.',{profile:session.profile,reviewed:session.opportunities.length,recommended:top.map(o=>({name:o.name,eligibility:o.eligibility,funding:o.funding,missing:o.missing_information})),draft_ready:!!session.draft,document_facts:session.facts.length},{emit,signal,maxTokens:1300});
     session.run.leadReview=lead;
-    const full=session.opportunities.length>=10 && top.length===5 && !!session.draft;
+    session.run.coverage=researchCoverage(session.opportunities,!!session.draft);
+    const full=session.run.coverage.complete;
     session.run.status=full?'completed':'partial';session.run.completedAt=Date.now();
-    stage(session,emit,'done',full?100:95,full?'Research, top five, and one draft are ready.':`Saved ${session.opportunities.length} researched opportunities. Resume to fill the remaining gaps.`);
-    say(emit,'mira',full?`${lead.summary}\n\nYour research pack is ready: **${session.opportunities.length} real opportunities, five ranked recommendations, and one application draft**. Open Matches to compare evidence, eligibility gaps, and application steps. The source excerpts and your report are downloadable.\n\n${lead.next_question || 'Review your missing details and personalize the draft before applying.'}`:`I’ve saved the results we could establish. We have ${session.opportunities.length}/10 opportunities and ${top.length}/5 recommendations. This run is partial; resume to continue rather than treating it as complete.`);
+    stage(session,emit,'done',full?100:95,full?'Research, top five, and one draft are ready.':`Saved ${session.opportunities.length} opportunities; ${session.run.coverage.ready}/5 recommendations have all application details verified.`);
+    say(emit,'mira',full?`${lead.summary}\n\nYour research pack is ready: **${session.opportunities.length} real opportunities, five ranked recommendations, and one application draft**. Open Matches to compare evidence, eligibility gaps, and application steps. The source excerpts and your report are downloadable.\n\n${lead.next_question || 'Review your missing details and personalize the draft before applying.'}`:`${lead.summary}\n\nI saved ${session.opportunities.length}/10 opportunities, ${top.length}/5 recommendations${session.draft?', and an application draft':''}. This pack is **partial**: ${session.run.coverage.suitable}/10 candidates remain potentially suitable, and ${session.run.coverage.ready}/5 recommendations have verified funding, intake dates, entry requirements and application instructions.\n\n${session.run.coverage.items.filter(o=>!o.complete).map(o=>`- **${o.name}**: still unconfirmed — ${o.missing.join('; ')}.`).join('\n')}\n\nUnpublished dates and missing student details remain unknown. You can review the saved evidence now or resume the research.`);
   }catch(e){
     session.run.status=signal.aborted?'paused':'interrupted';session.run.error=signal.aborted?null:e.message;session.run.message=signal.aborted?'Paused. Your findings are saved.':e.message;
     emit({type:'run',run:session.run});if(!signal.aborted)say(emit,'mira',`The run was interrupted: ${e.message}\n\nYour verified findings are saved. Use Resume research to continue.`);
@@ -305,5 +361,7 @@ export function pauseResearch(session){const c=active.get(session.id)?.controlle
 export async function stopResearch(session){const task=active.get(session.id);if(!task)return false;pauseResearch(session);await task.done;return true;}
 export function reportMarkdown(session){
   const p=session.profile;
-  return `# TetraNoodle scholarship research report\n\nGenerated: ${new Date().toISOString()}\n\nStudent: ${p.name||'[Name not supplied]'}\nDegree: ${p.degree||'Unknown'}\nScore: ${p.cgpa||'Unknown'}\nPreferences: ${p.countries||'Unknown'}\nFunding need: ${p.budget||'Unknown'}\nRun status: ${session.run?.status||'Not started'}\n\nScores are research priorities, not admission probabilities. Conditional matches need missing information and official confirmation.\n\n`+session.opportunities.map(o=>`## ${o.rank||''}. ${o.name}${o.recommended?' — TOP FIVE':''}\n\n${o.university} | ${o.country}\n[Official source](${o.url})\n\n**Why it fits:** ${o.reason}\n**Funding:** ${o.funding}\n**Funding caveat:** ${o.funding_caveat||''}\n**Deadline:** ${o.deadline}\n**Eligibility:** ${o.eligibility}\n**Research priority:** ${o.score||'Not scored'}/100\n\n### Requirements\n\n${(o.criteria||[]).map(c=>`- ${c.label}: ${c.status}; required: ${c.required}; student: ${c.student_value}`).join('\n')}\n\n### Missing information\n\n${(o.missing_information||[]).map(g=>`- ${g}`).join('\n')||'Check all requirements.'}\n\n### How to apply\n\n${(o.application_steps||[]).map((step,i)=>`${i+1}. ${step}`).join('\n')}\n\n### Source evidence\n\n${Object.entries(o.claims||{}).filter(([,c])=>c).map(([field,c])=>`**${field}**: ${c.value}\n> ${c.quote}\n\n[Source](${c.url}), read ${c.retrieved_at}`).join('\n\n')}\n`).join('\n---\n\n')+`\n## Application draft\n\n${session.draft||'No draft prepared yet.'}\n\nNothing has been submitted.`;
+  const opportunities=distinctProgramPages(session.opportunities);
+  const coverage=researchCoverage(opportunities,!!session.draft);
+  return `# ScholarX scholarship research report\n\nGenerated: ${new Date().toISOString()}\n\nStudent: ${p.name||'[Name not supplied]'}\nDegree: ${p.degree||'Unknown'}\nScore: ${p.cgpa||'Unknown'}\nPreferences: ${p.countries||'Unknown'}\nFunding need: ${p.budget||'Unknown'}\nRun status: ${session.run?.status||'Not started'}\nApplication-detail coverage: ${session.run?.coverage?`${coverage.ready}/5 recommendations fully evidenced`:'Not assessed by the current completeness checks'}\n\nScores are research priorities, not admission probabilities. Conditional matches need missing information and official confirmation.\n\n`+opportunities.map(o=>`## ${o.rank||''}. ${o.name}${o.recommended?' — TOP FIVE':''}\n\n${o.university} | ${o.country}\n[Official source](${o.url})\n\n**Why it fits:** ${o.reason}\n**Funding:** ${o.funding}\n**Funding caveat:** ${o.funding_caveat||''}\n**Deadline:** ${o.deadline}\n**Eligibility:** ${o.eligibility}\n**Research priority:** ${o.score||'Not scored'}/100\n\n### Requirements\n\n${(o.criteria||[]).map(c=>`- ${c.label}: ${c.status}; required: ${c.required}; student: ${c.student_value}`).join('\n')}\n\n### Missing information\n\n${(o.missing_information||[]).map(g=>`- ${g}`).join('\n')||'Check all requirements.'}\n\n### How to apply\n\n${(o.application_steps||[]).map((step,i)=>`${i+1}. ${step}${o.application_step_evidence?.[i]?`\n   [Supporting source](${o.application_step_evidence[i].url})`:''}`).join('\n')}\n\n### Source evidence\n\n${Object.entries(o.claims||{}).filter(([,c])=>c).map(([field,c])=>`**${field}**: ${c.value}\n> ${c.quote.split('\n').map(line=>line.trimEnd()).join('\n> ')}\n\n[Source](${c.url}), read ${c.retrieved_at}`).join('\n\n')}\n`).join('\n---\n\n')+`\n## Application draft\n\n${session.draft?guardDraft(session.draft,{profile:p,opportunity:session.opportunities.find(o=>o.id===session.draftMeta?.opportunityId)}):'No draft prepared yet.'}\n\nNothing has been submitted.`;
 }

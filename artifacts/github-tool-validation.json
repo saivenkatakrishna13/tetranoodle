@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-10-21T04:32:04.339Z",
+  "purpose": "Integration checks only; octocat is not attributed to a fictional student",
+  "checks": [
+    {
+      "check": "live public GitHub lookup",
+      "provider": "GitHub public page via Scrapling",
+      "repositories": 0,
+      "url": "https://github.com/octocat"
+    },
+    {
+      "check": "API 403 recovery",
+      "injectedFailure": true,
+      "publicPageFetchedLive": true,
+      "provider": "GitHub public page via Scrapling",
+      "characters": 2167,
+      "url": "https://github.com/octocat"
+    }
+  ],
+  "events": [
+    {
+      "type": "activity",
+      "agent": "arjun",
+      "label": "Arjun · Exploring GitHub: octocat"
+    },
+    {
+      "type": "activity",
+      "agent": "arjun",
+      "label": "GitHub API unavailable. Reading the supplied public GitHub page with Scrapling."
+    },
+    {
+      "type": "activity",
+      "agent": "arjun",
+      "label": "Arjun · Exploring GitHub: octocat"
+    },
+    {
+      "type": "activity",
+      "agent": "arjun",
+      "label": "GitHub API unavailable. Reading the supplied public GitHub page with Scrapling."
+    }
+  ]
+}

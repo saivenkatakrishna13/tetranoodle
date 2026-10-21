@@ -1,6 +1,6 @@
 # How the agents collaborate
 
-TetraNoodle has two connected paths. Ordinary chat is coordinated one turn at a time. The full research job passes explicit artifacts through all five specialists, independently of the browser connection.
+ScholarX has two connected paths. Ordinary chat is coordinated one turn at a time. The full research job passes explicit artifacts through all five specialists, independently of the browser connection.
 
 ```mermaid
 flowchart LR
@@ -32,7 +32,7 @@ flowchart LR
 
 Each specialist uses its own server-side Groq API key. Mira’s planning step selects one public speaker for normal chat. That speaker answers the student and asks, at most, one focused question. Other specialists retain their distinct jobs; they do not each ask another question on the same turn.
 
-The research job has explicit completion criteria: ten distinct researched opportunities, five recommendations that are not known to be ineligible or expired, and a saved application draft. It reports partial or interrupted status if these criteria are not met.
+The research job has explicit completion criteria: ten distinct researched opportunities, five recommendations that are not known to be ineligible or expired, a saved application draft, and evidence for funding, current intake/deadline, entry requirements and application instructions across the five recommendations. A deeper pass uses targeted official searches and source-selected passages, then Mira rechecks applicability and meaning. Each application step retains its own proof. It reports partial or interrupted status if these criteria are not met.
 
 Search results are discovery leads, not evidence. Scrapling fetches actual official pages. A saved claim about funding, deadline, admission requirements or application steps must cite a verbatim excerpt from a retrieved page. Unknowns remain unknown. An excerpt match establishes provenance. Mira independently checks whether each claim is entailed by its excerpt and whether grades or missing student details have been overinterpreted. Calendar checks override incorrect past/upcoming labels. A second draft review and conservative text guards replace unsupported coursework, degree completion and self-certified eligibility with placeholders. User review remains necessary.
 
@@ -47,3 +47,6 @@ The student switcher creates a new UUID workspace through the shared creation en
 A research brief records the intended degree level, subject, explicitly supplied related interests, destinations, original grades, nationality, intake, language scores and funding needs. Discovery is constrained to this brief. Wrong study levels and opportunities outside the stated countries are excluded from recommendations. Missing essentials prompt one question rather than defaulting to a master's. A profile revision cancels the active run before its derived state is cleared, and a client workspace generation prevents delayed old replies from changing a different student's interface.
 
 The live adaptation validation uses a communication-design student seeking interaction design in Finland, Sweden and the Netherlands. Its actual results and validation metadata are in `artifacts/adaptation-validation.json`. See `docs/live-profile-demo.md` for the demonstration steps.
+
+
+Document additions and removals invalidate derived research and clear unchanged document-derived profile fields. Conflicting saved and document-supported student facts stop research for clarification. The client replaces canonical profile snapshots and ignores late results from a previous student.

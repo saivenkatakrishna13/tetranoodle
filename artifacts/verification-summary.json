@@ -1,0 +1,44 @@
+{
+  "checkedAt": "2026-10-21T04:53:24.295015+00:00",
+  "backend": {
+    "command": "npm test",
+    "passed": 38,
+    "failed": 0
+  },
+  "browser": {
+    "command": "npm run test:ui",
+    "passed": 9,
+    "controlledProviderResponses": true
+  },
+  "productionBuild": {
+    "command": "npm run build",
+    "passed": true
+  },
+  "productionRuntime": {
+    "checkedAt": "2026-10-21T04:52:22.140Z",
+    "passed": true,
+    "servesBuiltAssets": true,
+    "brand": "ScholarX",
+    "refreshWorks": true,
+    "isolatedStorage": true,
+    "errors": []
+  },
+  "realBrowser": {
+    "command": "node scripts/check-live-ui.mjs",
+    "passed": true,
+    "checks": 8,
+    "mockedRoutes": false
+  },
+  "dependencies": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "github": {
+    "artifact": "github-tool-validation.json",
+    "apiAndScraplingFallbackChecked": true
+  }
+}

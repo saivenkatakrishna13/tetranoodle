@@ -2,47 +2,32 @@
 
 # Statement of Purpose
 
-**Name:** Rahul  
-**Program:** Master of Science (M.Sc.) in Computer Science  
-**University:** Trent University, Canada  
-**Application Link:** https://www.trentu.ca/graduatestudies/program/computer-science-msc
+**Applicant:** Rahul
+
+**Program:** Master of Science (M.Sc.) in Computer Science
+
+**University:** Trent University, Canada
+
+**Source:** https://www.trentu.ca/graduatestudies/program/computer-science-msc
 
 ---
 
-I am currently in the final year of my B.Tech in Computer Science, where I have maintained a cumulative GPA of **8.2/10**. [Add only transcript-supported coursework and academic preparation here.] I am eager to advance my knowledge through a research‑oriented master’s program that will enable me to contribute to cutting‑edge AI solutions.
+I am writing to express my interest in the M.Sc. Computer Science program at Trent University. I am currently in the final year of my B.Tech in Computer Science, where I have maintained a cumulative GPA of **8.2/10**. [Add only transcript-supported coursework and academic preparation here.]
 
-### Academic Background
+My primary motivation for pursuing a master’s degree is to acquire advanced knowledge and research skills in AI. [Add your own motivation and explain the programme fit using verified official information.] [Add your own motivation and explain the programme fit using verified official information.]
 
-[Add only transcript-supported coursework and academic preparation here.] While my transcript does not provide a detailed grade breakdown, the overall CGPA of **8.2/10** demonstrates my capability to pursue graduate studies.
+During my undergraduate studies, I have built a few AI projects. **[Specific details of AI projects, technologies used, and outcomes]**. [Add only transcript-supported coursework and academic preparation here.] I am eager to engage with faculty whose work intersects with my interests. **[Specific faculty or lab interests at Trent]** will be identified once I review the current research groups.
 
-### Research Interests and Motivation
+I am also motivated by the opportunity to study in Canada. The academic environment at Trent University provides a setting for me to grow academically.
 
-[**Placeholder: Specific AI research topics of interest (e.g., deep learning for natural language processing, reinforcement learning for robotics, ethical AI, etc.)**]
+Financial considerations are a significant factor in my decision to apply to Trent. My family is unable to afford the tuition fees associated with graduate studies abroad, and I require substantial funding to pursue this program. [Add your own confirmed career or research goals here.]
 
-**[Placeholder: Reason for interest in Trent’s program, including any known interdisciplinary aspects or faculty expertise]**
+In summary, I believe that the M.Sc. Computer Science program at Trent University offers the academic and research opportunities I am seeking. [Add your own motivation and explain the programme fit using verified official information.]
 
-### Why Trent University?
+Thank you for considering my application. I look forward to the possibility of joining Trent University.
+
+---
 
 [Add only transcript-supported coursework and academic preparation here.]
 
-### Funding Needs
-
-My family is unable to afford the tuition and living expenses associated with studying abroad. Consequently, I **require substantial financial assistance** to pursue this degree. I am prepared to explore scholarships, teaching assistantships, and research funding opportunities offered by Trent University and external bodies.
-
-### Future Goals
-
-[**Placeholder: Career aspirations post‑graduation (e.g., Ph.D. pursuit, industry research role, AI startup, etc.)**]
-
-[Add your own confirmed career or research goals here.]
-
----
-
-**Checklist of Missing Details**
-- [ ] Detailed personal motivation for choosing AI and this specific program
-- [ ] Specific faculty member or lab at Trent University to work with
-- [ ] Concrete research project ideas or past project outcomes
-- [ ] English proficiency test scores (e.g., IELTS/TOEFL) if required
-- [ ] Exact scholarship or funding sources to apply for
-- [ ] Confirmation of meeting the minimum B+ requirement with course‑level grades
-
-*Please review the official program requirements and ensure all placeholders are filled before final submission.*
+**Reminder:** Verify the official program requirements, application deadlines, and required documents on the university website before submission.

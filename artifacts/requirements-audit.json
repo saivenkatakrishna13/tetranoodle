@@ -1,0 +1,202 @@
+{
+  "checkedAt": "2026-10-21T04:54:28.122Z",
+  "brand": "ScholarX",
+  "checks": {
+    "fiveRolesConfigured": true,
+    "scraplingReady": true,
+    "allRetainedQuotesMatchRetrievedText": true,
+    "liveUi": true,
+    "githubRecovery": true,
+    "recordingHasNoSceneErrors": true
+  },
+  "cases": [
+    {
+      "name": "Rahul",
+      "workspace": "hackathon-rahul-complete-2026",
+      "goal": "Master’s in Computer Science or Artificial Intelligence",
+      "countries": "Canada, Germany, Singapore",
+      "status": "partial",
+      "opportunities": 24,
+      "suitable": 12,
+      "recommended": 5,
+      "retainedClaims": 143,
+      "unsupportedQuotes": 0,
+      "unreviewedRecommendations": 0,
+      "documentCount": 2,
+      "documentFacts": 6,
+      "draftCharacters": 2309,
+      "draftSourceStillReviewed": true,
+      "contributingAgents": [
+        "arjun",
+        "nova",
+        "mira",
+        "sage",
+        "leo"
+      ],
+      "coverage": {
+        "reviewed": 24,
+        "suitable": 12,
+        "recommended": 5,
+        "ready": 0,
+        "items": [
+          {
+            "id": "c4103613-94d2-4fc5-b17e-b545205f4efb",
+            "name": "Master of Science (M.Sc.) in Computer Science",
+            "funding": true,
+            "deadline": false,
+            "application": true,
+            "requirements": true,
+            "complete": false,
+            "missing": [
+              "current intake / deadline"
+            ]
+          },
+          {
+            "id": "99d922c1-9013-4d37-ae44-956bb52bcdf0",
+            "name": "Master of Science in Business AI (MBAI)",
+            "funding": true,
+            "deadline": false,
+            "application": true,
+            "requirements": true,
+            "complete": false,
+            "missing": [
+              "current intake / deadline"
+            ]
+          },
+          {
+            "id": "98969470-9a5d-4c42-9c47-c4318704cf12",
+            "name": "Master of Computing in Artificial Intelligence",
+            "funding": true,
+            "deadline": false,
+            "application": false,
+            "requirements": true,
+            "complete": false,
+            "missing": [
+              "current intake / deadline",
+              "application instructions"
+            ]
+          },
+          {
+            "id": "7dd9ca96-4b59-4510-b85e-57bac90ca32f",
+            "name": "Master of Artificial Intelligence & Data Science",
+            "funding": false,
+            "deadline": false,
+            "application": true,
+            "requirements": true,
+            "complete": false,
+            "missing": [
+              "funding",
+              "current intake / deadline"
+            ]
+          },
+          {
+            "id": "5dc655e3-2a13-41db-9f03-7ca471037fba",
+            "name": "Applied Artificial Intelligence (Master)",
+            "funding": false,
+            "deadline": true,
+            "application": false,
+            "requirements": true,
+            "complete": false,
+            "missing": [
+              "funding",
+              "application instructions"
+            ]
+          }
+        ],
+        "complete": false
+      }
+    },
+    {
+      "name": "Meera (fictional demo student)",
+      "workspace": "f092a29d-3297-49d7-ac1c-0e8f9e840ff7",
+      "goal": "Master's in Interaction Design",
+      "countries": "Finland, Sweden, Netherlands",
+      "status": "partial",
+      "opportunities": 14,
+      "suitable": 9,
+      "recommended": 5,
+      "retainedClaims": 94,
+      "unsupportedQuotes": 0,
+      "unreviewedRecommendations": 0,
+      "documentCount": 0,
+      "documentFacts": 0,
+      "draftCharacters": 3133,
+      "draftSourceStillReviewed": true,
+      "contributingAgents": [
+        "arjun",
+        "nova",
+        "sage",
+        "leo",
+        "mira"
+      ],
+      "coverage": {
+        "reviewed": 14,
+        "suitable": 9,
+        "recommended": 5,
+        "ready": 3,
+        "items": [
+          {
+            "id": "be65ac6e-dffb-4e85-850b-2c8929a60056",
+            "name": "University of Twente Scholarship (UTS)",
+            "funding": true,
+            "deadline": true,
+            "application": true,
+            "requirements": true,
+            "complete": true,
+            "missing": []
+          },
+          {
+            "id": "d3478d0d-ed07-4a02-9453-0fe06310336f",
+            "name": "MSc Interactive Media Technology",
+            "funding": true,
+            "deadline": true,
+            "application": true,
+            "requirements": true,
+            "complete": true,
+            "missing": []
+          },
+          {
+            "id": "383c6dde-e9ba-44dd-b995-9772de05e423",
+            "name": "KTH India Scholarship",
+            "funding": true,
+            "deadline": true,
+            "application": true,
+            "requirements": true,
+            "complete": true,
+            "missing": []
+          },
+          {
+            "id": "35e317db-2622-445e-a2f7-01514fb5abc0",
+            "name": "Virtual Worlds Master School",
+            "funding": false,
+            "deadline": true,
+            "application": true,
+            "requirements": true,
+            "complete": false,
+            "missing": [
+              "funding"
+            ]
+          },
+          {
+            "id": "b6f9a21c-3551-47a0-93da-bdd887a29200",
+            "name": "Axel Adler Scholarship",
+            "funding": false,
+            "deadline": true,
+            "application": true,
+            "requirements": true,
+            "complete": false,
+            "missing": [
+              "funding"
+            ]
+          }
+        ],
+        "complete": false
+      }
+    }
+  ],
+  "limitations": [
+    "Unknown student nationality, language results, credits, portfolio and individual project outcomes are never fabricated.",
+    "An annual day/month alone is not proof of a current intake year. A pack remains partial when practical source evidence is incomplete.",
+    "No real university applications were submitted."
+  ]
+}

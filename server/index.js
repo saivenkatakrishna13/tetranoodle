@@ -9,7 +9,7 @@ import { scraperReady, worker } from './tools.js';
 import { liveReady, agentKey, agentModel } from './groq.js';
 import { sessionFor, snapshot, saveSession, record, listStudents, validId } from './store.js';
 import { startResearch, pauseResearch, stopResearch, createDraft, reportMarkdown } from './research.js';
-import {cleanProfile,changeProfile,parseStudentText} from './profile.js';
+import {cleanProfile,changeProfile,parseStudentText,resetResearchData} from './profile.js';
 
 const app = express(), port = Number(process.env.PORT || 3001), root = path.resolve(import.meta.dirname, '..');
 app.disable('x-powered-by');
@@ -43,10 +43,10 @@ app.patch('/api/sessions/:id/profile',async(req,res)=>{
   record(session,{type:'profile',profile:session.profile});saveSession(session,true);res.json({profile:session.profile,changed,...snapshot(session)});
 });
 app.get('/api/sessions/:id/report',(req,res)=>{
-  const session=sessionFor(req.params.id);res.setHeader('Content-Disposition','attachment; filename="tetranoodle-research-report.md"');res.type('text/markdown').send(reportMarkdown(session));
+  const session=sessionFor(req.params.id);res.setHeader('Content-Disposition','attachment; filename="scholarx-research-report.md"');res.type('text/markdown').send(reportMarkdown(session));
 });
 app.get('/api/sessions/:id/export',(req,res)=>{
-  const session=sessionFor(req.params.id);res.setHeader('Content-Disposition','attachment; filename="tetranoodle-workspace.json"');res.json(snapshot(session));
+  const session=sessionFor(req.params.id);res.setHeader('Content-Disposition','attachment; filename="scholarx-workspace.json"');res.json(snapshot(session));
 });
 app.get('/api/sessions/:id/events',(req,res)=>{
   const session=sessionFor(req.params.id), after=Number(req.query.after||req.get('Last-Event-ID')||0);
@@ -86,14 +86,23 @@ app.post('/api/documents',upload.array('files',4),async(req,res,next)=>{
       if(text.trim().length<20)throw new Error(`${file.originalname} contains too little text. A scanned PDF needs OCR; please use a text-based document.`);
       extracted.push({id:randomUUID(),name:path.basename(file.originalname),size:file.size,characters:text.length,text:text.slice(0,40000)});
     }
+    invalidateDocuments(session);
     session.documents.push(...extracted);saveSession(session,true);res.json({documents:extracted.map(({text,...meta})=>meta)});
   }catch(e){next(e);}
 });
 app.delete('/api/sessions/:id/documents/:documentId',(req,res)=>{
   const session=sessionFor(req.params.id);
   if(session.chatBusy||session.run?.status==='running')return res.status(409).json({error:'Pause the current work before removing a document.'});
+  if(!session.documents.some(d=>d.id===req.params.documentId))return res.status(404).json({error:'This document was not found.'});
+  invalidateDocuments(session);
   session.documents=session.documents.filter(d=>d.id!==req.params.documentId);saveSession(session,true);res.json({documents:session.documents.map(({text,...d})=>d)});
 });
+function invalidateDocuments(session){
+  for(const [key,value] of Object.entries(session.documentProfileFields||{}))if(session.profile[key]===value)delete session.profile[key];
+  session.documentProfileFields={};session.profileConflicts=[];resetResearchData(session);
+  record(session,{type:'research_reset',reason:'Documents changed. Previous matches and drafts need a fresh review.'});
+  record(session,{type:'profile',profile:session.profile});
+}
 app.post('/api/chat',async(req,res)=>{
   let session;try{session=sessionFor(req.body.sessionId);}catch(e){return res.status(400).json({error:e.message});}
   const {message,history=[],profile={}}=req.body;
@@ -119,4 +128,4 @@ app.post('/api/chat',async(req,res)=>{
 app.use(express.static(path.join(root,'dist')));
 app.get('/{*path}',(req,res)=>{if(req.path.startsWith('/api/'))return res.status(404).json({error:'Not found'});res.sendFile(path.join(root,'dist/index.html'));});
 app.use((err,req,res,next)=>{if(res.headersSent)return next(err);res.status(err instanceof multer.MulterError?400:400).json({error:err instanceof multer.MulterError?err.code==='LIMIT_FILE_SIZE'?'That file is larger than 10 MB.':'Upload up to four files at a time.':err.message||'The request could not be completed.'});});
-app.listen(port,'127.0.0.1',()=>console.log(`TetraNoodle ready · http://127.0.0.1:${port} · ${liveReady()?'Groq live':'guided preview'}`));
+app.listen(port,'127.0.0.1',()=>console.log(`ScholarX ready · http://127.0.0.1:${port} · ${liveReady()?'Groq live':'guided preview'}`));

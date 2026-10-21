@@ -1,57 +1,43 @@
-# DRAFT — Statement of Purpose – Human-Computer Interaction and Design with Extended Reality (HCID/XR) – Aalto University
+# DRAFT — Motivation Draft for University of Twente Scholarship (UTS) – Master’s in Interaction Design
 
-# Statement of Purpose
+# Motivation Letter (Draft)
 
-**Applicant:** Meera (Final‑year Bachelor of Design, Communication Design)  
-**Program:** Human‑Computer Interaction and Design with Extended Reality (HCID/XR) – Master’s, Aalto University, Finland  
-**Intended intake:** 2027 (June graduation, entry in 2027)  
-**Source:** https://masterschool.28digital.eu/admissions/fees
+**Name:** Meera (fictional demo student)\
+**Nationality:** Indian\
+**Current Programme:** Final‑year Bachelor of Design in Communication Design (expected graduation June 2027)\
+**Target Programme:** [placeholder: verified official name of the Master's programme at University of Twente] (September 2027 intake)
 
 ---
 
-I am applying to the HCID/XR master’s programme at Aalto University because it [placeholder: aligns with my academic background and interests].
-
-## Academic Background
-
-I am currently completing my Bachelor of Design in Communication Design, scheduled to graduate in **June 2027** with a **CGPA of 8.6/10** on my university’s original scale. [Add only transcript-supported coursework and academic preparation here.] [Add only transcript-supported coursework and academic preparation here.] [placeholder: specific courses or projects that demonstrate relevant skills].
-
-## Research and Design Interests
-
-My primary research interests lie at the intersection of **interaction design, HCI, and accessible digital products**. I am interested in exploring how XR can be leveraged to create inclusive experiences for diverse user groups, including those with varying abilities. Potential topics include:
-
-- Designing XR interfaces that adhere to universal design principles.
-- Evaluating user engagement and learning outcomes in immersive environments.
-- Developing low‑cost XR prototypes for educational and social impact.
-
-These interests are consistent with Aalto’s interdisciplinary approach to HCI and XR.
-
-## Motivation for Aalto University
-
-Aalto University’s HCID/XR programme integrates design, technology, and human‑centred research. Studying in **Finland**, known for its progressive design education, is appealing. The programme’s focus on **extended reality** matches my aspiration to contribute to interactive systems that are usable and inclusive. [placeholder: specific faculty, labs, or research groups of interest].
+My recorded academic result is 8.6 / 10 CGPA, on the original university scale. No official grade conversion has been supplied. I note that the University of Twente Scholarship (UTS) requires an average grade of 7/10 at the end of the third quartile of the first year. [placeholder: statement confirming whether the applicant's specific grade conversion or transcript meets this specific institutional threshold, as no official conversion was provided in the source documents]
 
 ## Language Proficiency
+My **IELTS overall score is 7.0**. [placeholder: statement regarding whether this score meets the specific English language requirements for the target Master's programme, as component scores and specific programme requirements were not supplied]
 
-I have achieved an **IELTS overall band score of 7.0**. [placeholder: verification of meeting the programme’s English‑language requirement].
+## Research and Design Interests
+My primary interests lie in **interaction design, human‑computer interaction, user experience, and accessible digital products**. I am eager to deepen my understanding of these areas through the [placeholder: verified official name of the Master's programme] at the University of Twente.
 
-## Financial Considerations
+## Motivation for Applying to the UTS
+[placeholder: personal motivation for pursuing the target Master's programme at UT and how the scholarship aligns with career goals]
 
-I can contribute **EUR 4,000 per year** from personal savings. The remainder of tuition and living expenses will need to be covered through scholarships or other financial aid. I am exploring funding options offered by Aalto University and external bodies. [placeholder: confirmed scholarship eligibility and amounts].
+[Add only transcript-supported coursework and academic preparation here.] [placeholder: description of how the applicant's background aligns with the specific programme structure, avoiding unverified claims about labs or specific faculty]
 
-## Future Goals
+## Financial Need and Contribution
+While I can contribute **€4,000 per year** toward my studies, the **UTS** will be essential to cover the remaining tuition and living expenses in the Netherlands. [Confirm a realistic plan for costs not covered by the scholarship; no ability to pay has been established.]
 
-[Add your own confirmed career or research goals here.] [Add your own confirmed career or research goals here.]
+## Future Aspirations
+[placeholder: description of long‑term career objectives, potential impact on the design community, and how the Master's degree will facilitate these goals]
 
 ---
 
-[Add only transcript-supported coursework and academic preparation here.]
+[Add your own motivation and explain the programme fit using verified official information.] I look forward to the opportunity to contribute to and grow within the UT community.
 
 ---
 
 **Checklist of Missing Details**
-- [ ] Concrete examples of XR‑related projects or prototypes. 
-- [ ] Relevant internship or work experience descriptions. 
-- [ ] Personal motivation narrative. 
-- [ ] Specific Aalto faculty/lab interests to reference. 
-- [ ] Confirmation of scholarship eligibility criteria and deadlines.
+- Specific personal motivations for choosing the target programme at UT
+- Concrete examples of past design projects or research experiences
+- Detailed future career plans and how the Master's will support them
+- Any relevant extracurricular or volunteer activities related to UX/accessibility
 
-*Please review the official Aalto University HCID/XR programme requirements and scholarship guidelines to ensure all necessary information is included before final submission.*
+*Reminder: Please verify the official scholarship requirements, deadlines (application form opens 15 Oct 2026, closes 1 Apr 2027), and submission guidelines before finalising the application.*

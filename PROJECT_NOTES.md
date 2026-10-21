@@ -9,7 +9,8 @@
 - A known student fact, an official requirement and an interpretation of eligibility remain separate.
 - Funding and admission are checked separately. Missing information stays unknown.
 - Scores express research priority, never probability of admission or funding.
-- Research target: at least ten distinct opportunities, five non-excluded recommendations and one draft.
+- Research target: at least ten distinct opportunities, five non-excluded recommendations and one draft. Completion additionally requires practical evidence coverage across the top five; missing intake dates leave a partial pack.
+- Student workspaces isolate documents, chat, research and draft. Profile and document changes invalidate derived findings.
 - No real applications are submitted. The demo is local and uses fictional student information.
 
 # Experiments retained in the implementation
