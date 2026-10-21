@@ -39,3 +39,9 @@ The result is stricter completion: the job reports the number of recommendations
 A later run reached the primary model's daily token allowance. Short requests still worked while full research calls were rejected, so generic minute-limit retries looked like a stalled job. The provider's live models endpoint confirmed an available Qwen model; an actual JSON request verified it. The client now distinguishes daily exhaustion, switches models once with the same specialist role and evidence, and stops clearly if both budgets are unavailable. A regression test injects daily exhaustion and checks both recovery and bounded failure.
 
 A subsequent fallback-capacity failure showed that per-page excerpt limits were insufficient when eight pages were combined. The detail pass now bounds the combined source text budget while retaining exact source passages and distributing space across supporting pages. This preserves the evidence without passing the same oversized context to a smaller fallback model.
+
+## Continuing saved research under real provider limits
+
+A live detail pass exposed a retrieval failure: the full programme title plus every admission keyword could produce zero search results, while a short query for the same subject and official domain returned results. Detail queries now retain the institution domain, a few subject words and the requested intake within twelve words. Admission, funding and dates are searched separately, only when missing. Undergraduate, master and doctoral goals use their own vocabulary.
+
+A dedicated Verify missing details action revisits saved recommendations without discovering a new candidate pool. Completed cards are preserved, previous supporting pages remain available for independent review, and incomplete source details are not treated as finished for a day. The live run remains partial when the provider has not supplied usable evidence; shorter searches do not justify invented dates or funding.

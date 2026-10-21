@@ -60,7 +60,7 @@ app.get('/api/sessions/:id/events',(req,res)=>{
 app.post('/api/research',(req,res)=>{
   if(!liveReady())return res.status(503).json({error:'Connect the five Groq keys in .env before starting live research.'});
   const session=sessionFor(req.body.sessionId);
-  try{const run=startResearch(session,{resume:!!req.body.resume});res.status(202).json({run});}catch(e){res.status(409).json({error:e.message});}
+  try{const run=startResearch(session,{resume:!!req.body.resume,detailsOnly:req.body.mode==='details'});res.status(202).json({run});}catch(e){res.status(409).json({error:e.message});}
 });
 app.post('/api/sessions/:id/pause',async(req,res)=>{const session=sessionFor(req.params.id);const paused=await stopResearch(session);res.json({requested:paused,run:session.run});});
 app.post('/api/sessions/:id/finish',async(req,res,next)=>{

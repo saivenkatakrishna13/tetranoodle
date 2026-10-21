@@ -1,0 +1,86 @@
+{
+  "checkedAt": "2026-10-21T09:10:03.658Z",
+  "startingCommit": "7fd4646",
+  "initialWorkingTree": "clean; previous changes were already committed",
+  "backend": {
+    "passed": 49,
+    "failed": 0
+  },
+  "browser": {
+    "passed": 12,
+    "failed": 0
+  },
+  "productionBuild": true,
+  "productionSmokeTest": true,
+  "productionDependencyAudit": {
+    "vulnerabilities": 0
+  },
+  "liveWebsite": {
+    "mockedRoutes": false,
+    "checks": 8,
+    "passed": true,
+    "errors": []
+  },
+  "shortQueryExperiment": {
+    "longQueryResults": 0,
+    "shortQueryResults": 3,
+    "officialDomain": "nus.edu.sg"
+  },
+  "savedResearch": {
+    "fictionalProfile": "Rahul",
+    "mode": "details",
+    "status": "partial",
+    "elapsedSeconds": 148,
+    "opportunities": 24,
+    "independentlyReviewed": 24,
+    "potentiallySuitable": 11,
+    "recommendations": 5,
+    "fullyEvidenced": 0,
+    "draftCharacters": 2309,
+    "errors": null,
+    "sourceGaps": [
+      {
+        "name": "Master of Science (M.Sc.) in Computer Science",
+        "missing": [
+          "current intake / deadline",
+          "entry requirements"
+        ]
+      },
+      {
+        "name": "Master of Artificial Intelligence",
+        "missing": [
+          "funding",
+          "current intake / deadline"
+        ]
+      },
+      {
+        "name": "Master of Science (Artificial Intelligence & Innovation)",
+        "missing": [
+          "funding",
+          "application instructions",
+          "entry requirements"
+        ]
+      },
+      {
+        "name": "Master of Computing in Artificial Intelligence",
+        "missing": [
+          "current intake / deadline",
+          "application instructions",
+          "entry requirements"
+        ]
+      },
+      {
+        "name": "Master of Science in Artificial Intelligence",
+        "missing": [
+          "funding"
+        ]
+      }
+    ]
+  },
+  "preservation": {
+    "projectRecreated": false,
+    "secretsTracked": false,
+    "realStudentWorkspacesModified": false,
+    "fictionalResearchBackup": "Private ignored .data/backups directory"
+  }
+}

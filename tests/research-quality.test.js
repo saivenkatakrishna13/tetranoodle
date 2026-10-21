@@ -46,4 +46,5 @@ test('the independent review retains complete source passages without duplicatin
 test('an unreviewed high-scoring lead cannot become a recommendation',()=>{
  const ranked=rankOpportunities([{id:'pending',name:'Unreviewed lead',score:100,eligibility:'appears_eligible',integrity_checked:false},{id:'checked',name:'Verified conditional match',score:45,eligibility:'conditional',integrity_checked:true}]);
  assert.equal(ranked[0].id,'checked');assert.equal(ranked[0].recommended,true);assert.equal(ranked.find(o=>o.id==='pending').recommended,false);
+  assert.equal(researchCoverage(ranked,false).reviewed,1,'pending leads are not counted as independently reviewed');
 });

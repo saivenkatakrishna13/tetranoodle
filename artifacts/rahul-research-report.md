@@ -1,6 +1,6 @@
 # ScholarX scholarship research report
 
-Generated: 2026-10-21T04:52:22.190Z
+Generated: 2026-10-21T09:09:30.018Z
 
 Student: Rahul
 Degree: Final-year B.Tech Computer Science
@@ -17,40 +17,35 @@ Scores are research priorities, not admission probabilities. Conditional matches
 Trent University | Canada
 [Official source](https://www.trentu.ca/graduatestudies/program/computer-science-msc)
 
-**Why it fits:** The Trent University M.Sc. in Computer Science aligns with the student’s AI focus and offers a guaranteed funding package for eligible full‑time students, but funding details for international students require direct contact with the financial aid office. Admission is limited to a Fall intake with an application window of October to February, introducing competitive timing constraints.
-**Funding:** $18,000 annually (minimum funding package for eligible full‑time students)
-**Funding caveat:** Funding amount applies to eligible full‑time students and covers a minimum of $18,000 per year (primarily a Graduate Teaching Assistantship); tuition fees for international students are not listed, so living costs remain uncovered.
-**Deadline:** February 1 — intake year / current call not confirmed
+**Why it fits:** The program aligns with Rahul’s interest in AI and offers guaranteed funding for eligible students, but the source does not specify a Canada location confirmation beyond the university’s Canadian setting. Funding details are limited to eligible domestic students and no application deadline is provided in the extracted data.
+**Funding:** $18,000 per year (minimum) funding package, includes GTA valued at ~$13,000 annually
+**Funding caveat:** Funding is guaranteed only for eligible full‑time students; international tuition fees are not covered by the listed amount
+**Deadline:** Current deadline not confirmed
 **Eligibility:** conditional
-**Research priority:** 82/100
+**Research priority:** 72/100
 
 ### Requirements
 
-- Program intake: unknown; required: Fall only; student: Not supplied
-- Application window: unknown; required: October–February; student: Not supplied
-- Funding eligibility: unknown; required: Eligible full‑time students receive minimum $18,000 annually; student: Not supplied
+- Location preference: unknown; required: Requirement not confirmed; student: Canada
 
 ### Missing information
 
-- Student's citizenship/nationality (required for funding eligibility)
-- English language proficiency scores
-- Exact tuition fees for international students
-- Whether the student has a confirmed supervisor (if required)
-- Exact CGPA conversion or minimum GPA requirement
-- Program intake
-- Application window
-- Funding eligibility
+- Official English language test scores (e.g., IELTS/TOEFL)
+- Citizenship or residency status for funding eligibility
+- Confirmation whether a supervisor must be secured before application
+- Exact eligibility criteria for the guaranteed funding package
+- Location preference
 
 ### How to apply
 
-1. Upload official transcripts and graduation certificates for all prior undergraduate work
+1. Review specific program admission requirements and confirm supervisor if required
    [Supporting source](https://www.trentu.ca/graduatestudies/admissions/how-apply)
-2. Submit the application before the February 1 deadline and await admission decision
-   [Supporting source](https://www.trentu.ca/graduatestudies/program/computer-science-msc)
+2. Submit OUAC application, pay fee, and provide required references
+   [Supporting source](https://www.trentu.ca/graduatestudies/admissions/how-apply)
 
 ### Source evidence
 
-**funding**: $18,000 annually (minimum funding package for eligible full‑time students)
+**funding**: $18,000 per year (minimum) funding package, includes GTA valued at ~$13,000 annually
 > ity Studies (M.A.)
 > $-18,000.00
 > Ancillary Fees
@@ -67,58 +62,20 @@ Trent University | Canada
 >                     guidance.
 > Financial Matters
 > Funding
-> Eligible full-time students are offered minimum funding packages during their funded period of $18,000 annually. This includes a Gradua
-
-[Source](https://www.trentu.ca/graduatestudies/program/computer-science-msc), read 2026-10-19T17:14:09.596340+00:00
-
-**deadline**: February 1
-> Skip to main content
-> MyTrent Login
-> VISIT OUR CAMPUSES :
-> Peterborough
-> Durham GTA
-> Online
-> MENU
+> Eligible full-time students are offered minimum funding packages during their funded period of $18,000 annually. This includes a Graduate Teaching Assistantship employment offer valued at approximately $13,000 annually. Specific funding details are included in individual admission letters.
+> Students are supported in competing for external awards during their studies, such as the Ontario Graduate Scholarship. A full list of external awards is available on our
+> Scholarships and Awards page
+> .
+> Let's stay in touch
+> Loading...
 > Apply to Trent
 > Viewbook
 > Discover
-> Stay in touch
-> Graduate
-> Computer Science
-> Master of Science (M.Sc.)
-> Peterborough
-> Fall
-> At a glance:
-> Degree
-> Master of Science (M.Sc.)
-> Campus
-> Peterborough
-> Program is Offered
-> Fall
-> Study Options
-> Part time/Full time
-> Length
-> Thesis: 24 months
-> Guaranteed Funding
-> Yes (for eligible students)
-> Applications Open
-> September 11
-> Application Deadline
-> February 1
-> Deposit Required
-> No
-> Graduate Studies Contact
-> coisgrad@trentu.ca
-> Apply Now
-> Stay in Touch
-> The Trent Advantage
-> Build your future in technology through focused, research-intensive traini
+> Contact
 
 [Source](https://www.trentu.ca/graduatestudies/program/computer-science-msc), read 2026-10-19T17:14:09.596340+00:00
 
-**requirements**: Fall intake only; admissions process runs October–February; transcripts and graduation certificates required
-> communication skills but also prepares graduates for careers in computing, research, and technology-focused industries
-> Admissions
+**requirements**: Fall intake only; admissions process runs October‑February; may require a confirmed supervisor before applying
 > The Computer Science graduate program has a Fall intake only. The admissions process runs between October and February. Candidates interested in applying are encouraged to
 > review admission requirements
 > for the program before applying.
@@ -129,470 +86,83 @@ Trent University | Canada
 > Course Listing
 > Please visit the
 > Academic Timetable
-> to see which courses are presently being offered and in which location(s). Not
+> to see which courses are presently being offered and in which location(s). Not all courses listed below run every term or in all locations. For specific details about program requirements and degree regulations, please refer to the
+> Academic Calendar.
+> No results found.
+> 500 Level
+> 3
+> COIS-5210H: Advanced Topics in Software Engineering
+> Offered:
+> Peterborough
+> This course delves into advanced software engineering topics, such as software modeling, mining software repositories, empirical methods in software engineering, AI for Software Engineering (AI4SE), software testing, and quality assurance. The course will involve reading the latest research papers, delivering presentations, and hands-on work on software engineering projects.
+> COIS-5250H: Topics in Artificial Intelligence
+> Offered
 
 [Source](https://www.trentu.ca/cois/graduate-programs/computer-science-msc), read 2026-10-21T04:31:05.392617+00:00
 
-**application**: Apply through the Ontario Universities’ Application Centre (OUAC) via the myTrent portal; submit transcripts, graduation certificates, and any required documents
-> Skip to main content
-> MyTrent Login
-> VISIT OUR CAMPUSES :
-> Peterborough
-> Durham GTA
-> Online
-> MENU
-> Image
-> How to Apply
-> Applying to graduate studies is an important milestone in your academic journey. When you apply to the School of Graduate Studies at Trent University, you are choosing a community where intellectual growth, collaboration and discovery thrive.
-> For available start dates and application deadlines, please check
+**application**: Apply via the Ontario Universities’ Application Centre (OUAC); include up to 2 references as required by the program
+> support you through our application process. Be sure to take time to read through the information in each step carefully.
+> Component
+> Accordion Title
+> STEP 1: Review specific program admission requirements
+> Accordion Details
+> We request applicants to carefully review
+> admission requirements
+> and
 > program pages
-> .
-> The School of Graduate Studies processes all applications through the Ontario Universities’ Application Centre (OUAC). Start your application today:
-> APPLY NOW
-> Application Process
-> The following step-by-step guide wi
+> before applying.
+> Some research programs require a supervisor to be confirmed prior to applying. Please ensure this requirement is met prior to submitting your final application. Applicants are encouraged to visit our
+> Finding a Supervisor
+> page for support and the program websites to review faculty members and active areas of research.
+> Accordion Title
+> STEP 2: Prepare and submit your application
+> Accordion Details
+> Submit your OUAC application and pay your application fee.
+> Referees must be included on your OUAC application. Up to 2 references may be required (program dependent - please check individual
+> program admission requirements
+> for details). Please note that the Master of Management programs do not require references. Please ensure the referees you include on your OUAC application are available to act as a referenc
 
 [Source](https://www.trentu.ca/graduatestudies/admissions/how-apply), read 2026-10-20T08:58:54.231111+00:00
 
 ---
 
-## 2. Master of Science in Business AI (MBAI) — TOP FIVE
-
-Singapore Management University | Singapore
-[Official source](https://masters.smu.edu.sg/programme/msc-in-business-ai)
-
-**Why it fits:** The MBAI programme at SMU is a Singapore‑based, full‑time master’s that aligns with the student’s AI interest but requires a completed bachelor’s degree, work experience and test scores which are currently unknown. Funding is limited to a S$90,000 scholarship that may not cover full tuition and living costs.
-**Funding:** S$90,000
-**Funding caveat:** Scholarship covers tuition fees up to S$90,000; any excess may be used for study‑related expenses but does not guarantee living‑cost support
-**Deadline:** Current deadline not confirmed
-**Eligibility:** conditional
-**Research priority:** 80/100
-
-### Requirements
-
-- Bachelor's degree: unknown; required: Required; student: Final‑year B.Tech Computer Science
-- Work experience (1‑5 years): unknown; required: Required; student: None provided
-- GMAT/GRE/SMU Admissions Test: unknown; required: Required; student: None provided
-- English proficiency (TOEFL/IELTS): unknown; required: Required if prior medium not English; student: None provided
-
-### Missing information
-
-- Language test scores
-- Work experience length
-- GMAT/GRE/SMU Admissions Test result
-- Nationality eligibility for scholarship
-- Bachelor's degree
-- Work experience (1‑5 years)
-- GMAT/GRE/SMU Admissions Test
-- English proficiency (TOEFL/IELTS)
-
-### How to apply
-
-1. Create a new SMU account on the online portal
-   [Supporting source](https://masters.smu.edu.sg/programme/MBAI/Apply_now)
-2. Log in and complete the MSc in Business AI application form
-   [Supporting source](https://masters.smu.edu.sg/programme/MBAI/Apply_now)
-
-### Source evidence
-
-**funding**: S$90,000
-> izen
-> Must demonstrate academic excellence, in line with SMU policies.
-> Scholarship recipients are encouraged to participate in the following activities
-> Provide mentorship to junior Scholarship recipients and support the development of their leadership capabilities;
-> Attend, participate in, and support social and mentoring events organised for the Scholarship recipients; and
-> Continue to support such mentoring and networking initiatives for Scholarship recipients following graduation
-> Must not be a recipient of other Scholarship or sponsorship
-> Tenure and Benefits of Scholarship
-> Scholarship award is valued at S$90,000.
-> The Scholarship will offer financial support towards MBAI tuition fees. Any excess will be used for study related expenses.
-> No bond is required of the scholarship recipients.
-> A separate application for the Lillyn Teh Frontier Endeavour Scholarship is required, after application to the MBAI programme has been completed.
-> Lee Kuan Yew Scholarship
-> Established in honour of Singapore's former Prime Minister Mr Lee Kuan Yew, this scholarship is synonymous with prestige and a commitment to serving Singapore. It
-
-[Source](https://masters.smu.edu.sg/programme/msc-in-business-ai), read 2026-10-20T15:47:17.608041+00:00
-
-**requirements**: Bachelor's degree; GMAT/GRE/SMU Admissions Test; TOEFL/IELTS if undergraduate medium not English; 1 to 5 years work experience
-> Skip to main content
-> Toggle navigation
-> 12-
-> MONTH DURATION (FULL-TIME) (with a maximum course duration of 1.5 years)
-> S$63,220
-> TUITION FEES (INCLUSIVE OF GST)
-> Please note that the fees stated for the August 2027 intake are indicative and subject to revision.
-> Goods and Services Tax (GST) is a tax collected on behalf of the Singapore Government and will be charged at the prevailing rate
-> Application Closes
-> September to May (for August intake)
-> Pre-requisites
-> Bachelor's Degree
-> GMAT / GRE / SMU Admissions Test
-> TOEFL / IELTS (if the medium of instruction of your undergraduate studies was not in English)
-> Working experience
-> 1 to 5 years of work experien
-
-[Source](https://masters.smu.edu.sg/programme/msc-in-business-ai), read 2026-10-20T15:47:17.608041+00:00
-
-**application**: Online application via SMU portal; register an account, create a new application, submit required documents
-> Skip to main content
-> Toggle navigation
-> Online Application for MSc in Business AI
-> Applications for the August 2027 intake open 1 September 2026, Application Requirements can be found
-> here
-> .
-> Application Period
-> INTAKE
-> APPLICATION DEADLINE
-> August 2027 (Full-time)
-> September 2026 to May 2027
-> All applications are based on rolling admissions.
-> FOR NEW USERS
-> FOR EXISTING USERS
-> You need to first register for an account with SMU before you can submit an online application form.
-> Click on "Create New" below to proceed.
-> Create New
-> If you have already created an account with SMU, please go directly to the Login page to continue with your application.
-> Login Now
-
-[Source](https://masters.smu.edu.sg/programme/MBAI/Apply_now), read 2026-10-20T16:10:46.357797+00:00
-
----
-
-## 3. Master of Computing in Artificial Intelligence — TOP FIVE
-
-Official provider at www.comp.nus.edu.sg | Singapore
-[Official source](https://www.comp.nus.edu.sg/programmes/pg/mcomp-ai/scholarships/)
-
-**Why it fits:** The NUS AI master’s scholarship offers a S$45,000 tuition waiver but obliges recipients to a two‑year bond in Guangzhou, fitting the student’s AI focus yet imposing a location commitment. Funding is limited to tuition and does not cover living expenses, and the official site does not name the university in the quoted text.
-**Funding:** S$45,000 tuition fee waiver per recipient
-**Funding caveat:** Covers tuition only; does not include living expenses.
-**Deadline:** Current deadline not confirmed
-**Eligibility:** conditional
-**Research priority:** 70/100
-
-### Requirements
-
-- Academic merit: unknown; required: Merit-based scholarship (specific GPA/CGPA not disclosed); student: Not supplied
-- Program eligibility: met; required: Must be enrolled in the Master of Computing in Artificial Intelligence (or related CS/IS AI specialisation); student: Master of Computing in Artificial Intelligence
-- Service bond commitment: unknown; required: Willingness to work in Huangpu District, Guangzhou for ≥2 years after graduation; student: Not supplied
-
-### Missing information
-
-- Exact application deadline for the scholarship
-- Detailed application procedure and required documents
-- Language proficiency requirements
-- Nationality or residency restrictions
-- Academic merit
-- Service bond commitment
-
-### How to apply
-
-1. Application instructions are not yet verified. Check the official admissions page.
-
-### Source evidence
-
-**funding**: S$45,000 tuition fee waiver per recipient
-> reas such as Artificial Intelligence, Cybersecurity, Analytics, Immersive Media, and Digital Content Creation can chart their future with this scholarship.
-> Find out more about the scholarship
-> here
-> .
-> NUS GRTII Master’s Scholarship (NUS Guangzhou Research Translation and Innovation Institute)
-> This merit scholarship, sponsored by the Huangpu District Government of Guangzhou, China, aims to develop talent for the Greater Bay Area of China. Scholarship recipients are required to sign a Service Bond Agreement, with an obligation to work for at least two years in the Huangpu District of Guangzhou after graduation. One award of S$45,000 towards tuition fee will be granted to each scholarship recipient.
-> Find out more about the scholarship
-> here
-> .
-> Fees
-> Th
-
-[Source](https://www.comp.nus.edu.sg/programmes/pg/mcomp-ai/scholarships/), read 2026-10-21T04:35:06.918307+00:00
-
-**requirements**: Recipient must sign a Service Bond Agreement to work for at least two years in the Huangpu District of Guangzhou after graduation; scholarship is limited to Computer Science, Information Systems and Artificial Intelligence specialisations.
-> eas such as Artificial Intelligence, Cybersecurity,  Analytics, Immersive Media, and Digital Content Creation can chart their future with this scholarship.
-> Find out more about the scholarship
-> here.
-> NUS GRTII Master’s Scholarship (NUS Guangzhou Research Translation and Innovation Institute)
-> (Applicable only to Computer Science, Information Systems and Artificial Intelligence Specialisations)
-> This merit scholarship, sponsored by the Huangpu District Government of Guangzhou, China, aims to develop talent for the Greater Bay Area of China. Scholarship recipients are required to sign a Service Bond Agreement, with an obligation to work for at least two years in the Huangpu District of Guangzhou after graduation. One award of S$45,000 towards tuition
-
-[Source](https://www.comp.nus.edu.sg/programmes/pg/mai/scholarships/), read 2026-10-21T04:37:28.141470+00:00
-
----
-
-## 4. Master of Artificial Intelligence & Data Science — TOP FIVE
-
-Frankfurt School of Finance & Management | Germany
-[Official source](https://www.frankfurt-school.de/en/study/master/master-of-artificial-intelligence-and-data-science)
-
-**Why it fits:** The programme matches the student’s AI focus and German location, but the source provides no confirmed funding or scholarship details and the English proficiency requirement is unclear. Additionally, the institution name is not explicitly quoted, so institutional support cannot be verified.
-**Funding:** Funding not confirmed from official sources
-**Funding caveat:** Scholarships are merit- and need‑based; specific amounts or coverage (tuition vs living costs) are not detailed in the available passages.
-**Deadline:** Current deadline not confirmed
-**Eligibility:** conditional
-**Research priority:** 60/100
-
-### Requirements
-
-- Bachelor degree with minimum 180 ECTS: unknown; required: required; student: unknown
-- English language proficiency: unknown; required: Requirement not confirmed; student: unknown
-- Frankfurt School Admission Test (BT Methods): unknown; required: required (once only); student: unknown
-- Application fee €100: unknown; required: Requirement not confirmed; student: paid
-
-### Missing information
-
-- Exact application deadline for the upcoming intake
-- Specific scholarship amounts and whether they cover tuition, living costs, or both
-- Eligibility criteria for need‑based scholarships (e.g., income thresholds)
-- Language test scores (IELTS/TOEFL) for English proficiency
-- Nationality or residency restrictions for scholarships
-- Bachelor degree with minimum 180 ECTS
-- English language proficiency
-- Frankfurt School Admission Test (BT Methods)
-- Application fee €100
-
-### How to apply
-
-1. Complete online application and pay the €100 application fee.
-   [Supporting source](https://www.frankfurt-school.de/en/study/master/master-of-artificial-intelligence-and-data-science)
-2. Participate in an online interview.
-   [Supporting source](https://www.frankfurt-school.de/en/study/master/master-of-artificial-intelligence-and-data-science)
-3. Receive admission and scholarship decision via email.
-   [Supporting source](https://www.frankfurt-school.de/en/study/master/master-of-artificial-intelligence-and-data-science)
-
-### Source evidence
-
-**requirements**: First academic degree (Bachelor) of at least 180 ECTS credits; English language proficiency; Frankfurt School Admission Test (BT Methods) (can be taken only once); Application fee of €100.
-> ents to see if your profile fits the programme.
-> Step
-> 03
-> Interview
-> Let’s get to know more about your personality in an online interview.
-> Step
-> 04
-> Decision
-> Receive your admission and scholarship decision via email.
-> Admission Requirements
-> To apply for the Master of Artificial Intelligence and Data Science programme, applicants must meet certain academic requirements. An application fee of €100 applies.
-> Please note: The Frankfurt School Admission Test (BT Methods) can only be taken once.
-> First academic degree (Bachelor) of at least 180 ECTS credits
-> Stro
-
-[Source](https://www.frankfurt-school.de/en/study/master/master-of-artificial-intelligence-and-data-science), read 2026-10-20T15:41:32.220395+00:00
-
-**application**: Submit online application with required documents and pay €100 fee; complete online interview; await admission and scholarship decision via email.
-> ents to see if your profile fits the programme.
-> Step
-> 03
-> Interview
-> Let’s get to know more about your personality in an online interview.
-> Step
-> 04
-> Decision
-> Receive your admission and scholarship decision via email.
-> Admission Requirements
-> To apply for the Master of Artificial Intelligence and Data Science programme, applicants must meet certain academic requirements. An application fee of €100 applies.
-> Please note: The Frankfurt School Admission Test (BT Methods) can only be taken once.
-> First academic degree (Bachelor) of at least 180 ECTS credits
-> Stro
-
-[Source](https://www.frankfurt-school.de/en/study/master/master-of-artificial-intelligence-and-data-science), read 2026-10-20T15:41:32.220395+00:00
-
----
-
-## 5. Applied Artificial Intelligence (Master) — TOP FIVE
-
-Heilbronn University | Germany
-[Official source](https://www.daad.de/en/studying-in-germany/universities/all-degree-programmes/detail/heilbronn-university-applied-artificial-intelligence-w76327/?hec-id=w76327)
-
-**Why it fits:** The programme matches Rahul’s interest in AI and is offered in English, but the source provides no information on scholarships or tuition waivers, and the application process details are not fully described. Funding must be secured independently.
-**Funding:** Funding not confirmed from official sources
-**Funding caveat:** No scholarship or stipend is mentioned; tuition fees must be paid by the student
-**Deadline:** 2027-01-15
-**Eligibility:** conditional
-**Research priority:** 60/100
-
-### Requirements
-
-- Language of instruction: unknown; required: English; student: Not supplied
-- Tuition fee payment: unknown; required: 1,500 EUR per semester (non‑EU); student: Not supplied
-
-### Missing information
-
-- Exact GPA/CGPA requirement
-- English language test score requirement (e.g., IELTS/TOEFL)
-- Eligibility for scholarships or funding
-- Nationality restrictions
-- Credit/ECTS requirements
-- Language of instruction
-- Tuition fee payment
-
-### How to apply
-
-1. Application instructions are not yet verified. Check the official admissions page.
-
-### Source evidence
-
-**deadline**: 2027-01-15
-> red
-> Application deadline for Germans and inhabitants
-> Expired
-> Summer semester (2027)
-> Enrollment deadline for Germans and foreign students
-> Until 15.01.2027 (Universitywide deadline)
-> Tuition fees
-> Tuition fees
-> 1,500.00 EUR / semester
-> More information regarding tuition fees
-> For newly enrolled international students from non-EU/EEA countries, fees of EUR 1,500 per semester are charged.
-> Languages of instruction
-> Main language
-> English
-> Website
-> Heilbronn University - Applied Artificial Intelligence
-> Student advisory service
-> Zentrale Studienberatung
-> Address
-> Street
-> Max-Planck-Str. 39
-> Zipcode
-> 74081
-> City
-> Heilbronn
-> Contact details
-> Tel:
-> 07131 / 504-6932
-> E-Mail:
-> zentralestudienberatung
-> at
-> hs-heilbronn.
-> de
-> Web:
-> To the student advisory service
-> Contact for this programme
-> Hochschule Heilbronn
-> TechCampus
-> Address
-> Street
-> Max-Planck-Str. 39
-> Zipcode
-> 74081
-> City
-> Heilbronn
-> Contact details
-> Tel:
-> 07131 / 504-6687
-> E-Mail:
-> nicolaj.
-> stache
-> at
-> hs-heilbronn.
-> de
-> Address
-> Name
-> Prof. Dr.-Ing. Nicolaj Stache Hochschule Heilbronn TechCampus
-> International office
-> Inter
-
-[Source](https://www.daad.de/en/studying-in-germany/universities/all-degree-programmes/detail/heilbronn-university-applied-artificial-intelligence-w76327/?hec-id=w76327&hec-offset=402&hec-p=21), read 2026-10-21T04:40:08.862028+00:00
-
-**requirements**: Program taught in English; tuition fee 1,500 EUR per semester for non‑EU/EEA students
-> red
-> Application deadline for Germans and inhabitants
-> Expired
-> Summer semester (2027)
-> Enrollment deadline for Germans and foreign students
-> Until 15.01.2027 (Universitywide deadline)
-> Tuition fees
-> Tuition fees
-> 1,500.00 EUR / semester
-> More information regarding tuition fees
-> For newly enrolled international students from non-EU/EEA countries, fees of EUR 1,500 per semester are charged.
-> Languages of instruction
-> Main language
-> English
-> Website
-> Heilbronn University - Applied Artificial Intelligence
-> Student advisory service
-> Zentrale Studienberatung
-> Address
-> Street
-> Max-Planck-Str. 39
-> Zipcode
-> 74081
-> City
-> Heilbronn
-> Contact details
-> Tel:
-> 07131 / 504-6932
-> E-Mail:
-> zentralestudienberatung
-> at
-> hs-heilbronn.
-> de
-> Web:
-> To the student advisory service
-> Contact for this programme
-> Hochschule Heilbronn
-> TechCampus
-> Address
-> Street
-> Max-Planck-Str. 39
-> Zipcode
-> 74081
-> City
-> Heilbronn
-> Contact details
-> Tel:
-> 07131 / 504-6687
-> E-Mail:
-> nicolaj.
-> stache
-> at
-> hs-heilbronn.
-> de
-> Address
-> Name
-> Prof. Dr.-Ing. Nicolaj Stache Hochschule Heilbronn TechCampus
-> International office
-> Inter
-
-[Source](https://www.daad.de/en/studying-in-germany/universities/all-degree-programmes/detail/heilbronn-university-applied-artificial-intelligence-w76327/?hec-id=w76327&hec-offset=402&hec-p=21), read 2026-10-21T04:40:08.862028+00:00
-
----
-
-## 6. Master of Artificial Intelligence
+## 2. Master of Artificial Intelligence — TOP FIVE
 
 Curtin University Singapore | Singapore
 [Official source](https://www.curtin.edu.sg/courses/postgraduate/master-of-artificial-intelligence/)
 
-**Why it fits:** The program aligns with the student's target degree and location, and the 50% scholarship mentioned in the source text provides substantial funding support. The student's final-year degree meets the academic entry requirements, though English proficiency is unverified.
+**Why it fits:** The program matches the student’s AI interest and is offered in Singapore, but the student lacks confirmed work experience, English test results and a completed degree, and funding details are not program‑specific. Competitive admission and scholarship availability remain uncertain.
 **Funding:** Funding not confirmed from official sources
-**Funding caveat:** No specific scholarship for the Master of Artificial Intelligence program is mentioned in the provided passages; tuition fee is S$23,544 (including GST).
+**Funding caveat:** Bursary covers only 10% of first‑year tuition (up to S$2,160); does not cover living expenses or full tuition
 **Deadline:** Current deadline not confirmed
 **Eligibility:** conditional
-**Research priority:** 55/100
+**Research priority:** 65/100
 
 ### Requirements
 
-- Academic degree: met; required: 4‑year degree in IT, Computational Science, Engineering or related field; student: Final-year B.Tech Computer Science
-- Work experience: unknown; required: Minimum 2 years relevant work experience (if degree not in listed fields); student: Not provided
-- English proficiency: unknown; required: IELTS Academic overall band 6.0 (each component 6.0); student: Not provided
+- Academic degree: unknown; required: 4‑year degree in IT, Computational Science or Engineering; student: Final‑year B.Tech Computer Science
+- Work experience: unknown; required: Minimum 2 years relevant work experience; student: Not supplied
+- English language proficiency: unknown; required: IELTS Academic overall 6.0 with 6.0 in each component; student: Not supplied
+- Tuition fee affordability: unknown; required: Total tuition fee S$23,544 (including GST); student: Not supplied
 
 ### Missing information
 
 - Exact application deadline date for the July 2027 intake
-- Detailed step‑by‑step application procedure for the Master of Artificial Intelligence program
-- Availability of program‑specific scholarships or financial aid
-- Confirmation of any additional prerequisite courses or GPA requirements
+- Confirmation of eligibility for the Alumni Bursary (e.g., prior Curtin bachelor degree)
+- Student's IELTS or other English test scores
+- Academic degree
 - Work experience
-- English proficiency
+- English language proficiency
+- Tuition fee affordability
 
 ### How to apply
 
-1. Application instructions are not yet verified. Check the official admissions page.
+1. Visit the program page and click “How to apply” to start the online application for the July 2027 intake
+   [Supporting source](https://www.curtin.edu.sg/courses/postgraduate/master-of-artificial-intelligence/)
 
 ### Source evidence
 
-**requirements**: A 4‑year degree in Information Technology, Computational Science or Engineering, OR a 4‑year degree in a related field with a minimum of 2 years relevant work experience. Minimum English language entry requirement: IELTS Academic overall band 6.0 (each component 6.0).
+**requirements**: A 4‑year degree in Information Technology, Computational Science or Engineering OR minimum 2 years relevant work experience; IELTS Academic overall 6.0 with minimum 6.0 in each component
 > nce or Engineering with a minimum of 2 years relevant work experience
 > OR
 > A 4-year degree in Information Technology or Computational Science or Engineering
@@ -651,30 +221,75 @@ Curtin University Singapore | Singapore
 
 [Source](https://www.curtin.edu.sg/courses/postgraduate/master-of-artificial-intelligence/), read 2026-10-20T15:48:18.944955+00:00
 
+**application**: Apply via the Curtin Singapore online application portal for the July 2027 intake
+> Menu
+> Search
+> Please enter a keyword.
+> Home
+> Courses
+> Postgraduate courses
+> Master of Artificial Intelligence
+> Master of Artificial Intelligence
+> MC-AINTL
+> Master of Artificial Intelligence
+> wdt_ID
+> wdt_created_by
+> wdt_created_at
+> wdt_last_edited_by
+> wdt_last_edited_at
+> Location
+> Curtin Singapore campus
+> 1
+> Study method
+> On-campus
+> 2
+> Study mode
+> Full-time or part-time
+> 3
+> jeremycher
+> 17/12/2025 09:16 AM
+> jeremycher
+> 13/02/2026 03:19 PM
+> Intake
+> July, November
+> 4
+> jeremycher
+> 17/12/2025 09:20 AM
+> jeremycher
+> 18/12/2025 01:44 AM
+> Duration
+> 8 months full-time (2 trimesters) or part-time equivalent
+> Button block
+> How to apply
+> Apply for the Trimester 2A July 2027 intake and receive a
+
+[Source](https://www.curtin.edu.sg/courses/postgraduate/master-of-artificial-intelligence/), read 2026-10-20T15:48:18.944955+00:00
+
 ---
 
-## 7. Master of Science (Artificial Intelligence & Innovation)
+## 3. Master of Science (Artificial Intelligence & Innovation) — TOP FIVE
 
 National University of Singapore (NUS) | Singapore
 [Official source](https://scale.nus.edu.sg/programmes/graduate/msc-(artificial-intelligence-innovation))
 
-**Why it fits:** The MSc in Artificial Intelligence & Innovation at NUS aligns with Rahul’s AI focus and offers a Singapore‑based, multidisciplinary environment suitable for his target degree. Funding is limited to the OCBC scholarship and does not guarantee full tuition or living expenses, so financial certainty remains uncertain.
-**Funding:** S$100,000 scholarship per student (up to three students) offered by OCBC Bank for AI master's programmes at NUS
-**Funding caveat:** Scholarship is competitive and limited to three recipients; receipt is not guaranteed.
-**Deadline:** Application Period: Nov 2026 – Jan 2027
+**Why it fits:** The MSc in Artificial Intelligence & Innovation at NUS aligns with Rahul’s AI interests and offers a multidisciplinary environment suitable for a final‑year B.Tech student. However, the scholarship details are not confirmed for this specific programme and funding information remains unclear.
+**Funding:** Funding not confirmed from official sources
+**Funding caveat:** Scholarship amount covers tuition only; living expenses are not included.
+**Deadline:** January 2027 (end of application period)
 **Eligibility:** conditional
 **Research priority:** 55/100
 
 ### Requirements
 
-
+- Citizenship/Nationality: unknown; required: Open to all nationalities; scholarships may have additional eligibility; student: Not supplied
 
 ### Missing information
 
-- Specific GPA or class rank requirement
-- English language test scores
-- Eligibility criteria for the OCBC Bank scholarship (e.g., nationality, academic standing)
-- Exact tuition fee amount to assess coverage by the scholarship
+- Exact admission eligibility criteria (minimum GPA, prerequisite subjects)
+- Specific scholarship application procedure and eligibility details
+- English language test requirements and minimum scores
+- Whether the scholarship covers living expenses
+- Citizenship/Nationality
 
 ### How to apply
 
@@ -682,44 +297,8 @@ National University of Singapore (NUS) | Singapore
 
 ### Source evidence
 
-**funding**: S$100,000 scholarship per student (up to three students) offered by OCBC Bank for AI master's programmes at NUS
-> Skip to main content
-> Sidebar
-> ×
-> Main Menu
-> Home
-> Highlights
-> Research
-> Press Releases
-> News Reports
-> Press Room
-> Staff Awards
-> Quicklinks
-> NUS Home
-> Email
-> Library
-> Student
-> Staff
-> Alumni
-> NUS Home
-> Email
-> Library
-> Student
-> Staff
-> Alumni
-> 03
-> June
-> 2019
-> |
-> 22:50
-> Asia/Singapore
-> OCBC Bank offers new scholarship for AI masters’ students
-> background:white">OCBC Bank will be offering scholarships worth S$100,000 each to three postgraduate students at NUS and NTU’s Artificial Intelligence master’s programme. This is the first AI scholarship to be offered by a Singapore company and the first by any bank in Asia. The scholarship includes a 12 to 18 months stint at OCBC AI Lab
-
-[Source](https://news.nus.edu.sg/ocbc-bank-offers-new-scholarship-for-ai-masters-students/), read 2026-10-21T04:39:13.941048+00:00
-
-**deadline**: Application Period: Nov 2026 – Jan 2027
-> l applications and technological advancement.
+**deadline**: January 2027 (end of application period)
+> ns and technological advancement.
 > Master of Science
 > (Artificial Intelligence & Innovation)
 > Mode and Candidature:
@@ -733,13 +312,82 @@ National University of Singapore (NUS) | Singapore
 > Updating soon!
 > MASTER OF SCIENCE (ENVIRONMENTAL MANAGEMENT)
 > Multidisciplinary and Interdisciplinary Programme (Offered by Six NUS Schools and Faculties)
-> Make a world of difference through environmental and sustainability management initiatives. Combine know-how from the fields of development, science, law, governanc
+> Make a world of difference through environmental and sustainability management initiatives. Combine know-how from the fields of development, science, law, governance, economics, policy and more to cultivate a state-of-the-art multidisciplinary approach towards going (and staying) green.
+> Master of Science
+> (Environmental Management)
+> Mode and Candidature:
+> Full-time (12-24 months)
+> Part-time (24-36 months)
+> Next intake:
+> AUG
+> 2027
+> Application Period:
+> Nov 2026–Jan 2027
+> Updating soon!
+> MASTER OF SCIENCE (SMART INDUSTRIES AND DIGITAL TRANSFORMATION)
+> Multidisciplinary Programme (Offered by Six NUS Schools and Faculties)
+> This multidisciplinary graduate degree programme, formerly known as the Master of Science (Industry 4.0), equips its graduates with the mos
 
 [Source](https://scale.nus.edu.sg/programmes/graduate), read 2026-10-21T04:39:15.576694+00:00
 
 ---
 
-## 8. Master of Science in Artificial Intelligence
+## 4. Master of Computing in Artificial Intelligence — TOP FIVE
+
+Official provider at www.comp.nus.edu.sg | Singapore
+[Official source](https://www.comp.nus.edu.sg/programmes/pg/mcomp-ai/scholarships/)
+
+**Why it fits:** The NUS Master of Computing in Artificial Intelligence aligns with the student’s AI focus and offers a S$45,000 tuition scholarship, but funding covers only tuition and does not guarantee living expenses. Admission is competitive and the scholarship requires a service bond in Guangzhou, limiting flexibility.
+**Funding:** S$45,000 tuition scholarship (NUS GRTII Master’s Scholarship)
+**Funding caveat:** Only covers tuition; does not include living expenses
+**Deadline:** Current deadline not confirmed
+**Eligibility:** conditional
+**Research priority:** 55/100
+
+### Requirements
+
+- Scholarship amount: unknown; required: S$45,000 tuition; student: Not supplied
+- Tuition fee for AY2027/2028: unknown; required: S$69,215 (including GST); student: Not supplied
+
+### Missing information
+
+- Scholarship application deadline
+- Specific eligibility criteria (e.g., nationality, GPA, language scores)
+- Application procedure and required documents
+- Intake month for the Master of Computing in Artificial Intelligence
+- Scholarship amount
+- Tuition fee for AY2027/2028
+
+### How to apply
+
+1. Application instructions are not yet verified. Check the official admissions page.
+
+### Source evidence
+
+**funding**: S$45,000 tuition scholarship (NUS GRTII Master’s Scholarship)
+> reas such as Artificial Intelligence, Cybersecurity, Analytics, Immersive Media, and Digital Content Creation can chart their future with this scholarship.
+> Find out more about the scholarship
+> here
+> .
+> NUS GRTII Master’s Scholarship (NUS Guangzhou Research Translation and Innovation Institute)
+> This merit scholarship, sponsored by the Huangpu District Government of Guangzhou, China, aims to develop talent for the Greater Bay Area of China. Scholarship recipients are required to sign a Service Bond Agreement, with an obligation to work for at least two years in the Huangpu District of Guangzhou after graduation. One award of S$45,000 towards tuition fee will be granted to each scholarship recipient.
+> Find out more about the scholarship
+> here
+> .
+> Fees
+> The Master of Computing in Artificial Intelligence tuition fees for new students is:
+> Semester 1, AY2027/2028 (August 2027 Intake) onwards
+> – MComp in Artificial Intelligence Programme
+> Tuition Fees (including prevailing GST 9%)
+> S$69,215
+> The above tuition fees are inclusive of prevailing GST (prevailing Goods & Services Tax).
+> Applicants are required to make an application fee of
+
+[Source](https://www.comp.nus.edu.sg/programmes/pg/mcomp-ai/scholarships/), read 2026-10-21T04:35:06.918307+00:00
+
+---
+
+## 5. Master of Science in Artificial Intelligence — TOP FIVE
 
 Official provider at www.thi.de | Germany
 [Official source](https://www.thi.de/en/computer-science/degree-programmes/artificial-intelligence-msc/)
@@ -842,7 +490,7 @@ Official provider at www.thi.de | Germany
 
 ---
 
-## 9. Artificial Intelligence and Machine Learning
+## 6. Artificial Intelligence and Machine Learning
 
 TU Darmstadt | Germany
 [Official source](https://www.tu-darmstadt.de/studieren/studieninteressierte/bewerbung_zulassung_tu/bewerbung_master/artikel_details_de_en_334592.en.jsp)
@@ -920,7 +568,7 @@ TU Darmstadt | Germany
 
 ---
 
-## 10. Master of Management in Artificial Intelligence
+## 7. Master of Management in Artificial Intelligence
 
 Schulich School of Business, York University | Canada
 [Official source](https://schulich.yorku.ca/programs/mmai/)
@@ -1056,7 +704,71 @@ Schulich School of Business, York University | Canada
 
 ---
 
-## 11. Master of Computer Science, Concentration in Applied Artificial Intelligence
+## 8. Applied Artificial Intelligence (Master)
+
+Heilbronn University | Germany
+[Official source](https://www.daad.de/en/studying-in-germany/universities/all-degree-programmes/detail/heilbronn-university-applied-artificial-intelligence-w76327/?hec-id=w76327)
+
+**Why it fits:** The Applied Artificial Intelligence master program aligns with Rahul’s AI focus and is offered in Germany, a target country. However, the source provides no information about scholarships or tuition waivers, and the university name is not explicitly confirmed in the excerpt.
+**Funding:** Funding not confirmed from official sources
+**Funding caveat:** Check what tuition and living expenses are actually covered.
+**Deadline:** 2027-01-15
+**Eligibility:** conditional
+**Research priority:** 40/100
+
+### Requirements
+
+
+
+### Missing information
+
+- Exact scholarship amount or funding coverage for tuition and living costs
+- English language proficiency requirements
+- Eligibility criteria for DAAD scholarship specific to this programme
+- Required academic prerequisites (e.g., minimum GPA, relevant bachelor's degree)
+
+### How to apply
+
+1. Application instructions are not yet verified. Check the official admissions page.
+
+### Source evidence
+
+**deadline**: 2027-01-15
+> S credits in each area. Applicants must submit an application form to assess their professional suitability.
+> Admission modus
+> Local admission restriction
+> More information regarding admission requirements
+> Admission requirements
+> See web page on admissions
+> Lecture period
+> Winter semester 2026/2027: 28.09.2026 - 22.01.2027
+> Summer semester 2027: 15.03.2027 - 03.07.2027 (Universitywide lecture period)
+> Application deadlines
+> Winter semester (2026/2027)
+> Enrollment deadline for Germans and foreign students
+> Expired (Universitywide deadline)
+> in accordance with the letter of acceptance
+> Deadlines for International Students from the European Union
+> Expired
+> Deadlines for international students from countries that are not members of the European Union
+> Expired
+> Application deadline for Germans and inhabitants
+> Expired
+> Summer semester (2027)
+> Enrollment deadline for Germans and foreign students
+> Until 15.01.2027 (Universitywide deadline)
+> Tuition fees
+> Tuition fees
+> 1,500.00 EUR / semester
+> More information regarding tuition fees
+> For newly enrolled international students from non-EU/EEA countries, fees of EUR 1,500 per semester are charged.
+> L
+
+[Source](https://www.daad.de/en/studying-in-germany/universities/all-degree-programmes/detail/heilbronn-university-applied-artificial-intelligence-w76327/?hec-id=w76327), read 2026-10-21T04:34:42.101908+00:00
+
+---
+
+## 9. Master of Computer Science, Concentration in Applied Artificial Intelligence
 
 University of Ottawa | Canada
 [Official source](https://catalogue.uottawa.ca/en/graduate/master-computer-science-specialization-artificialintelligence/)
@@ -1095,7 +807,7 @@ University of Ottawa | Canada
 
 ---
 
-## 12. Master of Computing (Computer Science Specialisation)
+## 10. Master of Computing (Computer Science Specialisation)
 
 National University of Singapore (NUS) | Singapore
 [Official source](https://www.comp.nus.edu.sg/programmes/pg/mcs/)
@@ -1128,7 +840,40 @@ National University of Singapore (NUS) | Singapore
 
 ---
 
-## 13. Vector Institute Collaborative Specialization in Artificial Intelligence
+## 11. Master of Artificial Intelligence & Data Science
+
+Frankfurt School of Finance & Management | Germany
+[Official source](https://www.frankfurt-school.de/en/study/master/master-of-artificial-intelligence-and-data-science)
+
+**Why it fits:** The Master of Artificial Intelligence & Data Science MSc aligns with Rahul’s target degree and interest in AI, and it is offered in Germany, one of his preferred countries. However, the source does not provide any funding details, deadlines, or specific admission requirements, leaving financial and eligibility aspects uncertain.
+**Funding:** Funding not confirmed from official sources
+**Funding caveat:** The program page mentions merit and need‑based scholarships but does not specify amounts, coverage (tuition only or living costs), or eligibility criteria.
+**Deadline:** Current deadline not confirmed
+**Eligibility:** conditional
+**Research priority:** 15/100
+
+### Requirements
+
+
+
+### Missing information
+
+- Exact scholarship amounts and coverage
+- Application deadline for the MSc program
+- Specific admission requirements (e.g., minimum CGPA, language test scores, prerequisite courses)
+- Detailed application procedure (documents, portal, supervisor requirement, etc.)
+
+### How to apply
+
+1. Application instructions are not yet verified. Check the official admissions page.
+
+### Source evidence
+
+
+
+---
+
+## 12. Vector Institute Collaborative Specialization in Artificial Intelligence
 
 Western University | Canada
 [Official source](https://www.csd.uwo.ca/graduate/future/vector-institute-program.html)
@@ -1284,7 +1029,7 @@ Western University | Canada
 
 ---
 
-## 14. ELIZA Scholarship 2026 (Winter)
+## 13. ELIZA Scholarship 2026 (Winter)
 
 University of Freiburg (European Laboratory for Learning and Intelligent Systems) | Germany
 [Official source](https://ellis.uni-freiburg.de/news/call-for-applications-eliza-scholarships-2026-winter)
@@ -1490,7 +1235,7 @@ University of Freiburg (European Laboratory for Learning and Intelligent Systems
 
 ---
 
-## 15. M.Sc. in Computer Science
+## 14. M.Sc. in Computer Science
 
 University of Saskatchewan | Canada
 [Official source](https://www.cs.usask.ca/students/graduate/graduate-programs/applications-for-admission.php)
@@ -1540,7 +1285,7 @@ University of Saskatchewan | Canada
 
 ---
 
-## 16. Vector Scholarship in Artificial Intelligence
+## 15. Vector Scholarship in Artificial Intelligence
 
 Ontario Tech University | Canada
 [Official source](https://safa.ontariotechu.ca/awards-bursaries-and-scholarships/graduate-student-finances/graduate_student_awards/external_awards/vector-scholarship-in-ai1.php)
@@ -1580,6 +1325,115 @@ Ontario Tech University | Canada
 > Complete and submit the Vector Scholarship application form on our website. Submit your complete application package to gradscholarships@ontariotechu.ca by the deadline. All applications must include your Ontario Tech University student ID in the subject line and documents along with the following components: Copies of all up-to-date transcripts… An up-to-date one to two-page CV; A 500-word statement… a signed and approved study plan… Referee reports must no…
 
 [Source](https://safa.ontariotechu.ca/awards-bursaries-and-scholarships/graduate-student-finances/graduate_student_awards/external_awards/vector-scholarship-in-ai1.php), read 2026-10-20T07:34:01.791583+00:00
+
+---
+
+## 16. Master of Science in Business AI (MBAI)
+
+Singapore Management University | Singapore
+[Official source](https://masters.smu.edu.sg/programme/msc-in-business-ai)
+
+**Why it fits:** The SMU MSc in Business AI is a Singapore‑based programme that matches the student’s field interest but requires completed undergraduate credentials, standardized test scores and work experience, which are currently unknown. Funding is limited to a tuition‑covering scholarship and does not guarantee full living expenses.
+**Funding:** S$90,000 scholarship covering tuition fees (excess may be used for study‑related expenses)
+**Funding caveat:** Covers tuition only; living expenses are not included
+**Deadline:** September 2026 to May 2027 (rolling admissions for August 2027 intake)
+**Eligibility:** conditional
+**Research priority:** 30/100
+
+### Requirements
+
+- Bachelor's degree: met; required: Required; student: Final‑year B.Tech Computer Science
+- GMAT/GRE/SMU Admissions Test: unknown; required: Required; student: Not supplied
+- English proficiency (TOEFL/IELTS): unknown; required: Required if prior instruction not English; student: Not supplied
+- Work experience: unknown; required: 1–5 years; student: Not supplied
+- No other scholarship: unknown; required: Must not be a recipient of another scholarship or sponsorship; student: Not supplied
+
+### Missing information
+
+- GMAT/GRE or SMU Admissions Test score
+- TOEFL/IELTS score (if applicable)
+- Confirmed work experience duration
+- Nationality (for eligibility)
+- Whether the applicant holds any other scholarship
+- GMAT/GRE/SMU Admissions Test
+- English proficiency (TOEFL/IELTS)
+- Work experience
+- No other scholarship
+
+### How to apply
+
+1. Create a new SMU account ("Create New")
+   [Supporting source](https://masters.smu.edu.sg/programme/MBAI/Apply_now)
+2. Log in with the created credentials
+   [Supporting source](https://masters.smu.edu.sg/programme/MBAI/Apply_now)
+3. Complete the online application form for MSc in Business AI
+   [Supporting source](https://masters.smu.edu.sg/programme/MBAI/Apply_now)
+
+### Source evidence
+
+**funding**: S$90,000 scholarship covering tuition fees (excess may be used for study‑related expenses)
+> izen
+> Must demonstrate academic excellence, in line with SMU policies.
+> Scholarship recipients are encouraged to participate in the following activities
+> Provide mentorship to junior Scholarship recipients and support the development of their leadership capabilities;
+> Attend, participate in, and support social and mentoring events organised for the Scholarship recipients; and
+> Continue to support such mentoring and networking initiatives for Scholarship recipients following graduation
+> Must not be a recipient of other Scholarship or sponsorship
+> Tenure and Benefits of Scholarship
+> Scholarship award is valued at S$90,000.
+> The Scholarship will offer financial support towards MBAI tuition fees. Any excess will be used for study related expenses.
+> No bond is required of the scholarship recipients.
+> A separate application for the Lillyn Teh Frontier Endeavour Scholarship is required, after application to the MBAI programme has been completed.
+> Lee Kuan Yew Scholarship
+> Established in honour of Singapore's former Prime Minister Mr Lee Kuan Yew, this scholarship is synonymous with prestige and a commitment to serving Singapore. It
+
+[Source](https://masters.smu.edu.sg/programme/msc-in-business-ai), read 2026-10-20T15:47:17.608041+00:00
+
+**deadline**: September 2026 to May 2027 (rolling admissions for August 2027 intake)
+> Skip to main content
+> Toggle navigation
+> Online Application for MSc in Business AI
+> Applications for the August 2027 intake open 1 September 2026, Application Requirements can be found
+> here
+> .
+> Application Period
+> INTAKE
+> APPLICATION DEADLINE
+> August 2027 (Full-time)
+> September 2026 to May 2027
+> All applications are based on rolling admissions.
+> FOR NEW USERS
+> FOR EXISTING USERS
+> You need to first register for an account with SMU before you can submit an online application form.
+> Click on "Create New" below to proceed.
+> Create New
+> If you have already created an account with SMU, please go directly to the Login page to continue with your application.
+> Login Now
+
+[Source](https://masters.smu.edu.sg/programme/MBAI/Apply_now), read 2026-10-20T16:10:46.357797+00:00
+
+**application**: Apply via SMU online portal: register an account, create a new application, log in, complete and submit the MSc Business AI application form
+> Skip to main content
+> Toggle navigation
+> Online Application for MSc in Business AI
+> Applications for the August 2027 intake open 1 September 2026, Application Requirements can be found
+> here
+> .
+> Application Period
+> INTAKE
+> APPLICATION DEADLINE
+> August 2027 (Full-time)
+> September 2026 to May 2027
+> All applications are based on rolling admissions.
+> FOR NEW USERS
+> FOR EXISTING USERS
+> You need to first register for an account with SMU before you can submit an online application form.
+> Click on "Create New" below to proceed.
+> Create New
+> If you have already created an account with SMU, please go directly to the Login page to continue with your application.
+> Login Now
+
+[Source](https://masters.smu.edu.sg/programme/MBAI/Apply_now), read 2026-10-20T16:10:46.357797+00:00
 
 ---
 

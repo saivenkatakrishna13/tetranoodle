@@ -251,14 +251,15 @@ async function generateDraft(session, opportunity, emit, signal) {
   emit({type:'draft',content:`# DRAFT — ${result.title || opportunity.name}\n\n${guardDraft(checked.content,{profile:session.profile,opportunity})}`});
   say(emit,'leo',`Your draft for **${opportunity.name}** is ready in Applications. I’ve kept missing details as placeholders so you can add your own story. Nothing has been submitted.\n\n[Review the official opportunity](${opportunity.url})`);
 }
-async function deepenPack(session,emit,signal,checked){
+async function deepenPack(session,emit,signal,checked,{force=false}={}){
     stage(session,emit,'details',80,'Checking the practical details needed to apply.');
     const detailed=session.opportunities.filter(o=>!checked.has(sourceKey(o.url))&&o.eligibility!=='not_eligible'&&!o.preference_mismatch&&o.deadline_state!=='expired').slice(0,5);
     for(const item of detailed){
+      if(force&&evidenceCoverage(item).complete)continue;
       const original=[...(session.reviewAudit||[])].reverse().find(a=>sourceKey(a.candidate.url)===sourceKey(item.url));
       if(!original)continue;checked.add(sourceKey(item.url));
       const namedAwardGap=/scholarship|award|fellowship/i.test(original.review.name||'')&&norm(original.review.name)!==norm(original.candidate.name)&&!item.claims.funding&&original.review.details_identity!==original.review.name;
-      if(!namedAwardGap&&original.review.details_profile===session.run.profileFingerprint&&((original.review.details_version>=2&&evidenceCoverage(item).complete)||(original.review.details_version>=3&&Date.now()-(original.review.details_at||original.at)<86400000)))continue;
+      if(!force&&!namedAwardGap&&original.review.details_profile===session.run.profileFingerprint&&original.review.details_version>=5&&evidenceCoverage(item).complete)continue;
       try{
         const review=await deepenReview(original.candidate,original.review,session,emit,signal);
         original.review=review;
@@ -274,7 +275,7 @@ async function deepenPack(session,emit,signal,checked){
 export async function finalizeResearchPack(session,emit,signal,reason='Saved research is ready for review.') {
     signal.throwIfAborted();session.run.finalizing=true;session.run.deliveryReason=reason;session.opportunities=rankOpportunities(session.opportunities);emit({type:'opportunities',opportunities:session.opportunities});label(emit,'mira',reason);
     const top=session.opportunities.filter(o=>o.recommended).slice(0,5);
-    session.run.topFiveIds=top.map(o=>o.id);session.run.reviewedCount=session.opportunities.length;
+    session.run.topFiveIds=top.map(o=>o.id);session.run.reviewedCount=session.opportunities.filter(o=>o.integrity_checked===true).length;
     stage(session,emit,'rank',82,`Comparing academic fit, funding, preferences, and source evidence.`);
     say(emit,'sage',`I saved **${session.opportunities.length} opportunities**; ${session.opportunities.filter(o=>o.integrity_checked).length} have independent source checks. ${top.length} are ranked as the strongest available conditional matches. Unknown requirements remain visible; a shortlist is not an admission or funding guarantee.\n\n${top.map((o,i)=>`${i+1}. **[${o.name}](${o.url})**, ${o.university} — ${o.reason}\n   Funding: ${o.funding}\n   Deadline: ${o.deadline}\n   Gaps: ${o.missing_information.slice(0,3).join('; ')||'Check full official criteria.'}`).join('\n\n')}`);
     if(top.length && (!session.draft || session.draftMeta?.integrity_version!==2 || session.draftMeta?.opportunityId!==top[0].id || session.draftMeta?.method==='profile-template')){stage(session,emit,'draft',90,`Leo is preparing your first application draft.`);await createDraft(session,top[0],emit,signal);}
@@ -289,16 +290,24 @@ export async function finalizeResearchPack(session,emit,signal,reason='Saved res
     saveSession(session,true);
 }
 
-export async function runResearch(session, emit, parentSignal, resume=false, finish=false) {
+export async function runResearch(session, emit, parentSignal, resume=false, finish=false, detailsOnly=false) {
   const work=new AbortController();let timedOut=false;
-  const stop=()=>work.abort(parentSignal.reason);parentSignal.addEventListener('abort',stop,{once:true});
+  const stop=()=>work.abort(parentSignal.reason);parentSignal.addEventListener('abort',stop,{once:true});if(parentSignal.aborted)stop();
   const timer=setTimeout(()=>{timedOut=true;work.abort(new DOMException('Research pass time limit reached.','TimeoutError'));},researchBudgetMs());
   const signal=work.signal;
   const discoveryBefore=session.run.discoveryPasses||0;
   const canExpand=()=>((session.run.discoveryPasses||0)-discoveryBefore)<2;
 
   try {
+    signal.throwIfAborted();
     if(finish){clearTimeout(timer);await finalizeResearchPack(session,emit,parentSignal,'Finishing with the findings already saved.');return;}
+    if(detailsOnly){
+      session.researchBrief=researchBrief(session.profile);session.run.researchBrief=session.researchBrief;
+      session.run.profileFingerprint=fingerprint(session.profile);
+      say(emit,'mira','We’ll revisit the saved shortlist’s official funding, deadline and application pages. Your existing findings stay saved; no new candidate discovery will start.');
+      await deepenPack(session,emit,signal,new Set(),{force:true});
+      clearTimeout(timer);await finalizeResearchPack(session,emit,parentSignal,'The saved shortlist’s application details have been rechecked.');return;
+    }
     stage(session,emit,'profile',5,'Understanding your academic background and goals.');
     if(!resume || !session.run.profileReviewed){await enrichProfile(session,emit,signal);session.run.profileReviewed=true;}
     if(session.profileConflicts?.length){session.run.status='needs_input';stage(session,emit,'profile',5,'Resolve the conflicting student facts before research.');return;}
@@ -376,21 +385,23 @@ export async function runResearch(session, emit, parentSignal, resume=false, fin
     emit({type:'run',run:session.run});if(!parentSignal.aborted)say(emit,'mira',`The run was interrupted: ${e.message}\n\nYour verified findings are saved. Use Resume research to continue.`);
   }finally{clearTimeout(timer);parentSignal.removeEventListener('abort',stop);active.delete(session.id);saveSession(session,true);emit({type:'typing',agent:null});emit({type:'run',run:session.run});}
 }
-export function startResearch(session,{resume=false,finish=false}={}) {
+export function startResearch(session,{resume=false,finish=false,detailsOnly=false}={}) {
   if(active.has(session.id))throw new Error('This workspace already has an active research run.');
-  if(finish){
+  if(session.chatBusy)throw new Error('Wait for the current reply before starting research.');
+  if(finish||detailsOnly){
     if(!session.opportunities.some(o=>o.integrity_checked===true))throw new Error('At least one independently reviewed opportunity is needed to finish.');
     if(session.run?.profileFingerprint&&session.run.profileFingerprint!==fingerprint(session.profile))throw new Error('The student profile changed. Recheck its findings before preparing the pack.');
     session.run||={id:randomUUID(),startedAt:Date.now(),target:10};
   }
-  const reuse=(resume||finish) && session.run && (!session.run.profileFingerprint || session.run.profileFingerprint===fingerprint(session.profile));
+  const reuse=(resume||finish||detailsOnly) && session.run && (!session.run.profileFingerprint || session.run.profileFingerprint===fingerprint(session.profile));
   if(!reuse){resetResearchData(session);record(session,{type:'research_reset',reason:'Starting fresh research for this student and their current preferences.'});session.run={id:randomUUID(),status:'running',stage:'profile',progress:0,target:10,startedAt:Date.now(),queries:[],candidates:[],attempted:[],failures:[],discoveryCount:0};record(session,{type:'opportunities',opportunities:[]});record(session,{type:'draft',content:''});}
   else session.run={...session.run,status:'running',error:null};
   session.run.passStartedAt=Date.now();session.run.budgetMs=researchBudgetMs();session.run.finalizing=finish;session.run.message=finish?'Preparing saved findings; no new searches will start.':'Continuing research from saved evidence.';
+  session.run.mode=detailsOnly?'details':finish?'finish':'research';
   const controller=new AbortController();let settled;const done=new Promise(resolve=>settled=resolve);active.set(session.id,{controller,done});
   const emit=event=>record(session,event);emit({type:'run',run:session.run});
   // The job lives independently of the browser's SSE connection.
-  setImmediate(()=>runResearch(session,emit,controller.signal,reuse,finish).finally(settled));saveSession(session,true);return session.run;
+  setImmediate(()=>runResearch(session,emit,controller.signal,reuse,finish,detailsOnly).finally(settled));saveSession(session,true);return session.run;
 }
 export function pauseResearch(session){const c=active.get(session.id)?.controller;if(c){session.run.status='paused';session.run.message='Paused. Your findings are saved.';record(session,{type:'run',run:session.run});saveSession(session,true);c.abort();}return !!c;}
 export async function stopResearch(session){const task=active.get(session.id);if(!task)return false;pauseResearch(session);await task.done;return true;}

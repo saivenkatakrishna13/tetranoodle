@@ -1,6 +1,40 @@
 import {structured} from './groq.js';
 import {executeTool} from './tools.js';
-import {focusedExcerpt,institutionDomain} from './research-quality.js';
+import {focusedExcerpt,institutionDomain,evidenceCoverage} from './research-quality.js';
+
+export function detailSearchPlan(candidate,previous,profile={},brief={}) {
+  const coverage=evidenceCoverage({claims:previous,criteria:(previous.criteria||[]).map(c=>({...c,evidence:c.evidence||(c.quote&&c.url?c:null)})),application_step_evidence:previous.application_steps});
+  const level={bachelor:'undergraduate',master:'masters',phd:'doctoral'}[brief.level]||'';
+  const intake=profile.intake||String(new Date().getUTCFullYear()+1);
+  const topics=[];
+  if(!coverage.funding)topics.push({topic:'funding',terms:`${level} funding scholarships tuition`});
+  if(!coverage.deadline)topics.push({topic:'deadline',terms:`${intake} application deadline`});
+  if(!coverage.application||!coverage.requirements)topics.push({topic:'application',terms:`${level} admission requirements apply`});
+  return topics;
+}
+
+export function detailQuery(domain,candidate,plan){
+  const generic=/^(?:the|of|in|for|and|master'?s?|bachelor'?s?|doctoral|doctor|science|arts|programme?|msc|mfa|ma|bsc|ba|phd)$/i;
+  const subject=String(candidate.name||'').replace(/[()–—,/:]/g,' ').split(/\s+/).filter(w=>w&&!generic.test(w)).slice(0,5);
+  const terms=plan.terms.trim().split(/\s+/).filter(w=>w&&!subject.some(s=>s.toLowerCase()===w.toLowerCase()));
+  return [`site:${domain}`,...subject,...terms].slice(0,12).join(' ');
+}
+
+export function selectSupportingPages(pool,candidate,level,primaryUrl,topics) {
+  const keywords=candidate.name.toLowerCase().split(/[^a-z]+/).filter(w=>w.length>3&&!['master','science','scholarship','students','programme','program','excellence','university'].includes(w));
+  const relevance=item=>{
+    const text=`${item.title||''} ${item.url}`.toLowerCase();
+    const wrongLevel=level==='bachelor'?/\b(?:graduate|postgraduate|doctoral|phd|masters?)\b/.test(text):['master','phd'].includes(level)&&/undergraduate|bachelor/.test(text);
+    return keywords.filter(w=>text.includes(w)).length*3+Number(!!item.search)-(wrongLevel?30:0);
+  };
+  const selected=[];
+  for(const topic of topics){
+    const matches=[...pool.values()].filter(x=>x.topic===topic&&x.url!==primaryUrl&&!selected.some(p=>p.url===x.url))
+      .filter(x=>relevance(x)>-10).sort((a,b)=>relevance(b)-relevance(a)||a.url.length-b.url.length);
+    selected.push(...matches.slice(0,1));
+  }
+  return selected;
+}
 
 export async function deepenReview(candidate,previous,session,emit,signal) {
   candidate={...candidate,name:previous.name||candidate.name,university:previous.university||candidate.university};
@@ -16,26 +50,22 @@ export async function deepenReview(candidate,previous,session,emit,signal) {
   const allowedDomains=new Set([domain,searchDomain]);
   const topicOf=link=>/scholarship|funding|tuition|stipend|financial|fees/i.test(`${link.text} ${link.url}`)?'funding':/deadline|dates|intake/i.test(`${link.text} ${link.url}`)?'deadline':/admission|apply|application|entry.requirement/i.test(`${link.text} ${link.url}`)?'application':null;
   for(const page of [primary,provider].filter(Boolean))for(const link of page.links||[]){try{const u=new URL(link.url);u.hash='';if(allowedDomains.has(institutionDomain(u.href))&&topicOf(link))pool.set(u.href,{url:u.href,title:link.text,topic:topicOf(link)});}catch{/* Malformed source link. */}}
-  const year=String(new Date().getUTCFullYear()+1);
-  const queries=[
-    {topic:'funding',query:`site:${searchDomain} ${candidate.name} graduate funding scholarships tuition stipend`},
-    {topic:'deadline',query:`site:${searchDomain} ${candidate.name} ${session.profile.intake||year} application deadline how to apply`},
-  ];
+  const plan=detailSearchPlan(candidate,previous,session.profile,session.researchBrief);
+  const queries=plan.map(item=>({topic:item.topic,query:detailQuery(searchDomain,candidate,item)}));
   for(const search of queries){
     try{
       const result=await executeTool('search_web',{query:search.query,limit:5},session,emit,'nova',signal);
       for(const item of result.results||[]){try{if(allowedDomains.has(institutionDomain(item.url)))pool.set(item.url,{...item,topic:search.topic,search:true});}catch{/* Ignore invalid URLs. */}}
     }catch(e){if(signal.aborted)throw e;emit({type:'activity',agent:'nova',label:`A targeted ${search.topic} search was unavailable; checking links from the official source.`});}
   }
-  const selected=[];
-  const keywords=candidate.name.toLowerCase().split(/[^a-z]+/).filter(w=>w.length>3&&!['master','science','scholarship','students','programme','program','excellence','university'].includes(w));
-  const relevance=item=>keywords.filter(w=>`${item.title} ${item.url}`.toLowerCase().includes(w)).length*3+Number(!!item.search)+(/graduate|master|research/i.test(`${item.title} ${item.url}`)?3:0)-(/undergraduate|bachelor/i.test(`${item.title} ${item.url}`)&&session.researchBrief.level!=='bachelor'?30:0);
-  for(const topic of ['funding','deadline','application']){
-    const matches=[...pool.values()].filter(x=>x.topic===topic&&x.url!==primary.url)
-      .filter(x=>relevance(x)>-10).sort((a,b)=>relevance(b)-relevance(a)||a.url.length-b.url.length);
-    selected.push(...matches.slice(0,1));
-  }
+  const selected=selectSupportingPages(pool,candidate,session.researchBrief?.level,primary.url,plan.map(p=>p.topic));
   const pages=[{...primary,topic:'all'},...(provider?[{...provider,topic:'all'}]:[])];
+  // Previously verified supporting pages are still relevant on a gap-only retry.
+  // Include their actual text so retained details can be independently checked again.
+  for(const claim of ['funding','deadline','requirements','application'].map(key=>previous[key])){
+    const page=claim?.url&&session.evidence.get(claim.url);
+    if(page&&!pages.some(p=>p.url===page.url))pages.push({...page,topic:'all'});
+  }
   for(const link of selected){
     if(pages.some(p=>p.url===link.url))continue;
     try{
@@ -58,7 +88,7 @@ Select an exact supplied passage ID for EVERY claim, criterion and step. The ser
   for(const key of ['funding','deadline','requirements','application'])details[key]=attach(details[key]);
   details.application_steps=(details.application_steps||[]).map(attach).filter(Boolean);
   details.criteria=(details.criteria||[]).map(attach).filter(Boolean);
-  const next={...previous,...details,details_version:4,details_identity:candidate.name,details_at:Date.now(),details_profile:session.run.profileFingerprint,integrity_version:0};
+  const next={...previous,...details,details_version:5,details_identity:candidate.name,details_at:Date.now(),details_profile:session.run.profileFingerprint,integrity_version:0};
   // Identity and study classification cannot be silently changed by a funding page.
   for(const key of ['identity','name','university','country','type','level','subject_fit','source_kind','publisher_is_official','official_reason'])next[key]=previous[key];
   return next;

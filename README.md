@@ -90,7 +90,7 @@ See [the architecture](docs/architecture.md) and [the experiment/challenge note]
 
 ## Search and verification
 
-Discovery prefers Groq’s [built-in browser search](https://console.groq.com/docs/tool-use/built-in-tools/browser-search), with URLs taken from executed search receipts rather than generated prose. Optional `TAVILY_API_KEY` enables Tavily. Independent ddgs search is a fallback; set `SEARCH_PROVIDER=ddgs` to prefer it. Browser search is a discovery tool; actual saved claims are verified against pages read with **[Scrapling](https://github.com/D4Vinci/Scrapling)**.
+The example configuration uses independent ddgs discovery (`SEARCH_PROVIDER=ddgs`) to keep search separate from Groq token limits. Optional `TAVILY_API_KEY` enables Tavily. With another search-provider setting, Groq’s [built-in browser search](https://console.groq.com/docs/tool-use/built-in-tools/browser-search) can supply URLs from executed search receipts rather than generated prose, falling back to ddgs when unavailable. Browser search is a discovery tool; actual saved claims are verified against pages read with **[Scrapling](https://github.com/D4Vinci/Scrapling)**.
 
 Role models are configurable using `GROQ_MODEL_MIRA`, `GROQ_MODEL_ARJUN`, `GROQ_MODEL_NOVA`, `GROQ_MODEL_SAGE`, `GROQ_MODEL_LEO`, with `GROQ_MODEL` as a fallback. Browser search uses `GROQ_SEARCH_MODEL` (a supported GPT-OSS model). The example configuration uses GPT-OSS 120B for planning/profile/writing and GPT-OSS 20B for discovery/structured verification. `GROQ_FALLBACK_MODEL` can recover from a model-specific request-capacity limit. Request queues follow the actual model, and retries respect provider backoff.
 
@@ -127,7 +127,7 @@ Live smoke tests use actual provider calls and real official pages. `scripts/liv
 
 The current live audit uses Rahul’s Computer Science profile and a separately supplied Communication Design → Interaction Design profile. Their saved workspaces use the same engine with different subjects and destinations. See [the current requirements audit](docs/requirements-audit.md) for actual counts, status, evidence gaps and draft checks. The older economics profile is retained as historical demonstration data.
 
-Recommendations remain conditional. Unpublished intake dates, unconfirmed award coverage and missing student details keep a pack partial. The automated validation passed **44 backend checks and 11 browser checks**, the production build, and the dependency audit (zero reported vulnerabilities). A separate unmocked browser walkthrough checks real uploads, Groq replies, student switching, phone layout, downloads and refresh.
+Recommendations remain conditional. Unpublished intake dates, unconfirmed award coverage and missing student details keep a pack partial. The automated validation passed **49 backend checks and 12 browser checks**, the production build, and the dependency audit (zero reported vulnerabilities). A separate unmocked browser walkthrough checks real uploads, Groq replies, student switching, phone layout, downloads and refresh.
 
 Submission material:
 
@@ -152,3 +152,7 @@ Research passes now have an eight-minute work budget (`RESEARCH_BUDGET_MS`), fol
 **Use saved results** stops further research and prepares a pack from already reviewed findings. If AI drafting is unavailable, the application section receives an explicitly labelled profile-based scaffold with placeholders; this does not qualify as a fully complete pack. Saved sources and unknown requirements remain visible, and nothing is submitted.
 
 The interface now uses a forest and mint design inspired by the supplied AI-agent references, with the same group-chat workflow. See [design details and current previews](docs/ui-refinement.md).
+
+In Matches, **Verify missing details** revisits the saved top five with targeted official-source searches, without restarting candidate discovery. Completed recommendations are left intact. Admission searches follow the student’s actual study level, and an immediate pause now cancels work before profile or web calls begin.
+
+Run `node scripts/live-run.mjs --details` to verify fictional Rahul’s saved shortlist without restarting discovery. It requires an existing independently reviewed opportunity and preserves the saved profile and documents.

@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-21T04:54:28.122Z",
+  "checkedAt": "2026-10-21T09:10:03.561Z",
   "brand": "ScholarX",
   "checks": {
     "fiveRolesConfigured": true,
@@ -17,14 +17,15 @@
       "countries": "Canada, Germany, Singapore",
       "status": "partial",
       "opportunities": 24,
-      "suitable": 12,
+      "suitable": 11,
       "recommended": 5,
-      "retainedClaims": 143,
+      "retainedClaims": 132,
       "unsupportedQuotes": 0,
       "unreviewedRecommendations": 0,
       "documentCount": 2,
       "documentFacts": 6,
       "draftCharacters": 2309,
+      "draftMethod": "legacy-ai-reviewed",
       "draftSourceStillReviewed": true,
       "contributingAgents": [
         "arjun",
@@ -35,7 +36,7 @@
       ],
       "coverage": {
         "reviewed": 24,
-        "suitable": 12,
+        "suitable": 11,
         "recommended": 5,
         "ready": 0,
         "items": [
@@ -45,22 +46,38 @@
             "funding": true,
             "deadline": false,
             "application": true,
-            "requirements": true,
+            "requirements": false,
             "complete": false,
             "missing": [
-              "current intake / deadline"
+              "current intake / deadline",
+              "entry requirements"
             ]
           },
           {
-            "id": "99d922c1-9013-4d37-ae44-956bb52bcdf0",
-            "name": "Master of Science in Business AI (MBAI)",
-            "funding": true,
+            "id": "70f01f55-7eeb-4793-a497-cd55e8696605",
+            "name": "Master of Artificial Intelligence",
+            "funding": false,
             "deadline": false,
             "application": true,
             "requirements": true,
             "complete": false,
             "missing": [
+              "funding",
               "current intake / deadline"
+            ]
+          },
+          {
+            "id": "89589a18-650e-486e-9a08-87a21627ed1f",
+            "name": "Master of Science (Artificial Intelligence & Innovation)",
+            "funding": false,
+            "deadline": true,
+            "application": false,
+            "requirements": false,
+            "complete": false,
+            "missing": [
+              "funding",
+              "application instructions",
+              "entry requirements"
             ]
           },
           {
@@ -69,37 +86,24 @@
             "funding": true,
             "deadline": false,
             "application": false,
-            "requirements": true,
+            "requirements": false,
             "complete": false,
             "missing": [
               "current intake / deadline",
-              "application instructions"
+              "application instructions",
+              "entry requirements"
             ]
           },
           {
-            "id": "7dd9ca96-4b59-4510-b85e-57bac90ca32f",
-            "name": "Master of Artificial Intelligence & Data Science",
+            "id": "a01f88c8-ac47-443b-9d8e-6d847d406e29",
+            "name": "Master of Science in Artificial Intelligence",
             "funding": false,
-            "deadline": false,
+            "deadline": true,
             "application": true,
             "requirements": true,
             "complete": false,
             "missing": [
-              "funding",
-              "current intake / deadline"
-            ]
-          },
-          {
-            "id": "5dc655e3-2a13-41db-9f03-7ca471037fba",
-            "name": "Applied Artificial Intelligence (Master)",
-            "funding": false,
-            "deadline": true,
-            "application": false,
-            "requirements": true,
-            "complete": false,
-            "missing": [
-              "funding",
-              "application instructions"
+              "funding"
             ]
           }
         ],
@@ -121,6 +125,7 @@
       "documentCount": 0,
       "documentFacts": 0,
       "draftCharacters": 3133,
+      "draftMethod": "legacy-ai-reviewed",
       "draftSourceStillReviewed": true,
       "contributingAgents": [
         "arjun",
@@ -130,7 +135,7 @@
         "mira"
       ],
       "coverage": {
-        "reviewed": 14,
+        "reviewed": 13,
         "suitable": 9,
         "recommended": 5,
         "ready": 3,

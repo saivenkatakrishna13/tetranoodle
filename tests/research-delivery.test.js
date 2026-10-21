@@ -1,7 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {withinBudget,needsMoreCandidates,profileDraft} from '../server/research-delivery.js';
-import {createDraft} from '../server/research.js';
+import {createDraft,startResearch,stopResearch,fingerprint} from '../server/research.js';
+import {sessionFor,saveSession} from '../server/store.js';
+import {unlink} from 'node:fs/promises';
+import {randomUUID} from 'node:crypto';
 const opportunity={id:'verified-program',integrity_checked:true,name:'MSc Interaction Design',university:'Example University',url:'https://example.edu/design'};
 const makeSession=()=>({profile:{name:'Fictional Student',degree:'Final-year B.Des',cgpa:'8.6 / 10',budget:'EUR 4000 per year'},evidence:new Map([[opportunity.url,{text:'Official programme source.'}]]),draft:''});
 test('unknown deadlines alone do not launch more discovery waves',()=>{
@@ -23,4 +26,14 @@ test('manually pausing a draft never silently produces a scaffold',async()=>{
 test('unchecked discoveries cannot be used to prepare even a fallback scaffold',async()=>{
  const s=makeSession();await assert.rejects(createDraft(s,{...opportunity,integrity_checked:false},()=>{},new AbortController().signal),/successfully reviewed/);assert.equal(s.draft,'');
  assert.ok(!profileDraft({},opportunity).includes('Fictional Student'));
+});
+test('pausing in the same turn as start never begins profile or internet work',async()=>{
+ const s=sessionFor(randomUUID());s.profile={degree:'B.Des',target_degree:'Master of Design',countries:'Finland'};
+ try{startResearch(s);assert.equal(await stopResearch(s),true);assert.equal(s.run.status,'paused');assert.ok(!s.events.some(e=>e.type==='activity'));assert.equal(s.run.profileReviewed,undefined);}
+ finally{saveSession(s,true);await unlink(`.data/sessions/${s.id}.json`).catch(()=>{});}
+});
+test('detail-only verification rejects stale profiles and active chat without clearing findings',()=>{
+ const s={...makeSession(),opportunities:[opportunity],draft:'Existing reviewed draft',run:{profileFingerprint:fingerprint({degree:'Different student'})}};
+ assert.throws(()=>startResearch(s,{detailsOnly:true}),/profile changed/);assert.equal(s.draft,'Existing reviewed draft');assert.equal(s.opportunities[0],opportunity);
+ s.chatBusy=true;assert.throws(()=>startResearch(s,{resume:true}),/current reply/);assert.equal(s.draft,'Existing reviewed draft');
 });

@@ -34,7 +34,7 @@ export function researchCoverage(opportunities,hasDraft) {
   const suitable=opportunities.filter(o=>o.integrity_checked===true&&o.eligibility!=='not_eligible'&&o.deadline_state!=='expired'&&!o.preference_mismatch).length;
   const top=opportunities.filter(o=>o.recommended).slice(0,5);
   const items=top.map(o=>({id:o.id,name:o.name,...evidenceCoverage(o)}));
-  return {reviewed:opportunities.length,suitable,recommended:top.length,ready:items.filter(o=>o.complete).length,items,
+  return {reviewed:opportunities.filter(o=>o.integrity_checked===true).length,suitable,recommended:top.length,ready:items.filter(o=>o.complete).length,items,
     complete:suitable>=10&&top.length===5&&items.every(o=>o.complete)&&!!hasDraft};
 }
 

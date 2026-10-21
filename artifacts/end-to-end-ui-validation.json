@@ -1,13 +1,13 @@
 {
-  "startedAt": "2026-10-21T04:31:29.581Z",
-  "finishedAt": "2026-10-21T04:33:39.126Z",
+  "startedAt": "2026-10-21T09:04:20.614Z",
+  "finishedAt": "2026-10-21T09:04:34.749Z",
   "realProviders": true,
   "mockedRoutes": false,
   "checks": [
     {
       "check": "new workspace via website",
       "passed": true,
-      "workspace": "aa6efd84-b939-418e-9344-fdb0e909cfe1"
+      "workspace": "3fab4d3b-6090-40b2-999f-6b648b9ebfd4"
     },
     {
       "check": "actual PDF extraction and live Arjun review",
@@ -15,27 +15,27 @@
       "facts": [
         {
           "key": "name",
-          "source": "student profile"
-        },
-        {
-          "key": "degree",
-          "source": "student profile"
-        },
-        {
-          "key": "target_degree",
-          "source": "student profile"
-        },
-        {
-          "key": "cgpa",
           "source": "rahul-resume.pdf"
         },
         {
+          "key": "degree",
+          "source": "rahul-resume.pdf"
+        },
+        {
+          "key": "target_degree",
+          "source": "rahul-resume.pdf"
+        },
+        {
+          "key": "cgpa",
+          "source": "rahul-transcript.pdf"
+        },
+        {
           "key": "countries",
-          "source": "student profile"
+          "source": "rahul-resume.pdf"
         },
         {
           "key": "budget",
-          "source": "student profile"
+          "source": "rahul-resume.pdf"
         },
         {
           "key": "interests",
@@ -49,7 +49,7 @@
         },
         {
           "agent": "arjun",
-          "content": "You are Rahul. Based on the provided documents, you are in the final year of a B.Tech in Computer Science with an 8.2/10 CGPA, aiming for a master’s in Computer Science or AI. You are interested in artificial intelligence and are looking at Canada, Germany, and Singapore for study, but you need substantial funding as your family cannot afford expensive tuition. Several details such as your GitHub profile, nationality, graduation date, intake preferences, language test scores, career goals beyond the master’s, and other public profiles are not provided.\n\nDetails still needed: github; nationality; graduation; intake; language_scores."
+          "content": "You have provided a solid academic background with an 8.2/10 CGPA in your final year of B.Tech Computer Science and clear interests in AI. Your target is a master’s in Computer Science or AI, aiming for Canada, Germany, or Singapore, and you need substantial funding. However, details such as your GitHub link, nationality, graduation date, intended intake semester, language test scores, credit information, and any public profiles are missing and should be supplied to complete your profile.\n\nDetails still needed: GitHub profile; nationality; graduation date; target intake; language test scores."
         }
       ]
     },
@@ -58,17 +58,17 @@
       "passed": true,
       "replies": [
         {
-          "id": "9b8a5527-9860-4ee0-80d9-6ca336ea8bf7",
-          "time": 1792557216672,
+          "id": "412fad5a-89dd-447b-bd0e-9756952510c3",
+          "time": 1792573471896,
           "agent": "mira",
-          "content": "Hi Rahul! This app is an AI‑powered scholarship finder where our five specialists—Mira (lead), Arjun (profile), Nova (research), Sage (verification), and Leo (writing)—collaborate to understand your background, locate real funding opportunities, confirm your eligibility, and draft application materials for you."
+          "content": "Welcome! This app is an AI‑powered scholarship finder where five specialists—Mira, Arjun, Nova, Sage, and Leo—collaborate to understand your profile, locate real funding opportunities, verify your eligibility, and craft application drafts. Think of us as your personal team guiding you toward the right scholarships for your master’s goals."
         }
       ]
     },
     {
       "check": "phone composer and horizontal bounds",
       "passed": true,
-      "composerBottom": 823,
+      "composerBottom": 822,
       "height": 844,
       "overflow": false
     },

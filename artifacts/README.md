@@ -33,3 +33,7 @@ See [the current evidence audit](../docs/requirements-audit.md) for checked coun
 ## Current interface
 
 [Light](ui-refined-light.png) · [Dark](ui-refined-dark.png) · [Phone](ui-refined-phone.png) · [Dark phone](ui-refined-phone-dark.png) · [Research](ui-refined-matches.png) · [Application](ui-refined-application.png). These previews reflect the later visual refinement; the workflow recording above retains the earlier interface. [Validation](ui-refinement-validation.json).
+
+## Saved-shortlist verification
+
+[Continuation checks](continuation-validation.json) record 49 backend checks, 12 browser checks, eight unmocked website checks and the real saved-shortlist verification run. The latest fictional Rahul report and source snapshot above retain unresolved official funding, date and application gaps rather than claiming completion. Verify missing details is available from Matches; it leaves completed recommendations intact and does not restart candidate discovery.

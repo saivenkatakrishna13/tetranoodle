@@ -67,6 +67,14 @@ test('research recommendations expose requirements, source proof, application st
  await page.getByText('Source evidence & research priority',{exact:true}).click();await expect(page.getByText('Applicants need IELTS overall 6.5.',{exact:true})).toBeVisible();
  await page.getByRole('button',{name:'Applications',exact:true}).click();await expect(page.getByRole('button',{name:'Download draft',exact:true})).toBeVisible();
 });
+test('a partial shortlist can verify its missing details without starting discovery',async({page})=>{
+ const opportunity={integrity_checked:true,id:'checked-design',name:'MSc Design',university:'Example University',country:'Finland',url:'https://example.edu/design',recommended:true,rank:1,eligibility:'conditional',claims:{},criteria:[],missing_information:[]};
+ await isolate(page,{profile:{degree:'B.Des',target_degree:'Master of Design',countries:'Finland'},messages:[welcome],opportunities:[opportunity],run:{status:'partial',stage:'done',coverage:{complete:false,suitable:10,ready:2}}});
+ let request;await page.route('**/api/research',route=>{request=route.request().postDataJSON();return route.fulfill({status:202,json:{run:{status:'running',mode:'details',stage:'details',passStartedAt:Date.now(),message:'Rechecking saved official sources'}}});});
+ await page.goto('/');await page.getByRole('button',{name:'Your matches',exact:true}).click();
+ await page.setViewportSize({width:320,height:667});await expect(page.getByRole('button',{name:'Verify missing details'})).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.getByRole('button',{name:'Verify missing details'}).click();expect(request).toMatchObject({resume:true,mode:'details'});await expect(page.locator('.run-strip strong')).toHaveText('Checking application details');await expect(page.getByRole('textbox',{name:'Message your team'})).toBeInViewport();
+});
 test('invalid uploads report a readable error',async({page})=>{
  await page.goto('/');await page.locator('input[type=file]').setInputFiles({name:'scan.pdf',mimeType:'application/pdf',buffer:Buffer.from('not a valid PDF')});await expect(page.getByRole('alert')).toContainText('could not be read');
 });

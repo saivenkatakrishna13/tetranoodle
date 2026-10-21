@@ -16,7 +16,7 @@ flowchart LR
     N -->|Real search receipts\nSpecific candidate URLs| S
     S -->|10 reviewed opportunities\nFive ranked recommendations| L
     L -->|One evidence-grounded draft| C
-    N --> WEB[Groq browser search\nTavily / ddgs fallback]
+    N --> WEB[ddgs / Tavily discovery\nOptional Groq browser search]
     S --> READ[Scrapling official-page reader\nPDF text extraction]
     READ --> E[(Full source text + excerpts\nRetrieval dates + links)]
     E --> S
@@ -30,7 +30,7 @@ flowchart LR
     P -->|Resumable SSE events| UI
 ```
 
-Each specialist uses its own server-side Groq API key. Mira’s planning step selects one public speaker for normal chat. That speaker answers the student and asks, at most, one focused question. Other specialists retain their distinct jobs; they do not each ask another question on the same turn.
+Each specialist uses a server-side role key; roles may share a key when fewer than five keys are supplied. Mira’s planning step selects one public speaker for normal chat. That speaker answers the student and asks, at most, one focused question. Other specialists retain their distinct jobs; they do not each ask another question on the same turn.
 
 The research job has explicit completion criteria: ten distinct researched opportunities, five recommendations that are not known to be ineligible or expired, a saved application draft, and evidence for funding, current intake/deadline, entry requirements and application instructions across the five recommendations. A deeper pass uses targeted official searches and source-selected passages, then Mira rechecks applicability and meaning. Each application step retains its own proof. It reports partial or interrupted status if these criteria are not met.
 
@@ -50,3 +50,11 @@ The live adaptation validation uses a communication-design student seeking inter
 
 
 Document additions and removals invalidate derived research and clear unchanged document-derived profile fields. Conflicting saved and document-supported student facts stop research for clarification. The client replaces canonical profile snapshots and ignores late results from a previous student.
+
+## Bounded delivery and targeted verification
+
+A research pass allows eight minutes for provider and web work, followed by at most 45 seconds of draft preparation by default. The UI shows real retry deadlines and elapsed time. Use saved results ends further source work and delivers the saved pack. A rate-limited draft falls back to an explicitly labelled factual scaffold, which never satisfies full completion.
+
+Verify missing details starts a separate bounded pass over the saved shortlist rather than candidate discovery. Completed recommendations are skipped; missing funding, dates, admission requirements and application instructions receive specific official-domain searches. The search vocabulary follows bachelor, master or doctorate goals. Previously retrieved supporting pages remain available to the independent reviewer. Incomplete detail reviews are no longer cached as finished for 24 hours.
+
+Starting research while chat is active is rejected. Pausing before the queued job begins propagates the cancellation before any profile or internet call. Counts distinguish independently checked opportunities from pending leads.

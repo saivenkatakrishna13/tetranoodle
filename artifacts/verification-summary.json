@@ -1,21 +1,22 @@
 {
-  "checkedAt": "2026-10-21T05:15:24.382Z",
+  "checkedAt": "2026-10-21T09:10:51.465115+00:00",
   "backend": {
     "command": "npm test",
-    "passed": 38,
+    "passed": 49,
     "failed": 0
   },
   "browser": {
     "command": "npm run test:ui",
-    "passed": 10,
-    "controlledProviderResponses": true
+    "passed": 12,
+    "controlledProviderResponses": true,
+    "failed": 0
   },
   "productionBuild": {
     "command": "npm run build",
     "passed": true
   },
   "productionRuntime": {
-    "checkedAt": "2026-10-21T05:14:43.446Z",
+    "checkedAt": "2026-10-21T09:04:21.487Z",
     "passed": true,
     "servesBuiltAssets": true,
     "brand": "ScholarX",
@@ -35,7 +36,8 @@
     "moderate": 0,
     "high": 0,
     "critical": 0,
-    "total": 0
+    "total": 0,
+    "scope": "production dependencies (npm audit --omit=dev)"
   },
   "github": {
     "artifact": "github-tool-validation.json",
@@ -47,5 +49,11 @@
     "passed": true,
     "journeyNavigationChecked": true,
     "reference": "https://dribbble.com/tags/ai-agent-website"
+  },
+  "continuation": {
+    "artifact": "continuation-validation.json",
+    "pauseBeforeStartChecked": true,
+    "detailOnlyResearchChecked": true,
+    "degreeAwareSourceSelectionChecked": true
   }
 }

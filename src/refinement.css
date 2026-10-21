@@ -185,3 +185,7 @@
 .finish-results-button{display:flex;align-items:center;justify-content:center;gap:7px;flex-shrink:0;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:10px;color:var(--green);background:var(--selected)}
 .finish-results-button:hover{background:var(--hover)}
 @media(max-width:700px){.finish-results-button{font-size:8px;padding:8px;gap:4px;max-width:110px}.finish-results-button>svg{width:11px}.run-strip{gap:7px}}
+
+.research-gaps { flex-wrap: wrap; align-items: center; }
+.research-gaps > span { flex: 1 1 240px; min-width: 0; }
+.research-gaps > button { flex-shrink: 0; white-space: normal; }
