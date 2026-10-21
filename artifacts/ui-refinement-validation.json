@@ -1,0 +1,53 @@
+{
+  "checkedAt": "2026-10-21T05:15:24.337Z",
+  "realStoredWorkspaces": true,
+  "mockedRoutes": false,
+  "providerCallsRequired": false,
+  "checks": [
+    {
+      "check": "fixed chat boundaries",
+      "width": 320,
+      "height": 667,
+      "viewportWidth": 320,
+      "viewportHeight": 667,
+      "scrollWidth": 320,
+      "headerTop": 0,
+      "composerBottom": 645,
+      "passed": true
+    },
+    {
+      "check": "fixed chat boundaries",
+      "width": 390,
+      "height": 844,
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "scrollWidth": 390,
+      "headerTop": 0,
+      "composerBottom": 822,
+      "passed": true
+    },
+    {
+      "check": "fixed chat boundaries",
+      "width": 844,
+      "height": 390,
+      "viewportWidth": 844,
+      "viewportHeight": 390,
+      "scrollWidth": 844,
+      "headerTop": 0,
+      "composerBottom": 384,
+      "passed": true
+    },
+    {
+      "check": "fixed chat boundaries",
+      "width": 1440,
+      "height": 900,
+      "viewportWidth": 1440,
+      "viewportHeight": 900,
+      "scrollWidth": 1440,
+      "headerTop": 0,
+      "composerBottom": 874,
+      "passed": true
+    }
+  ],
+  "errors": []
+}

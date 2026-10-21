@@ -11,7 +11,7 @@ let browser;const errors=[];
 try{
  let ready=false;for(let i=0;i<60;i++){try{if((await fetch(`http://127.0.0.1:${port}/`)).ok){ready=true;break;}}catch{}await new Promise(r=>setTimeout(r,100));}if(!ready)throw Error('Production server did not become ready.');
  browser=await chromium.launch({headless:true});const page=await browser.newPage();page.on('pageerror',e=>errors.push(e.message));
- await page.goto(`http://127.0.0.1:${port}/?workspace=production-browser-check`);await expect(page).toHaveTitle(/ScholarX/);await expect(page.getByRole('textbox',{name:'Message your team'})).toBeVisible();await expect(page.locator('.small-brand')).toHaveText('ScholarX');
+ await page.goto(`http://127.0.0.1:${port}/?workspace=production-browser-check`);await expect(page).toHaveTitle(/ScholarX/);await expect(page.getByRole('textbox',{name:'Message your team'})).toBeVisible();await expect(page.locator('.sidebar-header h1')).toContainText('ScholarX');
  await page.reload();await expect(page.getByRole('textbox',{name:'Message your team'})).toBeVisible();
  await writeFile('artifacts/production-validation.json',JSON.stringify({checkedAt:new Date().toISOString(),passed:errors.length===0,servesBuiltAssets:true,brand:'ScholarX',refreshWorks:true,isolatedStorage:true,errors},null,2));if(errors.length)throw Error(errors.join('; '));console.log('Production build loads and refreshes with ScholarX branding.');
 }finally{await browser?.close();server.kill();await new Promise(r=>server.once('close',r));await rm(directory,{recursive:true,force:true});}

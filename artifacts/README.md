@@ -29,3 +29,7 @@ Nothing was submitted to a university or scholarship provider. No API keys, priv
 See [the current evidence audit](../docs/requirements-audit.md) for checked counts and unresolved requirements. Historical snapshots are preserved; they do not replace a fresh independent source review.
 
 [Automated verification summary](verification-summary.json) · [Real browser validation](end-to-end-ui-validation.json) · [GitHub API recovery](github-tool-validation.json) · [Profile conflict check](profile-conflict-validation.json) · [Production runtime check](production-validation.json).
+
+## Current interface
+
+[Light](ui-refined-light.png) · [Dark](ui-refined-dark.png) · [Phone](ui-refined-phone.png) · [Dark phone](ui-refined-phone-dark.png) · [Research](ui-refined-matches.png) · [Application](ui-refined-application.png). These previews reflect the later visual refinement; the workflow recording above retains the earlier interface. [Validation](ui-refinement-validation.json).

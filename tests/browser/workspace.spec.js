@@ -17,6 +17,16 @@ test('desktop and phone show WhatsApp-style chat, working search, and group deta
  await page.getByRole('button',{name:'Close details'}).click();await expect(page.getByRole('textbox',{name:'Message your team'})).toBeInViewport();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);
 });
+test('the scholarship journey opens the existing profile, research and draft workspaces',async({page})=>{
+ await isolate(page);await page.goto('/');
+ await expect(page.getByRole('heading',{name:/Your next chapter\. Within reach\./})).toBeVisible();
+ await page.setViewportSize({width:320,height:667});await expect(page.getByRole('heading',{name:/Your next chapter\. Within reach\./})).toBeInViewport();await expect(page.getByRole('textbox',{name:'Message your team'})).toBeInViewport();await page.setViewportSize({width:1440,height:900});
+ const journey=page.getByRole('navigation',{name:'Your scholarship journey'});
+ await journey.getByRole('button',{name:/Your story:/}).click();
+ await expect(page.getByRole('dialog',{name:'Your student profile'})).toBeVisible();await page.getByRole('button',{name:'Close dialog',exact:true}).click();
+ await journey.getByRole('button',{name:/Your possibilities:/}).click();await expect(page.getByRole('heading',{name:'Your next possibilities',exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Group chat',exact:true}).click();await journey.getByRole('button',{name:/Your next step:/}).click();await expect(page.getByRole('heading',{name:'Application draft',exact:true})).toBeVisible();
+});
 test('streamed replies persist, messages can be starred and quoted, provider errors stay readable',async({page})=>{
  const serverState={messages:[]};await isolate(page,serverState);await page.route('**/api/chat',route=>route.fulfill({contentType:'text/event-stream',body:[{type:'profile',profile:{name:'Rahul',degree:'B.Tech Computer Science',cgpa:'8.2 / 10'}},{type:'message',message:{id:'arjun-reply',agent:'arjun',content:'Thanks Rahul. I’ll keep your CGPA on its original scale.',time:Date.now()}},{type:'done'}].map(e=>`data: ${JSON.stringify(e)}\n\n`).join('')}));
  await page.goto('/');await page.getByRole('textbox',{name:'Message your team'}).fill('I am Rahul, B.Tech CS, CGPA 8.2 / 10.');await page.getByRole('button',{name:'Send message',exact:true}).click();
