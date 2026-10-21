@@ -43,7 +43,7 @@ export function record(session, event) {
 }
 export function snapshot(session) {
   const opportunities=distinctProgramPages(session.opportunities);
-  const run=session.run?.coverage?{...session.run,coverage:researchCoverage(opportunities,!!session.draft)}:session.run;
+  const run=session.run?.coverage?{...session.run,coverage:researchCoverage(opportunities,!!session.draft&&session.draftMeta?.method!=='profile-template')}:session.run;
   const draft=guardDraft(session.draft||'',{profile:session.profile,opportunity:session.opportunities.find(o=>o.id===session.draftMeta?.opportunityId)});
   return { sessionId: session.id, profile: session.profile, profileRevision:session.profileRevision,researchBrief:session.researchBrief||null,profileConflicts:session.profileConflicts||[],documents: session.documents.map(({ text, ...d }) => d), messages: session.messages, opportunities, draftDocument: draft, facts: session.facts, run, activity: session.events.filter(e => e.type === 'activity').slice(-30), cursor: session.events.at(-1)?.sequence || 0 };
 }

@@ -127,7 +127,7 @@ Live smoke tests use actual provider calls and real official pages. `scripts/liv
 
 The current live audit uses Rahul’s Computer Science profile and a separately supplied Communication Design → Interaction Design profile. Their saved workspaces use the same engine with different subjects and destinations. See [the current requirements audit](docs/requirements-audit.md) for actual counts, status, evidence gaps and draft checks. The older economics profile is retained as historical demonstration data.
 
-Recommendations remain conditional. Unpublished intake dates, unconfirmed award coverage and missing student details keep a pack partial. The automated validation passed **38 backend checks and 10 browser checks**, the production build, and the dependency audit (zero reported vulnerabilities). A separate unmocked browser walkthrough checks real uploads, Groq replies, student switching, phone layout, downloads and refresh.
+Recommendations remain conditional. Unpublished intake dates, unconfirmed award coverage and missing student details keep a pack partial. The automated validation passed **44 backend checks and 11 browser checks**, the production build, and the dependency audit (zero reported vulnerabilities). A separate unmocked browser walkthrough checks real uploads, Groq replies, student switching, phone layout, downloads and refresh.
 
 Submission material:
 
@@ -146,5 +146,9 @@ Built for the **TetraNoodle AI Hackathon 2026**. The product is named **ScholarX
 Run `node scripts/check-live-ui.mjs` for the unmocked website walkthrough, `node scripts/check-github.mjs` for the public API/fallback check, and `node scripts/audit-requirements.mjs` for the current evidence audit. See [the requirements audit](docs/requirements-audit.md).
 
 Daily token/request exhaustion switches once to `GROQ_DAILY_FALLBACK_MODEL` (the checked configuration uses `qwen/qwen3.8-27b`). The same role, input and saved evidence continue on that model. If both budgets are unavailable, the run saves progress and reports the limitation instead of retrying indefinitely. Unreviewed leads cannot enter the top five or generate an application draft. The independent reviewer checks official publisher ownership and requirement meaning before recommendations are published.
+
+Research passes now have an eight-minute work budget (`RESEARCH_BUDGET_MS`), followed by bounded draft preparation (`DRAFT_BUDGET_MS`, default 45 seconds). Missing dates or funding details alone do not trigger repeated discovery waves. Independent `ddgs` search avoids spending Groq tokens on search discovery. The group shows elapsed time and a live provider retry countdown.
+
+**Use saved results** stops further research and prepares a pack from already reviewed findings. If AI drafting is unavailable, the application section receives an explicitly labelled profile-based scaffold with placeholders; this does not qualify as a fully complete pack. Saved sources and unknown requirements remain visible, and nothing is submitted.
 
 The interface now uses a forest and mint design inspired by the supplied AI-agent references, with the same group-chat workflow. See [design details and current previews](docs/ui-refinement.md).

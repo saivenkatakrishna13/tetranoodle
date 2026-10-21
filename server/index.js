@@ -63,6 +63,16 @@ app.post('/api/research',(req,res)=>{
   try{const run=startResearch(session,{resume:!!req.body.resume});res.status(202).json({run});}catch(e){res.status(409).json({error:e.message});}
 });
 app.post('/api/sessions/:id/pause',async(req,res)=>{const session=sessionFor(req.params.id);const paused=await stopResearch(session);res.json({requested:paused,run:session.run});});
+app.post('/api/sessions/:id/finish',async(req,res,next)=>{
+  try{
+    const session=sessionFor(req.params.id);
+    if(session.chatBusy)return res.status(409).json({error:'Wait for the current reply before preparing the saved pack.'});
+    if(!session.opportunities.some(o=>o.integrity_checked===true))return res.status(409).json({error:'At least one independently reviewed opportunity is needed before preparing a pack.'});
+    if(session.run?.status==='running'&&session.run.finalizing)return res.status(202).json({run:session.run});
+    await stopResearch(session);
+    const run=startResearch(session,{resume:true,finish:true});res.status(202).json({run});
+  }catch(e){next(e);}
+});
 app.post('/api/sessions/:id/draft',async(req,res,next)=>{
   const session=sessionFor(req.params.id);
   if(session.chatBusy||session.run?.status==='running')return res.status(409).json({error:'Wait for the current task or pause research before generating another draft.'});

@@ -17,6 +17,17 @@ test('desktop and phone show WhatsApp-style chat, working search, and group deta
  await page.getByRole('button',{name:'Close details'}).click();await expect(page.getByRole('textbox',{name:'Message your team'})).toBeInViewport();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);
 });
+test('provider waits show a live countdown and saved findings can finish without another search',async({page})=>{
+ const now=Date.now(),run={status:'running',stage:'details',progress:70,startedAt:now-1000,passStartedAt:now-1000};
+ await isolate(page,{messages:[welcome],run,opportunities:[{id:'checked-program',name:'Reviewed programme',integrity_checked:true}],activity:[{time:now,waitUntil:now+60000,waitReason:'Groq rate limit',attempt:1,maxAttempts:5}]});
+ let finishCalls=0;await page.route('**/api/sessions/*/finish',route=>{finishCalls++;return route.fulfill({json:{run:{...run,finalizing:true,stage:'draft',passStartedAt:Date.now(),message:'Preparing saved findings'}}});});
+ await page.goto('/');await expect(page.locator('.run-strip strong')).toHaveText('Waiting for Groq');
+ const countdown=await page.locator('.run-strip small').innerText();await expect(page.locator('.run-strip small')).not.toHaveText(countdown);
+ await page.setViewportSize({width:320,height:667});await expect(page.getByRole('textbox',{name:'Message your team'})).toBeInViewport();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.getByRole('button',{name:'Finish with current results'}).click();await expect(page.locator('.run-strip strong')).toHaveText('Preparing saved results');expect(finishCalls).toBe(1);
+ await expect(page.getByRole('button',{name:'Finish with current results'})).toHaveCount(0);
+});
 test('the scholarship journey opens the existing profile, research and draft workspaces',async({page})=>{
  await isolate(page);await page.goto('/');
  await expect(page.getByRole('heading',{name:/Your next chapter\. Within reach\./})).toBeVisible();

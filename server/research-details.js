@@ -33,7 +33,7 @@ export async function deepenReview(candidate,previous,session,emit,signal) {
   for(const topic of ['funding','deadline','application']){
     const matches=[...pool.values()].filter(x=>x.topic===topic&&x.url!==primary.url)
       .filter(x=>relevance(x)>-10).sort((a,b)=>relevance(b)-relevance(a)||a.url.length-b.url.length);
-    selected.push(...matches.slice(0,2));
+    selected.push(...matches.slice(0,1));
   }
   const pages=[{...primary,topic:'all'},...(provider?[{...provider,topic:'all'}]:[])];
   for(const link of selected){

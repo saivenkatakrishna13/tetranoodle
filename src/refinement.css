@@ -180,3 +180,8 @@
 }
 @media(max-height:500px) {.workspace-progress{display:none}.composer-area{padding-top:6px;padding-bottom:6px}.composer-hint{display:none}}
 @media(prefers-reduced-motion:reduce) {*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* A provider wait is visible and has an exit that preserves verified findings. */
+.finish-results-button{display:flex;align-items:center;justify-content:center;gap:7px;flex-shrink:0;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:10px;color:var(--green);background:var(--selected)}
+.finish-results-button:hover{background:var(--hover)}
+@media(max-width:700px){.finish-results-button{font-size:8px;padding:8px;gap:4px;max-width:110px}.finish-results-button>svg{width:11px}.run-strip{gap:7px}}

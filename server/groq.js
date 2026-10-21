@@ -11,10 +11,19 @@ export function delay(ms, signal) {
   });
 }
 const queues = new Map();
+const dailyBackoffs=new Map();
+export const clearBudgetBackoffs=()=>dailyBackoffs.clear();
+const requestWeight=(messages,maxTokens)=>JSON.stringify(messages).length+(maxTokens||2200)*4;
 export const agentModel = (agent='mira') => process.env[`GROQ_MODEL_${agent.toUpperCase()}`] || process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
 export async function completion(messages, options = {}) {
   options.signal?.throwIfAborted();
-  const model=options.modelOverride || agentModel(options.agent);
+  let model=options.modelOverride || agentModel(options.agent);
+  const budgetKey=`${agentKey(options.agent)}\0${model}`,backoff=dailyBackoffs.get(budgetKey);
+  const fallback=process.env.GROQ_DAILY_FALLBACK_MODEL||'qwen/qwen3.8-27b';
+  if(!options.fallbackUsed&&backoff?.until>Date.now()&&requestWeight(messages,options.maxTokens)>=backoff.weight*.8&&fallback!==model){
+    options.emit?.({type:'activity',agent:options.agent||'mira',label:'Using the fallback model while the primary model’s daily budget recovers.'});
+    model=fallback;options={...options,fallbackUsed:true};
+  }
   const previous=queues.get(model)||Promise.resolve();
   const turn=previous.catch(()=>{}).then(()=>request(messages,{...options,modelOverride:model}));
   queues.set(model,turn.catch(()=>{}));
@@ -48,6 +57,8 @@ async function request(messages, { tools, json = false, signal, emit, agent = 'm
       if(attempt<4){messages=[...messages,{role:'user',content:'Return exactly one valid JSON object in the requested shape. Escape every string correctly. No Markdown fences or commentary.'}];continue;}
     }
     if(response.status===429&&/tokens per day|requests per day|\bTPD\b|\bRPD\b/i.test(data.error?.message||'')){
+      const retrySeconds=Number(response.headers.get('retry-after'))||300;
+      dailyBackoffs.set(`${agentKey(agent)}\0${model}`,{until:Date.now()+Math.min(900000,Math.max(60000,retrySeconds*1000)),weight:requestWeight(messages,maxTokens)});
       const fallback=process.env.GROQ_DAILY_FALLBACK_MODEL||'qwen/qwen3.8-27b';
       if(!fallbackUsed&&fallback!==model){
         emit?.({type:'activity',agent,label:`${agent[0].toUpperCase()+agent.slice(1)} reached the model’s daily allowance. Continuing with ${fallback}.`});
@@ -63,7 +74,7 @@ async function request(messages, { tools, json = false, signal, emit, agent = 'm
     if ([429, 500, 502, 503].includes(response.status) && attempt < 4) {
       const suggested = Number(response.headers.get('retry-after')) || Number(data.error?.message?.match(/try again in ([\d.]+)s/i)?.[1]) || 5 * (attempt + 1);
       const seconds = Math.min(Math.max(suggested + 1, 2), 90);
-      emit?.({ type: 'activity', agent, label: `Groq is busy. Progress is saved; retrying in ${Math.ceil(seconds)}s…` });
+      emit?.({ type: 'activity', agent, label: `Groq is busy. Progress is saved; retrying in ${Math.ceil(seconds)}s…`,waitUntil:Date.now()+seconds*1000,waitReason:response.status===429?'Groq rate limit':'Groq service retry',attempt:attempt+1,maxAttempts:5,model });
       await delay(seconds * 1000, signal); continue;
     }
     if (response.status === 401) throw new Error(`Groq rejected ${agent}’s API key. Check the matching role key in .env.`);
