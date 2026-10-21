@@ -1,0 +1,56 @@
+{
+  "checkedAt": "2026-10-21T11:13:13.050826+00:00",
+  "brand": "ScholarX",
+  "visual": "Original procedural Possibility Atlas",
+  "renderer": "Three.js WebGL2",
+  "profileFields": 14,
+  "requiredSearchEssentials": [
+    "degree",
+    "target_degree",
+    "countries"
+  ],
+  "manualEntryBeforeResearch": true,
+  "profileUploadResearchOrderVerified": true,
+  "missingDetailsHandledBy": "Arjun",
+  "automaticResearchAfterIntake": true,
+  "existingChatAndResearchPreserved": true,
+  "threeDimensionalInteraction": {
+    "dragRotation": true,
+    "doubleClickAndHomeReset": true,
+    "pauseResume": true,
+    "keyboardRotation": true
+  },
+  "rendering": {
+    "desktopFpsCap": 30,
+    "mobileFpsCap": 24,
+    "decorativeChatFpsCap": 12,
+    "lazySceneModule": true,
+    "reducedMotionStaticFallback": true,
+    "noWebGlStaticFallback": true,
+    "hiddenAndOffscreenPause": true,
+    "resourceCleanup": true
+  },
+  "responsiveWidthsChecked": [
+    1440,
+    390,
+    320
+  ],
+  "browserChecks": 23,
+  "backendChecks": 55,
+  "realProfileWorkflow": {
+    "artifact": "profile-first-live-validation.json",
+    "checks": 5,
+    "passed": true
+  },
+  "observedPageErrors": [],
+  "screenshots": [
+    "profile-first-desktop.png",
+    "profile-first-dark.png",
+    "profile-first-phone.png",
+    "profile-first-reduced-motion.png"
+  ],
+  "requirementsEvidence": "Prior deleted demo workspaces remain deleted; earlier research reports are historical, with unresolved official-source gaps.",
+  "productionBuildPassed": true,
+  "productionRuntimePassed": true,
+  "productionDependencyVulnerabilities": 0
+}

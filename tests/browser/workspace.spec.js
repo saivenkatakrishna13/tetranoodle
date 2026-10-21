@@ -2,7 +2,7 @@ import {test,expect}from'@playwright/test';
 const welcome={id:'welcome',agent:'mira',content:'Welcome. What are you studying?',time:Date.now()};
 async function isolate(page,overrides={}){
  await page.route('**/api/sessions/*',async route=>{
-  if(route.request().method()==='GET'&&!route.request().url().includes('/events'))return route.fulfill({json:{sessionId:'browser-fixture-session',profile:{},documents:[],opportunities:[],messages:[],draftDocument:'',facts:[],run:null,activity:[],cursor:0,...overrides}});
+  if(route.request().method()==='GET'&&!route.request().url().includes('/events'))return route.fulfill({json:{sessionId:'browser-fixture-session',profile:{},documents:[],opportunities:[],messages:[welcome],draftDocument:'',facts:[],run:null,activity:[],cursor:0,...overrides}});
   return route.continue();
  });
  // Keep test event feeds controlled and offline so tests never use Groq quota.
@@ -39,7 +39,7 @@ test('the scholarship journey opens the existing profile, research and draft wor
  await page.getByRole('button',{name:'Group chat',exact:true}).click();await journey.getByRole('button',{name:/Your next step:/}).click();await expect(page.getByRole('heading',{name:'Application draft',exact:true})).toBeVisible();
 });
 test('streamed replies persist, messages can be starred and quoted, provider errors stay readable',async({page})=>{
- const serverState={messages:[]};await isolate(page,serverState);await page.route('**/api/chat',route=>route.fulfill({contentType:'text/event-stream',body:[{type:'profile',profile:{name:'Rahul',degree:'B.Tech Computer Science',cgpa:'8.2 / 10'}},{type:'message',message:{id:'arjun-reply',agent:'arjun',content:'Thanks Rahul. I’ll keep your CGPA on its original scale.',time:Date.now()}},{type:'done'}].map(e=>`data: ${JSON.stringify(e)}\n\n`).join('')}));
+ const serverState={messages:[welcome]};await isolate(page,serverState);await page.route('**/api/chat',route=>route.fulfill({contentType:'text/event-stream',body:[{type:'profile',profile:{name:'Rahul',degree:'B.Tech Computer Science',cgpa:'8.2 / 10'}},{type:'message',message:{id:'arjun-reply',agent:'arjun',content:'Thanks Rahul. I’ll keep your CGPA on its original scale.',time:Date.now()}},{type:'done'}].map(e=>`data: ${JSON.stringify(e)}\n\n`).join('')}));
  await page.goto('/');await page.getByRole('textbox',{name:'Message your team'}).fill('I am Rahul, B.Tech CS, CGPA 8.2 / 10.');await page.getByRole('button',{name:'Send message',exact:true}).click();
  await expect(page.getByText('Thanks Rahul. I’ll keep your CGPA on its original scale.',{exact:true})).toBeVisible();
  const bubble=page.locator('#message-arjun-reply');await bubble.hover();await bubble.getByRole('button',{name:'Star message',exact:true}).click();await expect(bubble.getByRole('button',{name:'Unstar message',exact:true})).toBeAttached();
@@ -76,7 +76,7 @@ test('a partial shortlist can verify its missing details without starting discov
  await page.getByRole('button',{name:'Verify missing details'}).click();expect(request).toMatchObject({resume:true,mode:'details'});await expect(page.locator('.run-strip strong')).toHaveText('Checking application details');await expect(page.getByRole('textbox',{name:'Message your team'})).toBeInViewport();
 });
 test('invalid uploads report a readable error',async({page})=>{
- await page.goto('/');await page.locator('input[type=file]').setInputFiles({name:'scan.pdf',mimeType:'application/pdf',buffer:Buffer.from('not a valid PDF')});await expect(page.getByRole('alert')).toContainText('could not be read');
+ await page.goto('/');await page.locator('.app-shell>input[type=file]').setInputFiles({name:'scan.pdf',mimeType:'application/pdf',buffer:Buffer.from('not a valid PDF')});await expect(page.getByRole('alert')).toContainText('could not be read');
 });
 test('appearance is accessible on phones and persists across reloads and workspaces',async({page})=>{
  await isolate(page);await page.emulateMedia({colorScheme:'light'});await page.goto('/');
@@ -124,7 +124,7 @@ test('a new imported student gets an empty workspace and switching back restores
 });
 test('a late reply from a previous student cannot overwrite the newly selected student',async({page})=>{
  const first='late-original-student-2026',second='late-new-student-2026';
- const base={documents:[],messages:[],opportunities:[],draftDocument:'',facts:[],run:null,activity:[],cursor:0};
+ const base={documents:[],messages:[welcome],opportunities:[],draftDocument:'',facts:[],run:null,activity:[],cursor:0};
  await isolate(page);
  for(const [id,name]of [[first,'Rahul'],[second,'Meera']])await page.route(`**/api/sessions/${id}`,route=>route.fulfill({json:{...base,sessionId:id,profile:{name,degree:name==='Rahul'?'B.Tech CS':'B.Des. Design'}}}));
  await page.route('**/api/sessions?*',route=>route.fulfill({json:{students:[{sessionId:first,name:'Rahul',opportunities:0},{sessionId:second,name:'Meera',opportunities:0}]}}));

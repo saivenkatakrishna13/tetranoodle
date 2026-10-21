@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-21T10:23:24.378121+00:00",
+  "checkedAt": "2026-10-21T11:13:13.050134+00:00",
   "backend": {
     "command": "npm test",
     "passed": 55,
@@ -7,7 +7,7 @@
   },
   "browser": {
     "command": "npm run test:ui",
-    "passed": 17,
+    "passed": 23,
     "controlledProviderResponses": true,
     "failed": 0
   },
@@ -16,10 +16,12 @@
     "passed": true
   },
   "productionRuntime": {
-    "checkedAt": "2026-10-21T10:22:30.754Z",
+    "checkedAt": "2026-10-21T11:10:54.284Z",
     "passed": true,
     "servesBuiltAssets": true,
     "brand": "ScholarX",
+    "profileFirst": true,
+    "groupChatAccessible": true,
     "refreshWorks": true,
     "isolatedStorage": true,
     "errors": []
@@ -44,11 +46,16 @@
     "apiAndScraplingFallbackChecked": true
   },
   "visualRefinement": {
-    "artifact": "ui-refinement-validation.json",
-    "responsiveSizes": 4,
+    "artifact": "profile-first-ui-validation.json",
     "passed": true,
-    "journeyNavigationChecked": true,
-    "reference": "https://dribbble.com/tags/ai-agent-website"
+    "threeDimensionalBackground": true,
+    "manualProfileFirst": true,
+    "responsiveWidths": [
+      1440,
+      390,
+      320
+    ],
+    "reference": "https://threeui.com/hero/koi-mecha"
   },
   "continuation": {
     "artifact": "continuation-validation.json",
@@ -79,5 +86,10 @@
     "sequentialRequiredQuestions": true,
     "noDiscoveryBeforeReady": true,
     "automaticResearchHandoff": true
+  },
+  "profileFirstWorkflow": {
+    "artifact": "profile-first-live-validation.json",
+    "checks": 5,
+    "passed": true
   }
 }

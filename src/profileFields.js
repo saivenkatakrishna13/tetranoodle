@@ -1,0 +1,16 @@
+export const profileFields=[
+ ['name','Your name','What should we call you?'],
+ ['degree','Current degree & field','B.Tech Computer Science, final year'],
+ ['target_degree','Next degree / subject','Master’s in Computer Science'],
+ ['cgpa','Academic score & original scale','8.2 / 10'],
+ ['countries','Preferred countries','Canada, Germany, Singapore'],
+ ['budget','Budget & funding needs','Substantial funding needed'],
+ ['nationality','Nationality','Needed for scholarship eligibility'],
+ ['intake','Target intake','2027 entry'],
+ ['graduation','Graduation date','Expected month and year'],
+ ['language_scores','Language test results','IELTS / TOEFL scores, or not taken'],
+ ['github','Public GitHub profile','https://github.com/your-username'],
+ ['public_profiles','Other supplied public profiles','Portfolio, research profile, or website'],
+ ['interests','Academic interests','What would you like to explore?'],
+ ['career_goals','Goals after your next degree','What would you like to work on?'],
+];

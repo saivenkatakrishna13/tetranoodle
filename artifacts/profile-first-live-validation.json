@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-10-21T11:03:23.811Z",
+  "realProviders": true,
+  "mockedRoutes": false,
+  "fictionalStudentsOnly": true,
+  "temporaryWorkspacesDeleted": true,
+  "checks": [
+    {
+      "check": "first screen is a manual profile; research has not started",
+      "passed": true
+    },
+    {
+      "check": "real PDF upload and Arjun extraction use the supplied profile",
+      "passed": true
+    },
+    {
+      "check": "manual country preferences are retained without asking again",
+      "passed": true
+    },
+    {
+      "check": "missing manual country preference is asked by Arjun before discovery",
+      "passed": true
+    },
+    {
+      "check": "a real chat answer completes intake and starts the other agents automatically",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

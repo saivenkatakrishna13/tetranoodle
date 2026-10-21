@@ -1,15 +1,26 @@
 {
-  "checkedAt": "2026-10-21T09:10:03.561Z",
+  "checkedAt": "2026-10-21T10:59:48.384Z",
   "brand": "ScholarX",
   "checks": {
     "fiveRolesConfigured": true,
     "scraplingReady": true,
-    "allRetainedQuotesMatchRetrievedText": true,
+    "allRetainedQuotesMatchRetrievedText": null,
     "liveUi": true,
     "githubRecovery": true,
     "recordingHasNoSceneErrors": true
   },
-  "cases": [
+  "cases": [],
+  "unavailableWorkspaces": [
+    {
+      "workspace": "hackathon-rahul-complete-2026",
+      "reason": "Saved demo workspace no longer exists; deletion is preserved."
+    },
+    {
+      "workspace": "f092a29d-3297-49d7-ac1c-0e8f9e840ff7",
+      "reason": "Saved demo workspace no longer exists; deletion is preserved."
+    }
+  ],
+  "historicalCases": [
     {
       "name": "Rahul",
       "workspace": "hackathon-rahul-complete-2026",
@@ -199,9 +210,11 @@
       }
     }
   ],
+  "historicalCheckedAt": "2026-10-21T09:10:03.561Z",
   "limitations": [
     "Unknown student nationality, language results, credits, portfolio and individual project outcomes are never fabricated.",
     "An annual day/month alone is not proof of a current intake year. A pack remains partial when practical source evidence is incomplete.",
-    "No real university applications were submitted."
+    "No real university applications were submitted.",
+    "Deleted demo workspaces were not recreated. Their retained reports are historical evidence, not a fresh verification of source completeness."
   ]
 }

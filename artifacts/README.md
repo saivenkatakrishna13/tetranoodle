@@ -37,3 +37,7 @@ See [the current evidence audit](../docs/requirements-audit.md) for checked coun
 ## Saved-shortlist verification
 
 [Continuation checks](continuation-validation.json) record 49 backend checks, 12 browser checks, eight unmocked website checks and the real saved-shortlist verification run. The latest fictional Rahul report and source snapshot above retain unresolved official funding, date and application gaps rather than claiming completion. Verify missing details is available from Matches; it leaves completed recommendations intact and does not restart candidate discovery.
+
+## Profile-first screen and animated atlas
+
+[Light desktop](profile-first-desktop.png) · [Dark desktop](profile-first-dark.png) · [Phone](profile-first-phone.png) · [Reduced motion](profile-first-reduced-motion.png). [UI validation](profile-first-ui-validation.json) · [Real manual-profile, PDF and Arjun handoff checks](profile-first-live-validation.json). The original scholarship-themed atlas uses procedural Three.js geometry and the existing ScholarX colours. Deleted demo students remain deleted; older research reports are labelled as historical in the requirements audit.
