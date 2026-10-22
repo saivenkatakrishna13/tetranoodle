@@ -20,12 +20,22 @@ import { startResearch, pauseResearch, stopResearch, createDraft, reportMarkdown
 import {cleanProfile,changeProfile,parseStudentText,resetResearchData} from './profile.js';
 import {advanceIntake} from './intake.js';
 
-const app = express(), port = Number(process.env.PORT || 3001), root = path.resolve(import.meta.dirname, '..');
+export const app = express();
+const port = Number(process.env.PORT || 3001), root = path.resolve(import.meta.dirname, '..');
+const localOrigins = [`http://127.0.0.1:5173`,`http://localhost:5173`,`http://127.0.0.1:${port}`,`http://localhost:${port}`];
+const configuredOrigins = [process.env.APP_ORIGIN,process.env.VERCEL_URL&&`https://${process.env.VERCEL_URL}`]
+  .flatMap(value => String(value||'').split(','))
+  .map(value => value.trim().replace(/\/$/, ''))
+  .filter(Boolean);
+const allowedOrigins = new Set([...localOrigins,...configuredOrigins]);
 app.disable('x-powered-by');
 app.use((req,res,next)=>{
   const origin=req.get('origin');
-  if(origin && ![`http://127.0.0.1:5173`,`http://localhost:5173`,`http://127.0.0.1:${port}`,`http://localhost:${port}`].includes(origin))return res.status(403).json({error:'This is a private local workspace.'});
-  res.setHeader('X-Content-Type-Options','nosniff');next();
+  if(origin&&!allowedOrigins.has(origin))return res.status(403).json({error:'This ScholarX API does not allow requests from this origin.'});
+  if(origin){res.setHeader('Access-Control-Allow-Origin',origin);res.setHeader('Access-Control-Allow-Headers','Content-Type, Last-Event-ID');res.setHeader('Access-Control-Allow-Methods','GET, POST, PATCH, DELETE, OPTIONS');res.setHeader('Vary','Origin');}
+  res.setHeader('X-Content-Type-Options','nosniff');
+  if(req.method==='OPTIONS')return res.status(204).end();
+  next();
 });
 app.use(express.json({limit:'1mb'}));
 app.get('/api/status',async(req,res)=>res.json({live:liveReady(),agents:Object.fromEntries(['mira','arjun','nova','sage','leo'].map(id=>[id,!!agentKey(id)])),models:Object.fromEntries(['mira','arjun','nova','sage','leo'].map(id=>[id,agentModel(id)])),provider:'Groq',model:process.env.GROQ_MODEL||'openai/gpt-oss-120b',scrapling:await scraperReady(),storage:'local-disk'}));
@@ -173,4 +183,9 @@ app.post('/api/chat',async(req,res)=>{
 app.use(express.static(path.join(root,'dist')));
 app.get('/{*path}',(req,res)=>{if(req.path.startsWith('/api/'))return res.status(404).json({error:'Not found'});res.sendFile(path.join(root,'dist/index.html'));});
 app.use((err,req,res,next)=>{if(res.headersSent)return next(err);res.status(err.statusCode===410?410:400).json({error:err instanceof multer.MulterError?err.code==='LIMIT_FILE_SIZE'?'That file is larger than 10 MB.':'Upload up to four files at a time.':err.message||'The request could not be completed.'});});
-app.listen(port,'127.0.0.1',()=>console.log(`ScholarX ready · http://127.0.0.1:${port} · ${liveReady()?'Groq live':'guided preview'}`));
+if(!process.env.VERCEL){
+  const host=process.env.HOST||(process.env.NODE_ENV==='production'?'0.0.0.0':'127.0.0.1');
+  app.listen(port,host,()=>console.log(`ScholarX ready · http://${host}:${port} · ${liveReady()?'Groq live':'guided preview'}`));
+}
+
+export default app;

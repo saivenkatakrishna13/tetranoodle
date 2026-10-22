@@ -44,6 +44,10 @@ npm start
 
 Open **http://127.0.0.1:3001/**.
 
+## Deploy with Vercel
+
+The frontend is ready for Vercel. The research API stays on a persistent Node/Python service so Scrapling, live agent events, and saved workspaces remain reliable. Follow the [Vercel deployment guide](docs/vercel-deployment.md) to deploy the Vercel frontend and the companion API from this same GitHub repository.
+
 ## Try the complete workflow
 
 1. Open the landing page and click **Launch app**. New students start with the manual profile form; saved workspaces remain at `/app`. You can also open the profile from the attachment menu or your avatar. Share a current degree/field, preferred countries, intended degree, original academic scale, and funding needs. Unknown details can stay empty.

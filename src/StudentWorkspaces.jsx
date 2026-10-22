@@ -2,18 +2,19 @@ import React,{useEffect,useRef,useState} from 'react';
 import {ArrowRight,Check,FileText,Loader2,Plus,Upload,Users,Trash2} from 'lucide-react';
 import {Modal} from './ui';
 import {studentBookmarks,forgetStudent} from './studentBookmarks';
+import {apiFetch} from './api';
 
 export default function StudentWorkspaces({currentId,onSwitch,onCreate,onDelete,close}){
  const[students,setStudents]=useState(studentBookmarks),[tab,setTab]=useState('saved'),[loading,setLoading]=useState(true),[saving,setSaving]=useState(false),[error,setError]=useState(''),[text,setText]=useState(''),[files,setFiles]=useState([]);
  const importInput=useRef(null);
  const[deleting,setDeleting]=useState(null);
- useEffect(()=>{const controller=new AbortController();fetch(`/api/sessions?current=${encodeURIComponent(currentId)}`,{signal:controller.signal}).then(async r=>{const data=await r.json();if(!r.ok)throw Error(data.error);(data.deletedIds||[]).forEach(forgetStudent);setStudents([...new Map([...studentBookmarks(),...(data.students||[])].map(s=>[s.sessionId,s])).values()].sort((a,b)=>b.updatedAt-a.updatedAt));}).catch(e=>{if(e.name!=='AbortError')setError('Saved students could not be loaded. You can still create a new workspace.');}).finally(()=>setLoading(false));return()=>controller.abort();},[currentId]);
+ useEffect(()=>{const controller=new AbortController();apiFetch(`/api/sessions?current=${encodeURIComponent(currentId)}`,{signal:controller.signal}).then(async r=>{const data=await r.json();if(!r.ok)throw Error(data.error);(data.deletedIds||[]).forEach(forgetStudent);setStudents([...new Map([...studentBookmarks(),...(data.students||[])].map(s=>[s.sessionId,s])).values()].sort((a,b)=>b.updatedAt-a.updatedAt));}).catch(e=>{if(e.name!=='AbortError')setError('Saved students could not be loaded. You can still create a new workspace.');}).finally(()=>setLoading(false));return()=>controller.abort();},[currentId]);
  async function submit(event){
   event.preventDefault();setError('');const profile=Object.fromEntries([...new FormData(event.currentTarget)].filter(([,v])=>typeof v==='string'&&v.trim()).map(([k,v])=>[k,v.trim()]));
   if(!Object.keys(profile).length&&!text.trim()&&!files.length){setError('Enter, paste or upload the new student’s profile.');return;}
   setSaving(true);try{await onCreate({profile,profileText:text,files});}catch(e){setError(e.message||'The student could not be created. Please retry.');}finally{setSaving(false);}
  }
- async function loadDemo(){setSaving(true);setError('');try{const r=await fetch('/api/demo-profile'),data=await r.json();if(!r.ok)throw Error(data.error);await onCreate({profile:data.profile});}catch(e){setError(e.message);}finally{setSaving(false);}}
+ async function loadDemo(){setSaving(true);setError('');try{const r=await apiFetch('/api/demo-profile'),data=await r.json();if(!r.ok)throw Error(data.error);await onCreate({profile:data.profile});}catch(e){setError(e.message);}finally{setSaving(false);}}
  async function confirmDelete(){
   setSaving(true);setError('');
   try{const remaining=students.filter(s=>s.sessionId!==deleting.sessionId);await onDelete(deleting.sessionId,remaining);setStudents(remaining);setDeleting(null);}
