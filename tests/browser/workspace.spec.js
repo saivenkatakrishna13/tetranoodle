@@ -18,6 +18,23 @@ test('desktop and phone show WhatsApp-style chat, working search, and group deta
  await page.getByRole('button',{name:'Close details'}).click();await expect(page.getByRole('textbox',{name:'Message your team'})).toBeInViewport();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);
 });
+test('a slow deployed API response shows and then clears the Render wake-up overlay',async({page})=>{
+ let releaseStatus;const heldStatus=new Promise(resolve=>{releaseStatus=resolve;});let statusRequested;const statusStarted=new Promise(resolve=>{statusRequested=resolve;});
+ await page.route('**/api/status',async route=>{statusRequested();await heldStatus;await route.fulfill({json:{live:true,provider:'Groq'}});});
+ await page.route('**/api/sessions/*',async route=>{
+  if(route.request().method()==='GET'&&!route.request().url().includes('/events'))return route.fulfill({json:{sessionId:'cold-start-fixture',profile:{},documents:[],opportunities:[],messages:[welcome],draftDocument:'',facts:[],run:null,activity:[],cursor:0}});
+  return route.continue();
+ });
+ await page.route('**/api/sessions/*/events?*',route=>route.fulfill({contentType:'text/event-stream',body:': connected\n\n'}));
+ await page.goto('/app');
+ await statusStarted;
+ const wake=page.getByRole('status',{name:'Render is waking up'});
+ await expect(wake).toBeVisible();
+ await expect(wake).toContainText('Ready check in');
+ await expect(wake).toContainText('closes automatically');
+ releaseStatus();
+ await expect(wake).toBeHidden();
+});
 test('provider waits show a live countdown and saved findings can finish without another search',async({page})=>{
  const now=Date.now(),run={status:'running',stage:'details',progress:70,startedAt:now-1000,passStartedAt:now-1000};
  await isolate(page,{messages:[welcome],run,opportunities:[{id:'checked-program',name:'Reviewed programme',integrity_checked:true}],activity:[{time:now,waitUntil:now+60000,waitReason:'Groq rate limit',attempt:1,maxAttempts:5}]});
