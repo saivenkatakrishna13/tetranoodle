@@ -1,4 +1,8 @@
 const configuredOrigin = (import.meta.env.VITE_API_BASE_URL || '').trim().replace(/\/+$/, '');
+// This is deliberately public configuration, not a secret. It lets the UI
+// distinguish a sleeping/unreachable API from a Vercel deployment that was
+// built without its server URL.
+export const apiOriginConfigured = Boolean(configuredOrigin);
 const wakingEvent = 'scholarx:api-waking';
 const responsiveEvent = 'scholarx:api-responsive';
 const coldStartDelayMs = 900;

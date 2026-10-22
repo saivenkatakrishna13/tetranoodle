@@ -35,6 +35,15 @@ test('a slow deployed API response shows and then clears the Render wake-up over
  releaseStatus();
  await expect(wake).toBeHidden();
 });
+test('an unavailable research server is not reported as five missing browser keys',async({page})=>{
+ await isolate(page);await page.unroute('**/api/status');
+ await page.route('**/api/status',route=>route.fulfill({status:503,json:{error:'temporarily unavailable'}}));
+ await page.goto('/app');
+ await page.getByRole('button',{name:'Connection settings',exact:true}).click();
+ await expect(page.getByText('Research server unavailable',{exact:true})).toBeVisible();
+ await expect(page.getByText('Server unavailable',{exact:true})).toHaveCount(6);
+ await expect(page.getByText('Missing key',{exact:true})).toHaveCount(0);
+});
 test('provider waits show a live countdown and saved findings can finish without another search',async({page})=>{
  const now=Date.now(),run={status:'running',stage:'details',progress:70,startedAt:now-1000,passStartedAt:now-1000};
  await isolate(page,{messages:[welcome],run,opportunities:[{id:'checked-program',name:'Reviewed programme',integrity_checked:true}],activity:[{time:now,waitUntil:now+60000,waitReason:'Groq rate limit',attempt:1,maxAttempts:5}]});
