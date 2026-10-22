@@ -36,6 +36,15 @@ test('application steps cannot carry unevidenced portal instructions',()=>{
  const review={name:'MSc Computing',source_kind:'degree_program',publisher_is_official:true,identity:{value:'MSc Computing',quote:'Example University offers the MSc in Computing.',url},application:proof,application_steps:['Email a passport and payment to an invented address.',proof,{value:'Pay $500',quote:'The fee is $500',url}]};
  const result=validateReview({url},review,new Map([[url,page]]));assert.deepEqual(result.application_steps,[proof.value]);assert.equal(result.application_step_evidence.length,1);
 });
+test('individually audited application steps survive a rejected compound summary',()=>{
+ const url='https://example.edu/degree',identity={value:'Computing MSc',quote:'Example University offers the Computing MSc degree.',url};
+ const step={value:'Apply online.',quote:'Apply online using the university admissions portal.',url};
+ const evidence=new Map([[url,{url,text:identity.quote+' '+step.quote}]]);
+ const review={name:'Computing MSc',source_kind:'degree_program',publisher_is_official:true,identity,application:null,application_steps:[step]};
+ assert.equal(validateReview({url},review,evidence).claims.application,null,'unaudited steps cannot replace a rejected summary');
+ const audited=validateReview({url},{...review,application_steps_audited:true},evidence);
+ assert.equal(audited.claims.application.value,step.value);assert.deepEqual(audited.application_steps,[step.value]);
+});
 
 test('the independent review retains complete source passages without duplicating shared evidence',()=>{
  const url='https://example.edu/admissions',claim={value:'Apply online',quote:'Submit the application online before 15 January 2027.',url};
@@ -47,4 +56,10 @@ test('an unreviewed high-scoring lead cannot become a recommendation',()=>{
  const ranked=rankOpportunities([{id:'pending',name:'Unreviewed lead',score:100,eligibility:'appears_eligible',integrity_checked:false},{id:'checked',name:'Verified conditional match',score:45,eligibility:'conditional',integrity_checked:true}]);
  assert.equal(ranked[0].id,'checked');assert.equal(ranked[0].recommended,true);assert.equal(ranked.find(o=>o.id==='pending').recommended,false);
   assert.equal(researchCoverage(ranked,false).reviewed,1,'pending leads are not counted as independently reviewed');
+});
+test('the same named award on a directory and detail page cannot occupy two recommendations',()=>{
+ const common={type:'scholarship',level:'Master and Doctoral',university:'Example University',country:'Canada',integrity_checked:true,eligibility:'conditional',score:70};
+ const ranked=rankOpportunities([{...common,name:'Example Foundation – Scholarship for Master and Doctoral level study in Computing',url:'https://example.edu/award'}, {...common,name:'Example Foundation – Scholarship for study in Computing',url:'https://example.edu/masters-awards'}]);
+ assert.equal(ranked.length,1);assert.equal(ranked.filter(o=>o.recommended).length,1);
+ const different=rankOpportunities([{...common,name:'Example Computing Scholarship',url:'https://example.edu/computing'},{...common,name:'Example Design Scholarship',url:'https://example.edu/design'}]);assert.equal(different.length,2);
 });

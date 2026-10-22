@@ -1,3 +1,11 @@
+import {applicationPlan} from './match-planning.js';
+import {readableDraft} from './draft-validation.js';
+import {sopDocx,reportPdf} from './exports.js';
+import {readFile} from 'node:fs/promises';
+import {askMissing} from './missing-info.js';
+import {historyList,diffRuns,reopenRun} from './run-history.js';
+import {draftLanguages,localizedDraft} from './draft-languages.js';
+import {assertStudentProfile} from '../shared/models.js';
 import 'dotenv/config';
 import express from 'express';
 import multer from 'multer';
@@ -21,6 +29,15 @@ app.use((req,res,next)=>{
 });
 app.use(express.json({limit:'1mb'}));
 app.get('/api/status',async(req,res)=>res.json({live:liveReady(),agents:Object.fromEntries(['mira','arjun','nova','sage','leo'].map(id=>[id,!!agentKey(id)])),models:Object.fromEntries(['mira','arjun','nova','sage','leo'].map(id=>[id,agentModel(id)])),provider:'Groq',model:process.env.GROQ_MODEL||'openai/gpt-oss-120b',scrapling:await scraperReady(),storage:'local-disk'}));
+app.get('/api/demo-profile',async(req,res,next)=>{try{const profile=JSON.parse(await readFile(path.join(root,'fixtures/rahul-profile.json'),'utf8'));assertStudentProfile(profile);res.json({profile,fictional:true});}catch(e){next(e);}});
+app.get('/api/sessions/:id/insights',(req,res)=>{const state=snapshot(sessionFor(req.params.id));res.json({cursor:state.cursor,draftDocument:state.draftDocument,metrics:state.metrics,runHistory:state.runHistory,checklist:state.checklist,profileStrength:state.profileStrength,draftOptions:state.draftOptions,demoFailures:state.demoFailures,draftMeta:state.draftMeta,languages:Object.entries(draftLanguages).map(([id,l])=>({id,name:l.name}))});});
+app.post('/api/sessions/:id/demo-failures',(req,res)=>{const session=sessionFor(req.params.id);session.demoFailures={searchOnce:req.body.searchOnce===true,sourceOnce:req.body.sourceOnce===true};record(session,{type:'activity',agent:'mira',demo:true,label:'DEMO failure controls updated. Armed failures affect only this workspace’s next matching tool call.'});saveSession(session,true);res.json(snapshot(session));});
+app.post('/api/sessions/:id/missing-info',(req,res,next)=>{try{const session=sessionFor(req.params.id);if(session.chatBusy||session.run?.status==='running')throw Error('Pause research and wait for the current reply before resolving a field.');askMissing(session,e=>record(session,e));saveSession(session,true);res.json(snapshot(session));}catch(e){next(e);}});
+app.post('/api/sessions/:id/checklist',(req,res,next)=>{try{const session=sessionFor(req.params.id),id=String(req.body.id||'');if(!session.opportunities.some(o=>applicationPlan(o).some(task=>task.id===id)))throw Error('Sourced application task not found.');session.checklist||={};session.checklist[id]=req.body.done===true;record(session,{type:'checklist',checklist:session.checklist});saveSession(session,true);res.json({checklist:session.checklist});}catch(e){next(e);}});
+app.get('/api/sessions/:id/runs',(req,res)=>res.json({runs:historyList(sessionFor(req.params.id))}));
+app.get('/api/sessions/:id/runs/diff',(req,res,next)=>{try{const session=sessionFor(req.params.id),a=session.runHistory?.find(r=>r.id===req.query.before),b=session.runHistory?.find(r=>r.id===req.query.after);if(!a||!b)throw Error('Select two saved runs.');res.json(diffRuns(a,b));}catch(e){next(e);}});
+app.post('/api/sessions/:id/runs/:run/reopen',async(req,res,next)=>{try{const session=sessionFor(req.params.id);if(session.chatBusy)throw Error('Wait for the current reply.');await stopResearch(session);reopenRun(session,req.params.run);record(session,{type:'research_reset',reason:'Opening an archived research pack.'});record(session,{type:'profile',profile:session.profile});record(session,{type:'opportunities',opportunities:session.opportunities});record(session,{type:'draft',content:session.draft});record(session,{type:'run',run:session.run});saveSession(session,true);res.json(snapshot(session));}catch(e){next(e);}});
+app.post('/api/sessions/:id/draft-language',async(req,res,next)=>{try{const session=sessionFor(req.params.id);if(session.chatBusy||session.run?.status==='running')throw Error('Pause research and wait for the current reply.');const language=String(req.body.language||''),opportunity=session.opportunities.find(o=>o.id===(req.body.opportunityId||session.draftMeta?.opportunityId))||session.opportunities.find(o=>o.recommended);if(!opportunity?.integrity_checked)throw Error('Choose a reviewed opportunity first.');if(language==='en'){session.chatBusy=true;try{session.draftOptions={language};await createDraft(session,opportunity,event=>record(session,event),new AbortController().signal);saveSession(session,true);return res.json(snapshot(session));}finally{session.chatBusy=false;}}const content=localizedDraft(session,opportunity,language);session.draftOptions={language};session.draftMeta={opportunityId:opportunity.id,url:opportunity.url,language,integrity_version:2,method:'source-constrained-language-template',validation:'source-constrained',createdAt:Date.now()};record(session,{type:'draft',content});saveSession(session,true);res.json(snapshot(session));}catch(e){next(e);}});
 app.get('/api/sessions/:id',(req,res)=>res.json(snapshot(sessionFor(req.params.id))));
 app.get('/api/sessions',(req,res)=>res.json({students:listStudents(req.query.current),deletedIds:deletedStudentIds()}));
 app.delete('/api/sessions/:id',async(req,res)=>{
@@ -35,7 +52,7 @@ app.post('/api/sessions',async(req,res,next)=>{
  try{
   let parsed={profile:{},facts:[]};
   if(req.body.profileText?.trim())parsed=await parseStudentText(req.body.profileText,{signal:AbortSignal.timeout(180000)});
-  const profile={...parsed.profile,...cleanProfile(req.body.profile||{})};
+  const profile={...parsed.profile,...cleanProfile(req.body.profile||{})};assertStudentProfile(profile);
   const session=sessionFor(randomUUID());session.listed=true;session.profile=profile;session.profileRevision=1;session.facts=parsed.facts;
   if(parsed.facts.length)record(session,{type:'message',message:{agent:'arjun',content:`I’ve read this new student profile${profile.name?` for **${profile.name}**`:''}. ${profile.degree?`Current studies: ${profile.degree}. `:''}${profile.target_degree?`Next degree: ${profile.target_degree}. `:''}Missing details will stay unknown; this workspace has its own research and documents.`}});
   saveSession(session,true);
@@ -53,6 +70,8 @@ app.patch('/api/sessions/:id/profile',async(req,res)=>{
   if(session.intake?.active&&advanceIntake(session,event=>record(session,event)))startResearch(session);
   saveSession(session,true);res.json({profile:session.profile,changed,...snapshot(session)});
 });
+app.get('/api/sessions/:id/report.pdf',async(req,res,next)=>{try{const session=sessionFor(req.params.id);const pdf=await reportPdf(session,AbortSignal.timeout(60000));res.setHeader('Content-Disposition','attachment; filename="scholarx-top-five.pdf"');res.type('application/pdf').send(pdf);}catch(e){next(e);}});
+app.get('/api/sessions/:id/sop.docx',(req,res,next)=>{try{const session=sessionFor(req.params.id);if(!session.draft)throw Error('Prepare a draft before exporting.');res.setHeader('Content-Disposition','attachment; filename="scholarx-sop-draft.docx"');res.type('application/vnd.openxmlformats-officedocument.wordprocessingml.document').send(sopDocx(readableDraft(session)));}catch(e){next(e);}});
 app.get('/api/sessions/:id/report',(req,res)=>{
   const session=sessionFor(req.params.id);res.setHeader('Content-Disposition','attachment; filename="scholarx-research-report.md"');res.type('text/markdown').send(reportMarkdown(session));
 });
@@ -102,10 +121,10 @@ app.post('/api/documents',upload.array('files',4),async(req,res,next)=>{
     if(session.documents.length+req.files.length>12)return res.status(400).json({error:'Up to twelve documents per journey are supported.'});
     const extracted=[];
     for(const file of req.files){
-      const ext=path.extname(file.originalname).toLowerCase();let text;
-      try{if(ext==='.pdf')text=(await worker('parse_pdf',{base64:file.buffer.toString('base64')},new AbortController().signal)).text;else if(ext==='.docx')text=extractDocx(file.buffer);else text=file.buffer.toString('utf8');}catch{throw new Error(`${file.originalname} could not be read. Upload a valid, text-based PDF, DOCX or TXT file.`);}
+      const ext=path.extname(file.originalname).toLowerCase();let text,parsing={method:'Text'};
+      try{if(ext==='.pdf'){const parsed=await worker('parse_pdf',{base64:file.buffer.toString('base64')},new AbortController().signal);text=parsed.text;parsing={method:parsed.method,ocrPages:parsed.ocr_pages,truncated:parsed.truncated};}else if(ext==='.docx')text=extractDocx(file.buffer);else text=file.buffer.toString('utf8');}catch{throw new Error(`${file.originalname} could not be read. Upload a valid, text-based PDF, DOCX or TXT file.`);}
       if(text.trim().length<20)throw new Error(`${file.originalname} contains too little text. A scanned PDF needs OCR; please use a text-based document.`);
-      extracted.push({id:randomUUID(),name:path.basename(file.originalname),size:file.size,characters:text.length,text:text.slice(0,40000)});
+      extracted.push({id:randomUUID(),name:path.basename(file.originalname),size:file.size,characters:text.length,parsing,text:text.slice(0,40000)});
     }
     invalidateDocuments(session);
     session.documents.push(...extracted);saveSession(session,true);res.json({documents:extracted.map(({text,...meta})=>meta)});

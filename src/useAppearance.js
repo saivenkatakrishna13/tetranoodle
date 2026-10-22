@@ -11,10 +11,10 @@ function initialChoice(){
  }catch{/* Use the device setting when storage is unavailable. */}
  return 'system';
 }
-export default function useAppearance(){
+export default function useAppearance({forceLight=false}={}){
  const[appearance,setAppearance]=useState(initialChoice);
  const[systemDark,setSystemDark]=useState(()=>window.matchMedia('(prefers-color-scheme: dark)').matches);
- const dark=appearance==='dark'||appearance==='system'&&systemDark;
+ const dark=!forceLight&&(appearance==='dark'||appearance==='system'&&systemDark);
  useEffect(()=>{
   const media=window.matchMedia('(prefers-color-scheme: dark)');
   const changed=event=>setSystemDark(event.matches);
@@ -27,7 +27,7 @@ export default function useAppearance(){
   try{localStorage.setItem(storageKey,appearance);}catch{/* The selection still works for this visit. */}
   document.documentElement.dataset.theme=dark?'dark':'light';
   document.documentElement.style.colorScheme=dark?'dark':'light';
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',dark?'#111b21':'#f0f2f5');
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',dark?'#090A0C':'#F4F0E8');
  },[appearance,dark]);
  return {appearance,setAppearance,dark,toggleAppearance:()=>setAppearance(dark?'light':'dark')};
 }

@@ -11,7 +11,7 @@ const profile={name:'Rahul',degree:'Final-year B.Tech Computer Science',target_d
 const nav=name=>page.getByRole('button',{name,exact:true}).click();
 const state=()=>page.evaluate(async()=>{const id=new URLSearchParams(location.search).get('workspace');return fetch(`/api/sessions/${id}`).then(r=>r.json());});
 try{
- await page.goto(base+'/?workspace=hackathon-rahul-complete-2026');
+ await page.goto(base+'/app?workspace=hackathon-rahul-complete-2026');
  await expect(page.getByRole('textbox',{name:'Message your team'})).toBeVisible();
  await nav('Chat menu');await nav('Switch student');await nav('New student');
  await page.getByRole('textbox',{name:'New student profile'}).fill(JSON.stringify(profile));
@@ -35,7 +35,7 @@ try{
  await page.setViewportSize({width:1440,height:900});await nav('Chat menu');await nav('Switch student');await page.locator('.saved-student').filter({hasText:'Meera'}).first().click();
  await expect(page.locator('.student-workspace-button')).toContainText('Meera');current=await state();checks.push({check:'different subject and student restored without document leakage',passed:current.profile.name===expectedDesignName&&/design/i.test(current.profile.target_degree)&&current.documents.length===0,workspace:current.sessionId,profile:current.profile});
  await nav('Your matches');await expect(page.getByRole('heading',{name:'Your next possibilities',exact:true})).toBeVisible();await page.screenshot({path:'artifacts/e2e-adapted-matches.png',animations:'disabled'});
- await page.goto(base+'/?workspace=hackathon-rahul-complete-2026');await nav('Your matches');await expect(page.locator('.opportunity-card').first()).toBeVisible();
+ await page.goto(base+'/app?workspace=hackathon-rahul-complete-2026');await nav('Your matches');await expect(page.locator('.opportunity-card').first()).toBeVisible();
  const download=page.waitForEvent('download');await page.getByRole('link',{name:'Export report',exact:true}).click();const report=await download;checks.push({check:'report download',passed:report.suggestedFilename().endsWith('.md')});
  await nav('Applications');await expect(page.locator('.application-paper')).toContainText('DRAFT');checks.push({check:'draft displayed',passed:true});
 }catch(e){errors.push(e.message);}

@@ -9,7 +9,7 @@ async function create(name){const s=await post('/api/sessions',{profile:{name}})
 let page;
 try{
  page=await browser.newPage({viewport:{width:1440,height:1000}});page.on('pageerror',e=>errors.push(e.message));
- const id=await create('Rahul');await page.goto(`${web}/?workspace=${id}`);await expect(page.getByRole('heading',{name:'Tell us your story.',exact:true})).toBeVisible();
+ const id=await create('Rahul');await page.goto(`${web}/app?workspace=${id}`);await expect(page.getByRole('heading',{name:'Tell us your story.',exact:true})).toBeVisible();
  checks.push({check:'first screen is a manual profile; research has not started',passed:!(await state(id)).run});
  for(const [key,value]of Object.entries({degree:'Final-year B.Tech Computer Science',target_degree:'Master of Computer Science or Artificial Intelligence',cgpa:'8.2 / 10',budget:'Substantial scholarship funding needed',countries:'Canada, Germany, Singapore'}))await page.locator(`.profile-start-fields input[name=${key}]`).fill(value);
  await page.getByLabel('Profile supporting documents').setInputFiles(['fixtures/rahul-resume.pdf','fixtures/rahul-transcript.pdf']);
@@ -18,7 +18,7 @@ try{
  let s=await state(id);checks.push({check:'real PDF upload and Arjun extraction use the supplied profile',passed:s.documents.length===2&&s.facts.length>=3&&s.profile.cgpa==='8.2 / 10'&&!s.profile.nationality});
  await expect.poll(async()=>{const s=await state(id);return ['discover','verify','details','done'].includes(s.run?.stage)||s.run?.status==='interrupted';},{timeout:120000}).toBe(true);
  s=await state(id);checks.push({check:'manual country preferences are retained without asking again',passed:!!s.profile.countries&&s.run?.status==='running'&&s.run.stage!=='profile'});await post(`/api/sessions/${id}/pause`);
- const partial=await create('Fictional Biology Student');await page.goto(`${web}/?workspace=${partial}`);await expect(page.getByRole('heading',{name:'Tell us your story.',exact:true})).toBeVisible();
+ const partial=await create('Fictional Biology Student');await page.goto(`${web}/app?workspace=${partial}`);await expect(page.getByRole('heading',{name:'Tell us your story.',exact:true})).toBeVisible();
  await page.locator('.profile-start-fields input[name=degree]').fill('B.Sc Biology');await page.locator('.profile-start-fields input[name=target_degree]').fill('Master of Biology');
  await page.getByRole('button',{name:'Save profile & continue with Arjun',exact:true}).click();
  await expect(page.getByText('Which countries would you like us to focus on?',{exact:false})).toBeVisible({timeout:30000});s=await state(partial);

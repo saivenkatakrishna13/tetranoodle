@@ -1,5 +1,9 @@
 # ScholarX hackathon audit
 
+Strict-pipeline implementation and two live validations finished on 22 October 2026. Current policy is the forward-only sequence in `server/pipeline-state.js`: Sage owns verification/critic work, Mira ranks, Leo writes once, then Mira closes the run. Older notes describing repeated widening or replacement for missing fields are historical. See [the current strict-pipeline audit](strict-pipeline-validation.md) for exact before/after behavior, validation and delivery limits: Rahul has five conditional recommendations, Arts/Germany has two, and neither run established five fully verified matches. The historical table below is not a claim of fresh complete research.
+
+Current enhancement implementation, before/after checklist, validation and short demos: [approved enhancement audit](enhancements-audit.md). The latest isolated three-profile live run reached partial saved states; it did not establish ten opportunities or a fully verified top five for every profile. Historical evidence below is retained separately.
+
 Checked 2026-10-21T10:59:48.384Z. The table separates implemented capabilities from the completeness of live research evidence.
 
 | Requirement | Status | Evidence |

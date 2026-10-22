@@ -1,3 +1,8 @@
+import {secondarySearch,cacheSearch,cachedSearch} from './search-providers.js';
+import {extractPage} from './page-extract.js';
+import {consumeRunTool} from './pipeline-state.js';
+import {injectFailure} from './demo-failures.js';
+import {validateDraft,sourceDraft} from './draft-validation.js';
 import { spawn } from 'node:child_process';
 import { access } from 'node:fs/promises';
 import { constants } from 'node:fs';
@@ -47,34 +52,60 @@ export function verifyOpportunities(items, evidence) {
     return { name: String(item.name || '').slice(0, 200), university: String(item.university || '').slice(0, 200), country: String(item.country || '').slice(0, 100), url: source.url, reason: String(item.reason || '').slice(0, 1000), funding: supports(item.funding_quote) ? String(item.funding).slice(0, 1000) : 'Funding not confirmed from this source', deadline: supports(item.deadline_quote) ? String(item.deadline).slice(0, 500) : 'Current deadline not confirmed', eligibility: supports(item.eligibility_quote) ? String(item.eligibility).slice(0, 1000) : 'Eligibility needs further review', retrieved_at: source.retrieved_at, quotes: { funding: supports(item.funding_quote) ? item.funding_quote : null, deadline: supports(item.deadline_quote) ? item.deadline_quote : null, eligibility: supports(item.eligibility_quote) ? item.eligibility_quote : null } };
   });
 }
-export async function executeTool(name, args, session, emit, agent, signal) {
+export async function executeTool(name, args, session, emit, agent, signal,{searchWorker=worker,searchCompletion=completion,pageWorker=worker}={}) {
+  signal?.throwIfAborted();
+  consumeRunTool(emit?.runSession,agent,name);
   emit({ type: 'activity', agent, label: `${agent === 'nova' ? 'Nova' : agent === 'sage' ? 'Sage' : agent === 'arjun' ? 'Arjun' : agent === 'leo' ? 'Leo' : 'Mira'} · ${name === 'read_page' ? `Reading ${new URL(args.url).hostname}` : name === 'search_web' ? `Searching: ${args.query}` : name === 'read_documents' ? 'Reviewing your documents' : name === 'github_profile' ? `Exploring GitHub: ${args.username}` : name === 'save_opportunities' ? 'Updating your shortlist' : 'Preparing your draft'}` });
   if (name === 'search_web') {
+    let searchFailed=false;const originalEmit=emit;emit=event=>{if(event.state==='failure'||/unavailable|empty|failed/i.test(event.label||''))searchFailed=true;originalEmit(event);};
+    const finishSearch=result=>{const saved=cacheSearch(session,args.query,result);if(searchFailed)emit({type:'activity',agent,state:'recovery',label:`Search recovered using ${saved.provider}. These remain discovery leads.`});return saved;};
     if (process.env.TAVILY_API_KEY) {
       try {
+        injectFailure(session,'search',emit,agent);
         const response = await fetch('https://api.tavily.com/search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.any([signal, AbortSignal.timeout(20000)]), body: JSON.stringify({ api_key: process.env.TAVILY_API_KEY, query: args.query, max_results: Math.min(args.limit || 6, 10) }) });
         if (!response.ok) throw new Error('Search unavailable');
-        const data = await response.json(); return { results: data.results.map(r => ({ title: r.title, url: r.url, snippet: r.content })), provider: 'Tavily', note: 'Discovery only; verify on official sources.' };
+        const data = await response.json(); return finishSearch({ results: (data.results||[]).map(r => ({ title: r.title, url: r.url, snippet: r.content })), provider: 'Tavily', note: 'Discovery only; verify on official sources.' });
       } catch (e) { if (signal.aborted) throw e; emit({ type: 'activity', agent, label: 'Search provider unavailable. Trying the fallback search…' }); }
     }
-    if (agentKey(agent) && process.env.SEARCH_PROVIDER !== 'ddgs') {
+    const secondary=await secondarySearch(args,signal,emit,agent,{before:()=>injectFailure(session,'search',emit,agent)});if(secondary)return finishSearch(secondary);
+    let independentFailed=false;
+    if(process.env.SEARCH_PROVIDER==='ddgs'){
+      try{injectFailure(session,'search',emit,agent);return finishSearch(await searchWorker(name,args,signal));}
+      catch(e){if(signal.aborted)throw e;independentFailed=true;emit({type:'activity',agent,label:'Independent search is unavailable. Trying Groq live search while keeping the saved evidence.'});}
+    }
+    if (agentKey(agent)) {
       try {
+        injectFailure(session,'search',emit,agent);
         emit({type:'activity',agent,label:`${agent === 'sage'?'Sage':'Nova'} is using Groq live browser search.`});
-        const response=await completion([{role:'system',content:'You are a search tool. Perform ONE live browser search for the supplied query. Return search results only, with their exact URLs. Do not open individual pages, do not do follow-up searches, do not invent URLs. The app uses Scrapling to read the pages separately.'},{role:'user',content:`Find up to ${Math.min(args.limit||8,10)} search results for: ${args.query}. Search only; no page opening.`}],{tools:[{type:'browser_search'}],modelOverride:process.env.GROQ_SEARCH_MODEL||'openai/gpt-oss-20b',agent,signal,emit,maxTokens:1800});
+        const response=await searchCompletion([{role:'system',content:'You are a search tool. Perform ONE live browser search for the supplied query. Return search results only, with their exact URLs. Do not open individual pages, do not do follow-up searches, do not invent URLs. The app uses Scrapling to read the pages separately.'},{role:'user',content:`Find up to ${Math.min(args.limit||8,10)} search results for: ${args.query}. Search only; no page opening.`}],{tools:[{type:'browser_search'}],modelOverride:process.env.GROQ_SEARCH_MODEL||'openai/gpt-oss-20b',agent,signal,emit,maxTokens:1800});
         const collected=[];
         const collect=value=>{if(!value||typeof value!=='object')return;if(typeof value.url==='string'&&/^https?:/.test(value.url))collected.push({url:value.url,title:value.title||value.name||value.url,snippet:String(value.content||value.snippet||value.text||'').slice(0,800)});for(const child of Object.values(value))if(child&&typeof child==='object')Array.isArray(child)?child.forEach(collect):collect(child);};
         for(const tool of response.executed_tools||[])collect(tool.search_results);
         const results=[...new Map(collected.map(r=>[r.url,r])).values()].slice(0,24);
         if(!results.length)throw new Error('The provider returned no search receipts.');
-        return {results,provider:'Groq browser_search',note:'URLs came from real executed search results, not generated prose. Discovery only; verify official pages with Scrapling.'};
-      }catch(e){if(signal.aborted)throw e;emit({type:'activity',agent,label:'Groq web search unavailable. Trying independent search…'});}
+        return finishSearch({results,provider:'Groq browser_search',note:'URLs came from real executed search results, not generated prose. Discovery only; verify official pages with Scrapling.'});
+      }catch(e){if(signal.aborted)throw e;emit({type:'activity',agent,label:independentFailed?'Both search services are unavailable. Keeping the checked sources.':'Groq web search unavailable. Trying independent search…'});}
     }
-    return worker(name, args, signal);
+    if(!independentFailed)try{injectFailure(session,'search',emit,agent);return finishSearch(await searchWorker(name,args,signal));}catch(e){if(signal.aborted)throw e;}
+    const cached=cachedSearch(session,args.query);if(cached){emit({type:'activity',agent,state:'recovery',label:'Search services are unavailable. Using cached discovery receipts; official claims still need verification.'});return cached;}
+    throw new Error('Search is temporarily unavailable. Saved sources remain available for verification.');
   }
   if (name === 'read_page') {
-    const data = await worker(name, args, signal);
+    injectFailure(session,'source',emit,agent);
+    const canonical=value=>{try{const u=new URL(value);u.hash='';u.pathname=u.pathname.replace(/\/+$/,'')||'/';return u.href;}catch{return value;}};
+    const cached=session.evidence.get(args.url)||[...session.evidence.values()].find(p=>canonical(p.url)===canonical(args.url));
+    const age=Date.now()-Date.parse(cached?.retrieved_at);
+    if(cached?.text&&age>=0&&age<86400000)return {...cached,cached:true,text:relevantText(cached.text),links:(cached.links||[]).slice(0,20),note:'Cached full-page fetch; original retrieval time retained. Full text remains available for quote validation.'};
+    let data;
+    try{data=await pageWorker(name,args,signal);}catch(error){
+      if(signal.aborted||!process.env.TAVILY_API_KEY)throw error;
+      emit({type:'activity',agent,label:'Scrapling could not read this page. Trying full-page Tavily Extract.'});
+      data=await extractPage(args.url,signal);
+    }
+    signal?.throwIfAborted();
+    if(session.sourceRecoveryPending){emit({type:'activity',agent,state:'recovery',label:'Official-source recovery succeeded. The replacement page was actually fetched.'});session.sourceRecoveryPending=false;}
     session.evidence.set(args.url, data); session.evidence.set(data.url, data);
-    return { ...data, text: relevantText(data.text), links: data.links.slice(0, 20), note: 'Relevant page excerpts for context efficiency. Full fetched text is kept for quote validation.' };
+    return { ...data, text: relevantText(data.text), links: (data.links||[]).slice(0, 20), note: 'Relevant page excerpts for context efficiency. Full fetched text is kept for quote validation.' };
   }
   if (name === 'read_documents') {
     if (!session.documents.length) return { error: 'No uploaded documents are available in this server session. Ask the student to upload them to this workspace.' };
@@ -101,13 +132,16 @@ export async function executeTool(name, args, session, emit, agent, signal) {
       return {repository:r.name,url:r.html_url,readme:(await response.text()).slice(0,5000)};
     }));
 
-    return { readmes: readmes.filter(r=>r.status==='fulfilled').map(r=>r.value), profile: { name: p.name, bio: p.bio, url: p.html_url, public_repos: p.public_repos }, repositories: repos.map(r => ({ name: r.name, url: r.html_url, description: r.description, language: r.language, topics: r.topics, stars: r.stargazers_count, fork: r.fork })), note: 'Repo metadata does not prove code authorship or proficiency. Do not invent achievements.' };
+    return { retrieved_at:new Date().toISOString(), readmes: readmes.filter(r=>r.status==='fulfilled').map(r=>r.value), profile: { name: p.name, bio: p.bio, url: p.html_url, public_repos: p.public_repos }, repositories: repos.map(r => ({ name: r.name, url: r.html_url, description: r.description, language: r.language, topics: r.topics, stars: r.stargazers_count, fork: r.fork })), note: 'Repo metadata does not prove code authorship or proficiency. Do not invent achievements.' };
   }
   if (name === 'save_opportunities') { const verified = verifyOpportunities(args.opportunities, session.evidence); session.opportunities = verified; emit({ type: 'opportunities', opportunities: verified }); return { saved: verified.length, opportunities: verified }; }
   if (name === 'save_application_draft') {
     if (!session.evidence.has(args.url)) throw new Error('Read the opportunity source before preparing a tailored application.');
     if (typeof args.content !== 'string' || args.content.length > 30000) throw new Error('Draft is missing or too long.');
-    session.draft = args.content; emit({ type: 'draft', content: args.content }); return { saved: true, note: 'Draft only. Nothing was submitted.' };
+    const opportunity=(session.opportunities||[]).find(o=>o.url===args.url&&o.integrity_checked===true);
+    if(!opportunity)throw Error('Choose an independently reviewed opportunity before saving a draft.');
+    const checked=validateDraft(args.content,session,opportunity),sourced=sourceDraft(session,opportunity);session.draftMeta={opportunityId:opportunity.id,url:args.url,createdAt:Date.now(),validation:'source-constrained',blockedClaims:checked.blocked,sources:sourced.sources,method:'source-grounded-template'};
+    session.draft = sourced.content; emit({ type: 'draft', content: sourced.content }); return { saved: true, blockedClaims:checked.blocked.length, note: 'Draft only. Nothing was submitted.' };
   }
   throw new Error(`Unknown tool: ${name}`);
 }

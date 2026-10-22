@@ -1,4 +1,4 @@
-/* Profile-first entry: existing forest/mint identity, editorial form, original 3D atlas. */
+/* Structural profile layout; the current visual system is in obsidian.css. */
 .main-panel{position:relative;isolation:isolate}
 .profile-start{--atlas-gold:#b29254;flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:38px clamp(24px,3vw,58px) 48px;display:grid;grid-template-columns:minmax(250px,.9fr) minmax(360px,1.1fr);gap:clamp(24px,3vw,55px);background:radial-gradient(ellipse at 15% 35%,#dce9cf66,transparent 55%),var(--bg);scrollbar-width:thin;scrollbar-color:var(--line) transparent}
 .theme-dark .profile-start{background:radial-gradient(ellipse at 15% 35%,#2d503366,transparent 60%),#101e18}
@@ -37,6 +37,8 @@
 .profile-start-fields small{font-size:6px;letter-spacing:.6px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:2px 4px}
 .profile-start-fields input{width:100%;min-width:0;border:1px solid var(--line);border-radius:8px;padding:12px 11px;background:var(--bg);font-size:11px;line-height:1.5;transition:border-color .2s,box-shadow .2s}
 .profile-start-fields input::placeholder{color:var(--subtle);opacity:.85}
+.profile-start-fields select,.profile-form select{width:100%;min-width:0;border:1px solid var(--line);border-radius:8px;padding:12px 11px;background:var(--bg);color:var(--text);font:inherit;line-height:1.5}
+.profile-start-fields select:focus,.profile-form select:focus{border-color:var(--green);outline:2px solid var(--gold-wash)}
 .profile-start-fields input:focus{border-color:var(--green);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 9%,transparent)}
 .profile-file-drop{display:flex;align-items:center;gap:12px;padding:17px;width:100%;border:1px dashed color-mix(in srgb,var(--green) 35%,var(--line));border-radius:10px;text-align:left;background:var(--surface);color:var(--green)}
 .profile-file-drop>span:nth-child(2){display:flex;flex-direction:column;gap:7px;min-width:0}.profile-file-drop strong{font-size:10px;font-weight:550}.profile-file-drop small{font-size:8px;color:var(--muted);line-height:1.6}.file-add{font-size:22px;font-weight:300;margin-left:auto}
@@ -47,23 +49,6 @@
 .profile-start-cta>span{flex:1}.profile-start-cta:hover{background:#326141}.theme-dark .profile-start-cta{background:#d2edb6;color:#1c3b25;border-color:#d2edb6}.theme-dark .profile-start-cta:hover{background:#e0f5cb}
 .profile-saved-link{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:16px 0 0;font-size:9px;color:var(--muted)}
 .profile-start-error{font-size:11px;line-height:1.6;color:#c44e46;background:#c44e4610;border-radius:8px;padding:12px;margin-bottom:0}
-.scholar-atmosphere{position:relative;isolation:isolate;overflow:hidden;min-width:0}
-.interactive-atlas{height:clamp(250px,26vw,400px);margin:5px -28px 0}
-.atlas-stage{position:absolute;inset:0;width:100%;height:100%;padding:0;cursor:grab;touch-action:pan-y;border-radius:24px;transition:none!important}
-.atlas-stage:active{transform:none!important;cursor:grabbing}
-.atlas-canvas{position:absolute;inset:0;pointer-events:none}
-.atlas-canvas>canvas{display:block;width:100%;height:100%;pointer-events:none}
-.atlas-aura{position:absolute;inset:5%;background:radial-gradient(ellipse,#bdd8a450,transparent 65%);filter:blur(14px);pointer-events:none}
-.atlas-dark .atlas-aura{background:radial-gradient(ellipse,#b2d88b24,transparent 65%)}
-.atlas-fallback{position:absolute;inset:18% 17%;pointer-events:none;opacity:.75}
-.atlas-fallback>span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:40%;aspect-ratio:1;border-radius:50%;font-size:40px;color:#b89a5e;background:radial-gradient(circle at 30% 25%,#fffdf1,#d6dec8 65%,#91a680);box-shadow:inset -12px -8px 30px #536b3e3b,0 0 45px #c1de9c33}
-.atlas-fallback>i{position:absolute;inset:8%;border:1px solid #b5985990;border-radius:50%;transform:rotate(-35deg) scaleY(.5)}.atlas-fallback>i:nth-child(2){transform:rotate(45deg) scaleY(.6);inset:0;border-color:#94bd7a90}.atlas-fallback>i:nth-child(3){transform:rotate(105deg) scaleY(.45);inset:15%;border-width:2px}
-.atlas-fallback>b{position:absolute;left:18%;top:26%;width:8px;height:8px;border-radius:50%;background:#b99b61}.atlas-fallback>b:nth-last-child(2){left:auto;right:13%;top:60%;background:#a4bf87}.atlas-fallback>b:last-child{left:40%;top:88%;width:5px;height:5px}
-.scholar-atmosphere[data-renderer=webgl] .atlas-fallback{opacity:0}.scholar-atmosphere[data-renderer=static] .atlas-canvas{display:none}
-.atlas-edition{position:absolute;top:16px;left:30px;right:30px;display:flex;align-items:center;gap:7px;font-size:6px;letter-spacing:1.5px;color:var(--muted);pointer-events:none}.atlas-edition>i{height:3px;width:3px;border-radius:50%;background:#b29254}.atlas-edition>span{margin-left:auto;font-size:6px;letter-spacing:.8px}
-.atlas-controls{position:absolute;bottom:7px;left:28px;right:28px;display:flex;align-items:center;gap:5px;color:var(--muted)}
-.atlas-controls>span{display:flex;align-items:center;gap:5px;margin-right:auto;font-size:7px}.atlas-controls>button{display:flex;align-items:center;gap:5px;padding:7px;border:1px solid var(--line);border-radius:20px;background:var(--bg);font-size:7px;color:var(--green)}
-.ambient-atlas{position:absolute;inset:65px 0 80px;pointer-events:none;z-index:0;opacity:.2}.ambient-atlas .atlas-canvas{inset:-20% -15%}.ambient-atlas .atlas-fallback{inset:25%}
 .main-panel.has-ambient{background:var(--chat)}
 .main-panel.has-ambient>.chat-scroll{background:transparent}
 .main-panel>.chat-header,.main-panel>.chat-scroll,.main-panel>.composer-area,.main-panel>.workspace-progress,.main-panel>.run-strip,.main-panel>.in-chat-search{position:relative;z-index:1}

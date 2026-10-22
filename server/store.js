@@ -1,3 +1,10 @@
+import {publicLeads} from '../shared/discovery-results.js';
+import {readableDraft} from './draft-validation.js';
+import {pipelineState} from './pipeline-state.js';
+import {statusMessageKey,dedupeStatusMessages} from '../shared/status-messages.js';
+import {archiveRun,historyList} from './run-history.js';
+import {aggregateMetrics} from './run-metrics.js';
+import {profileStrength} from './match-planning.js';
 import { mkdirSync, readFileSync, writeFileSync, renameSync, existsSync, readdirSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
@@ -20,8 +27,10 @@ export function sessionFor(id) {
   if (existsSync(filename)) {
     try { data = JSON.parse(readFileSync(filename, 'utf8')); } catch { throw new Error('This saved workspace could not be read. Start a new journey or restore its backup.'); }
   }
+  /** @type {import('../shared/models').SharedState} */
   const session = { profile: {}, documents: [], opportunities: [], messages: [], events: [], draft: '', run: null, facts: [], createdAt:Date.now(),profileRevision:0,...data, id, evidence: new Map(data.evidence || []), chatBusy: false };
   if (session.run?.status === 'running') { session.run.status = 'interrupted'; session.run.message = 'The server restarted. Resume to continue from saved findings.'; }
+  if(session.run?.pipeline)pipelineState(session);
   cache.set(id, session); return session;
 }
 export function saveSession(session, immediate = false) {
@@ -39,12 +48,23 @@ export function saveSession(session, immediate = false) {
 }
 export function record(session, event) {
   if(isDeleted(session.id))return {type:'workspace_deleted',sessionId:session.id};
+  if(event.type==='message'){
+    if(event.message.status)event.message.statusRunId=session.run?.id;
+    const key=statusMessageKey(event.message);
+    if(key&&session.messages.some(m=>statusMessageKey(m)===key))return null;
+  }
+  if(event.type==='activity'){
+    const last=session.events.at(-1);
+    if(last?.type==='activity'&&last.agent===event.agent&&last.label===event.label&&last.state===event.state&&last.waitUntil===event.waitUntil)return null;
+  }
   if (event.type === 'message') { event.message = { id: randomUUID(), time: Date.now(), ...event.message }; session.messages.push(event.message); }
   if (event.type === 'profile') Object.assign(session.profile, event.profile);
   if (event.type === 'opportunities') session.opportunities = event.opportunities;
   if (event.type === 'draft') session.draft = event.content;
   if (event.type === 'facts') session.facts = event.facts;
-  if (event.type === 'run' && event.run) { const { candidates, queries, attempted, rejected, profileSnapshot, ...publicRun } = event.run; event = { ...event, run: publicRun }; }
+  if (event.type === 'run' && event.run) { const { candidates, queries, attempted, rejected, profileSnapshot, ...publicRun } = event.run; event = { ...event, run: {...publicRun,discovered:publicLeads(event.run)} }; }
+  if(event.type==='metric'){session.metrics||=[];session.metrics.push({...event});if(session.metrics.length>1000)session.metrics.shift();event={...event,metrics:aggregateMetrics(session.metrics)};}
+  if(event.type==='run'&&['completed','partial','interrupted','paused'].includes(event.run?.status))archiveRun(session);
   const stored = { ...structuredClone(event), sequence: (session.events.at(-1)?.sequence || 0) + 1, time: Date.now() };
   session.events.push(stored); if (session.events.length > 500) session.events.splice(0, session.events.length - 500);
   saveSession(session); session.subscribers?.forEach(send => send(stored)); return stored;
@@ -62,8 +82,8 @@ export function deleteSession(session){
 export function snapshot(session) {
   const opportunities=distinctProgramPages(session.opportunities);
   const run=session.run?.coverage?{...session.run,coverage:researchCoverage(opportunities,!!session.draft&&session.draftMeta?.method!=='profile-template')}:session.run;
-  const draft=guardDraft(session.draft||'',{profile:session.profile,opportunity:session.opportunities.find(o=>o.id===session.draftMeta?.opportunityId)});
-  return { sessionId: session.id, profile: session.profile, profileRevision:session.profileRevision,researchBrief:session.researchBrief||null,profileConflicts:session.profileConflicts||[],documents: session.documents.map(({ text, ...d }) => d), messages: session.messages, opportunities, draftDocument: draft, facts: session.facts, run, activity: session.events.filter(e => e.type === 'activity').slice(-30), cursor: session.events.at(-1)?.sequence || 0 };
+  const draft=readableDraft(session);
+  return { profileAssessment:session.profileAssessment||null,metrics:aggregateMetrics(session.metrics||[]),runHistory:historyList(session),checklist:session.checklist||{},draftMeta:session.draftMeta||null,draftOptions:session.draftOptions||{},pendingEligibility:session.pendingEligibility||null,profileStrength:profileStrength(session.profile,session.documents,opportunities),demoFailures:session.demoFailures||{}, sessionId: session.id, profile: session.profile, profileRevision:session.profileRevision,researchBrief:session.researchBrief||null,profileConflicts:session.profileConflicts||[],documents: session.documents.map(({ text, ...d }) => d), messages: dedupeStatusMessages(session.messages), opportunities, draftDocument: draft, facts: session.facts, run:run?{...run,discovered:publicLeads(session.run)}:null, activity: session.events.filter(e => e.type === 'activity').slice(-30), cursor: session.events.at(-1)?.sequence || 0 };
 }
 export function listStudents(currentId){
  const ids=new Set(readdirSync(directory).filter(f=>f.endsWith('.json')).map(f=>f.slice(0,-5)));

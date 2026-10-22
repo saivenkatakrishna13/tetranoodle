@@ -1,3 +1,7 @@
 scrapling[fetchers]>=0.3.14,<1
 ddgs>=9,<10
 pypdf>=5,<7
+rapidocr-onnxruntime>=1.4,<2
+pypdfium2>=4,<6
+Pillow>=10,<13
+reportlab>=4,<5

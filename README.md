@@ -2,13 +2,13 @@
 
 A working AI scholarship finder presented as a WhatsApp-style group chat. Five specialist agents use real web research, official-source evidence and a student’s own documents to build a researched shortlist and an application draft.
 
-![ScholarX scholarship workspace](artifacts/ui-refined-light.png)
+![ScholarX landing page](artifacts/landing-dark.png)
 
 ![Agent architecture](docs/architecture.svg)
 
 ## Start the local demo
 
-Requirements: **Node.js 22+**, **Python 3.10+** (tested with Python 3.12), and a Groq account with access to the configured models.
+Requirements: **Node.js 22+**, **Python 3.10–3.12** (Python 3.12 recommended for the local OCR dependencies), and a Groq account with access to the configured models.
 
 ```sh
 npm ci
@@ -46,7 +46,7 @@ Open **http://127.0.0.1:3001/**.
 
 ## Try the complete workflow
 
-1. Open the profile from the attachment menu or your avatar. Share a current degree/field, preferred countries, intended degree, original academic scale, and funding needs. Unknown details can stay empty.
+1. Open the landing page and click **Launch app**. New students start with the manual profile form; saved workspaces remain at `/app`. You can also open the profile from the attachment menu or your avatar. Share a current degree/field, preferred countries, intended degree, original academic scale, and funding needs. Unknown details can stay empty.
 2. Upload a resume and transcript. Text PDFs, DOCX, TXT and Markdown are supported. The team extracts supported facts and can inspect a supplied public GitHub profile and other supplied public URLs.
 3. Click **Start scholarship research**, or explicitly ask the team to begin research after sharing the essential profile details.
 4. Follow the durable job through profile, discovery, official-source checks, ranking, writing and final review. Refreshing the browser does not cancel the job. Pause and Resume retain progress.
@@ -78,10 +78,10 @@ Use the sun/moon button in the chat header to switch instantly on desktop or pho
 
 | Agent | Responsibility | Actual capabilities |
 | --- | --- | --- |
-| Mira | Plans the next conversational turn, coordinates research, reviews the final handoff | Groq planning, shared artifacts, final review |
+| Mira | Coordinates the ordered run, ranks the top five, posts one final summary | Groq planning, shared artifacts, ranking and final handoff |
 | Arjun | Understands academic background and supported achievements | Resume/transcript extraction, GitHub API, supplied public pages |
 | Nova | Discovers distinct programs and scholarships | Actual web-search receipts, provider fallback, candidate selection |
-| Sage | Checks admission and funding separately and ranks matches | Scrapling official-page reading, source excerpts, eligibility criteria and gaps |
+| Sage | Checks official evidence, admission and funding separately | Scrapling official-page reading, source excerpts, eligibility criteria and gaps |
 | Leo | Writes one opportunity-specific application draft | Confirmed student facts, official requirements, explicit placeholders |
 
 In ordinary chat the coordinator selects **one relevant public speaker per user turn**, with one focused follow-up. The team does not all ask questions simultaneously. In a full run, each specialist contributes its own artifact in sequence and can build on previous findings.
@@ -96,9 +96,9 @@ Role models are configurable using `GROQ_MODEL_MIRA`, `GROQ_MODEL_ARJUN`, `GROQ_
 
 The workflow distinguishes **specific university degree programs** from **scholarship awards**. A valid degree program can remain a conditional candidate even when funding is unknown. A funding page does not establish admission, and tuition-free study does not establish living-cost support.
 
-A second research pass follows relevant official funding, graduate-admissions and intake pages for up to eight promising leads. It uses a stronger verifier that selects numbered source passages; the server attaches their actual text and URLs. Each practical application step has its own evidence. Long navigation menus no longer crowd out facts at the end of a page.
+Within each candidate’s bounded eligibility check, Sage follows relevant official funding, graduate-admissions and intake pages. It uses a stronger verifier that selects numbered source passages; the server attaches their actual text and URLs. Each practical application step has its own evidence. Long navigation menus no longer crowd out facts at the end of a page.
 
-A saved detailed claim needs a matching excerpt from a successfully retrieved page. Excerpts with omissions are accepted only when every retained fragment appears in order. Mira independently reviews whether the excerpt actually supports the claim, downgrades unsupported grade assumptions and checks institution identity. Explicit dated deadlines are checked against the calendar rather than trusting the model’s open/expired label. The application draft receives a separate factual review before it is saved. Completion requires ten distinct opportunities, five non-excluded recommendations, a draft, and verified funding, intake/deadline information, requirements and application instructions for all five. Otherwise the pack is explicitly partial, with a per-opportunity list of gaps. An annual day/month alone does not establish a current intake year. Every retained excerpt includes its URL and retrieval date. Unsupported funding, deadlines and requirements stay unknown. Official ownership, degree level, nationality, academic requirements, language tests, work experience, current intake and award coverage must be considered separately. Unknown nationality is not inferred from the student’s city.
+A saved detailed claim needs a matching excerpt from a successfully retrieved page. Excerpts with omissions are accepted only when every retained fragment appears in order. Sage’s independent critic pass reviews whether the excerpt actually supports the claim, downgrades unsupported grade assumptions and checks institution identity. Explicit dated deadlines are checked against the calendar rather than trusting the model’s open/expired label. The application draft receives a separate factual review before it is saved. Completion requires ten distinct opportunities, five non-excluded recommendations, a draft, and verified funding, intake/deadline information, requirements and application instructions for all five. Otherwise the pack is explicitly partial, with a per-opportunity list of gaps. An annual day/month alone does not establish a current intake year. Every retained excerpt includes its URL and retrieval date. Unsupported funding, deadlines and requirements stay unknown. Official ownership, degree level, nationality, academic requirements, language tests, work experience, current intake and award coverage must be considered separately. Unknown nationality is not inferred from the student’s city.
 
 Quote matching establishes provenance, not perfect semantic interpretation. Full eligibility and competitive award decisions still belong to the institution/provider. The interface exposes conditional verdicts, missing information and financial caveats rather than admission or scholarship guarantees.
 
@@ -110,7 +110,7 @@ The reader rejects non-web schemes, private IPs and redirects to private network
 
 Chat history, profile details, documents, evidence, ranked candidates, drafts and job events survive restarts. A restarted active job is marked interrupted, and Resume continues from saved evidence and candidates. The app is a **single-user local demo**, with no public multi-user hosting or authentication. Do not expose the loopback API as a shared service.
 
-Upload limits: 10 MB per file, four files per upload, twelve documents per workspace. PDF extraction reads up to forty pages; oversized extracted text is capped. Scanned PDFs require OCR and produce a clear request for a text-based file. OCR is not represented as completed work.
+Upload limits: 10 MB per file, four files per upload, twelve documents per workspace. PDF extraction reads up to forty pages; oversized extracted text is capped. Scanned PDFs now use local PDFium/RapidOCR fallback (up to six scanned pages per upload); text PDFs keep their fast path. Extraction metadata identifies OCR. A poor scan or timeout may still require a clearer or smaller file.
 
 ## Validation and submission material
 
@@ -121,13 +121,13 @@ npm run test:ui    # keep npm run dev running
 npm run build
 ```
 
-Backend tests exercise source provenance, unsupported claims, eligibility downgrades, ranking, persistence/restart recovery, Word extraction and private-network rejection. Browser tests cover responsive chat, independent long-message scrolling, fixed composer/header, stream handling, refresh persistence, replies, stars, source evidence, application views and upload failure. Controlled browser tests do not spend Groq quota.
+Backend tests exercise source provenance, unsupported claims, eligibility downgrades, ranking, persistence/restart recovery, Word extraction and private-network rejection. Browser tests cover responsive chat, independent long-message scrolling, fixed composer/header, stream handling, refresh persistence, replies, source evidence, application views and upload failure. Controlled browser tests do not spend Groq quota.
 
 Live smoke tests use actual provider calls and real official pages. `scripts/live-run.mjs` runs the complete fictional Rahul scenario; `--alternate` uses the economics/public-policy profile. `TETRA_URL` and `TETRA_WORKSPACE_ID` can select an isolated local test server/workspace. Generated validation snapshots and research reports are in `artifacts/` when a live run finishes.
 
 The retained research reports use Rahul’s Computer Science profile and a separately supplied Communication Design → Interaction Design profile. Their demo workspaces have since been deleted; their earlier results remain historical evidence. New students use the same profile-driven engine. See [the current requirements audit](docs/requirements-audit.md) for evidence availability, unresolved gaps and historical draft checks. The older economics profile is also retained as historical demonstration data.
 
-Recommendations remain conditional. Unpublished intake dates, unconfirmed award coverage and missing student details keep a pack partial. The automated validation passed **55 backend checks and 23 browser checks**, the production build, and the dependency audit (zero reported vulnerabilities). A separate unmocked browser walkthrough checks real uploads, Groq replies, student switching, phone layout, downloads and refresh.
+Recommendations remain conditional. Unpublished intake dates, unconfirmed award coverage and missing student details keep a pack partial. The automated validation passed **118 backend checks and 43 browser checks**, plus the shared type contracts, the production build, and the dependency audit (zero reported vulnerabilities). A separate unmocked browser walkthrough checks real uploads, Groq replies, student switching, phone layout, downloads and refresh.
 
 Submission material:
 
@@ -147,15 +147,13 @@ Run `node scripts/check-live-ui.mjs` for the unmocked website walkthrough, `node
 
 Daily token/request exhaustion switches once to `GROQ_DAILY_FALLBACK_MODEL` (the checked configuration uses `qwen/qwen3.8-27b`). The same role, input and saved evidence continue on that model. If both budgets are unavailable, the run saves progress and reports the limitation instead of retrying indefinitely. Unreviewed leads cannot enter the top five or generate an application draft. The independent reviewer checks official publisher ownership and requirement meaning before recommendations are published.
 
-Research passes now have an eight-minute work budget (`RESEARCH_BUDGET_MS`), followed by bounded draft preparation (`DRAFT_BUDGET_MS`, default 45 seconds). Missing dates or funding details alone do not trigger repeated discovery waves. Independent `ddgs` search avoids spending Groq tokens on search discovery. The group shows elapsed time and a live provider retry countdown.
+Research runs have an eight-minute total active budget (`RESEARCH_BUDGET_MS`), with draft preparation reserved inside it (`DRAFT_BUDGET_MS`, default cap 45 seconds), and a 100-call logical tool/model budget (`RESEARCH_MAX_TOOL_CALLS`). Missing dates or funding details alone do not trigger repeated discovery waves. Independent `ddgs` search avoids spending Groq tokens on search discovery. The group shows elapsed time and a live provider retry countdown.
 
 **Use saved results** stops further research and prepares a pack from already reviewed findings. If AI drafting is unavailable, the application section receives an explicitly labelled profile-based scaffold with placeholders; this does not qualify as a fully complete pack. Saved sources and unknown requirements remain visible, and nothing is submitted.
 
-The interface now uses a forest and mint design inspired by the supplied AI-agent references, with the same group-chat workflow. See [design details and current previews](docs/ui-refinement.md).
+The interface uses the Obsidian Gold palette with light/dark/system appearance. The supplied 3D landing page lives at `/`; the existing group-chat workspace lives at `/app`. Landing WebGL is disposed while the workspace is visible. See [frontend integration](docs/frontend-experience.md).
 
-In Matches, **Verify missing details** revisits the saved top five with targeted official-source searches, without restarting candidate discovery. Completed recommendations are left intact. Admission searches follow the student’s actual study level, and an immediate pause now cancels work before profile or web calls begin.
-
-Run `node scripts/live-run.mjs --details` to verify fictional Rahul’s saved shortlist without restarting discovery. It requires an existing independently reviewed opportunity and preserves the saved profile and documents.
+During eligibility, Sage targets missing fields on official domains, with at most two attempts per field and 45 seconds total per candidate. Once the pipeline finishes, Matches shows saved findings and the run stays closed. Manual Resume continues an unfinished cursor; an explicit fresh run is required for more source research. The existing missing-student-info action rechecks only matches affected by the supplied answer. An immediate pause cancels work before profile or web calls begin.
 
 Delete a student through **Chat menu → Switch student → trash icon**, then confirm the named student. This removes that workspace’s profile, documents, messages, source evidence and draft; another saved student or a fresh workspace opens when the active student is deleted. Existing downloaded exports and manual backups are separate. Deleted IDs cannot be recreated by old URLs or delayed saves.
 
@@ -163,4 +161,51 @@ When a Groq request hits a limit, ScholarX shows an in-app notification naming t
 
 If required profile details are missing, **Start research** opens Arjun’s questions in the group chat. He asks for current studies, intended degree and subject, and preferred countries one at a time, saves explicit answers, and starts the research job automatically after the final required answer. Uploaded documents are checked first when available. Other missing facts remain unknown. You can also fill the profile form, refresh midway, or say “not now” to pause collection. [Live intake validation](artifacts/intake-validation.json).
 
-The website now opens a **manual profile-first screen** for new students, with a calm interactive Three.js Possibility Atlas in ScholarX’s forest/mint palette. Save the profile and optional documents to start the existing agent workflow; Arjun asks for any missing essentials in chat before discovery. Existing conversations, saved research, matches and drafts keep their current workflows. [Design, performance and validation](docs/profile-first-ui.md).
+After the landing page, the workspace opens a **manual profile-first screen** for new students, with the lightweight gold particle background and agent constellation. Save the profile and optional documents to start the existing agent workflow; Arjun asks for any missing essentials in chat before discovery. Existing conversations, saved research, matches and drafts keep their current workflows. [Design, performance and validation](docs/profile-first-ui.md).
+
+
+## Research tools and the approved enhancements
+
+Open **Chat menu → Research tools** for the live agent graph, profile-completeness suggestions, actual per-agent tokens/response time, scoped failure-demo controls, saved-run history/diffs and optional browser audio. Costs remain Missing until cited prices are configured. Failures and successful recoveries are real workflow events; injected failures are labelled DEMO.
+
+**Matches** adds explicit verification/trust badges, numeric score components and adjustments, deadline countdown/urgency sorting, source-backed cost-gap estimates, a persistent application checklist and Sage’s targeted missing-information resolver. Unavailable costs, dates and student details stay Missing. Existing comparison and explanation panels remain available.
+
+**Applications** adds source-constrained English/Hindi/Spanish/French templates and DOCX export. Student facts and source quotations retain their original language. Both ordinary-chat and full-run draft-save paths block unsupported prose, and historical display/export applies the same protection without rewriting stored originals. PDF export of reviewed top-five matches is available beside the existing Markdown export.
+
+**Student workspaces → Load fictional Rahul demo** creates a separate input profile. No opportunities are seeded. New profiles continue to use the same subject- and country-driven research engine.
+
+```sh
+npm run test:types
+npm test
+npm run test:ui
+npm run build
+npm run test:e2e:profiles                 # real providers, isolated temporary student data
+node scripts/e2e-profiles.mjs --budget=120000  # shorter bounded live validation
+```
+
+The three-profile script exercises CS, economics and design through the real website/API. It returns **0** only when every pack meets research completion, **2** for partial research, and **1** for workflow errors. The retained two-minute-per-profile run had no page errors but remained partial (two, zero and one reviewed opportunities); it is not proof of a fully verified top five. Default research passes retain their eight-minute budget.
+
+Implementation tradeoffs, optional search/pricing settings and retention behavior: [NOTES](NOTES.md). Full before/after checklist, exact enhancement-only changed files and short demonstrations: [enhancement audit](docs/enhancements-audit.md).
+
+To re-record the five-minute walkthrough, prepare two saved fictional/consented student packs and set `TETRA_RECORDING_PRIMARY_WORKSPACE` and `TETRA_RECORDING_ALTERNATE_WORKSPACE` before running `node scripts/record-demo.mjs`. The script uses those workspace IDs rather than deleted historical demo IDs. Existing retained recordings remain historical artifacts.
+
+
+## Strict research pipeline
+
+`Arjun profile → Nova discovery → Sage eligibility → Mira top five → Leo draft → Mira final summary` is persisted in `server/pipeline-state.js`. Arjun produces the profile once. Nova stops at ten real source-backed candidate URLs; only dead or clearly ineligible candidates permit one shortfall search before Sage finishes. Missing evidence stays visible and never triggers discovery waves. Mira ranks once, Leo saves one draft, and Mira closes the run with one Complete or Partial summary. Existing search fallbacks, failure injection, storage and SSE transport are reused.
+
+Run `node scripts/check-pipeline.mjs` after `npm run build` for unmocked Rahul and Arts/Germany browser/API/provider validation in isolated temporary storage. Use `--case=rahul` or `--case=arts-germany` for one case. The report records phase order, lifecycle events, tool/candidate budgets, real verified counts and UI checks. Partial source evidence is reported honestly; it is never promoted to a complete pack.
+
+Latest strict-pipeline validation: [implementation, before/after audit and actual profile results](docs/strict-pipeline-validation.md). Both profiles passed workflow checks; research remains partial (Rahul: five conditional recommendations, Arts/Germany: two, neither fully verified across five). The live runner returns 0 for complete research, 2 for a correctly handled partial outcome and 1 for workflow errors.
+
+Profile and evidence updates (22 October 2026): the starter and profile editor accept an intake term, original score scale (/10, /4, %) and funding level (none/partial/full), with optional amount/details. Grades are never converted. Sourced intake start dates are compared with graduation; missing dates remain unknown. Case-only names use document spelling while real academic conflicts still stop research. Arjun caches one source-backed summary per profile/document revision and reports restricted LinkedIn content explicitly. GitHub facts link to their repositories and do not prove proficiency or authorship.
+
+Sage sends bounded relevant passages to `GROQ_EXTRACTION_MODEL` (default `openai/gpt-oss-20b`) while retaining full fetched pages in the existing evidence cache. The critic preserves genuinely relevant but ambiguous claims as **Partial**, with source and note. **Verified (with note)** requires a supported narrow claim. Partial claims never increase the fully verified count. Ordinary chat does not duplicate the full discovery run or replace the saved shortlist.
+
+`RESEARCH_RESERVE_CALLS` defaults to 14, capped at 15% of the run’s tool-call budget, to leave room for ranking and a fact-checked draft. Rate-limit scheduling, failure injection, manual Resume, Save partial results and Nova’s ten-candidate stop remain in place.
+
+To validate a consented existing student without modifying their workspace:
+```sh
+node scripts/check-current-profile.mjs --workspace=<workspace-id> --intake-term=Summer
+```
+This makes live API calls within the existing eight-minute/100-call budget, saves a redacted report in `artifacts/current-profile-evidence-validation.json`, and keeps personal validation checkpoints under private `.data/qa/`.

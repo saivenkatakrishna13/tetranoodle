@@ -8,7 +8,9 @@
     "build": "vite build",
     "start": "node server/index.js",
     "test": "node --test tests/*.test.js",
-    "test:ui": "playwright test"
+    "test:ui": "playwright test",
+    "test:types": "tsc -p tsconfig.contracts.json",
+    "test:e2e:profiles": "node scripts/e2e-profiles.mjs"
   },
   "dependencies": {
     "dotenv": "^16.6.1",
@@ -26,6 +28,7 @@
     "@playwright/test": "^1.56.0",
     "@vitejs/plugin-react": "^4.7.0",
     "concurrently": "^9.2.1",
+    "typescript": "^7.0.2",
     "vite": "^6.3.5"
   }
 }

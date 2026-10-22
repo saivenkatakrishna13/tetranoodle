@@ -1,0 +1,22 @@
+/* Shared ScholarX palette. Appearance is owned by the app shell. */
+:root {
+  --scholar-bg: #090a0c;
+  --scholar-surface: #111317;
+  --scholar-card: #181a1f;
+  --scholar-text: #f4f0e8;
+  --scholar-muted: #a3a3aa;
+  --scholar-gold: #c6a66b;
+  --scholar-line: rgba(198,166,107,.16);
+}
+:root[data-theme="light"] {
+  --scholar-bg: #f4f0e8;
+  --scholar-surface: #faf8f3;
+  --scholar-card: #f0ece4;
+  --scholar-text: #292620;
+  --scholar-muted: #72695d;
+  --scholar-gold: #85632f;
+  --scholar-line: rgba(156,120,72,.15);
+}
+.workspace-host[hidden] { display: none !important; }
+.app-shell .workspace-home { display: inline-flex; align-items: center; gap: 5px; color: #c6a66b; font-size: 9px; letter-spacing: 0; margin-top: 5px; width: fit-content; }
+.app-shell .workspace-home:hover { color: #f4f0e8; }

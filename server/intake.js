@@ -2,7 +2,7 @@ import {randomUUID} from 'node:crypto';
 import {structured} from './groq.js';
 import {missingEssentials,PROFILE_FIELDS,labeledProfileFacts} from './profile.js';
 
-export const REQUIRED_QUESTIONS={degree:'What are you studying right now?',target_degree:'What degree and subject would you like to pursue next?',countries:'Which countries would you like us to focus on?'};
+export const REQUIRED_QUESTIONS={degree:'What is your current degree and field of study (for example, final-year B.Tech Computer Science)?',target_degree:'What degree and subject would you like to pursue next (for example, a master’s in Computer Science)?',countries:'Which countries would you like us to focus on?'};
 const norm=value=>String(value||'').replace(/\s+/g,' ').trim().toLowerCase();
 export function supportedIntakeFields(fields,message){
  const text=norm(message),patch={};

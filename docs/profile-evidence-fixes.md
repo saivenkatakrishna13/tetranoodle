@@ -1,0 +1,45 @@
+# Profile, evidence and attached fixes — 22 October 2026
+
+Existing ScholarX checkout preserved. No project recreation, dependency replacement, or original student-session writes. After the user supplied a replacement key, only GROQ_API_KEY_SAGE was updated in the ignored .env file; its request check succeeded, and the backend was reloaded. Other credentials were preserved. The reference files from `Downloads/scholarx-fixes` were compared and merged selectively: their complete `agents.js` copy would have removed the intake, scale and funding fields already in progress.
+
+| Requested fix | Before | Current implementation and evidence |
+| --- | --- | --- |
+| Intake term and graduation | No explicit term control or graduation/start check | `src/ProfileFieldInput.jsx`, `src/ProfileStart.jsx`, `src/App.jsx`: Fall/Winter/Spring/Summer. `server/intake-dates.js:intakeCompatibility` and `server/research.js:validateReview` exclude earlier starts. Missing actual provider start dates stay unknown. Season planning is explicitly labelled, never presented as an official university date. |
+| Critic consistency | `auditPack` dropped flagged fields even when a relevant passage existed | `reviewedField`, `validateReview`, `auditPack`: preserve exact relevant evidence as Partial with a note; supported narrow claims may be Verified (with note). Unrelated awards, fabricated quotes and inferred deadline years still fail. `evidenceCoverage` excludes Partial from full verification. |
+| GitHub / LinkedIn | GitHub facts depended on another summarization call; restrictions were not consistently explained | `server/profile-facts.js:githubFacts`: repository names, languages, topics and README technology sections become repo-linked facts, with authorship/proficiency caveats. `restrictedProfile` and `enrichProfile` explicitly report unreadable LinkedIn content. |
+| Request size / caching | Large project metadata, menus and page contexts could exceed the fallback model’s allowance | `server/tools.js:executeTool` reuses 24-hour full-page fetches by URL, retaining original timestamps/full text. `reviewCandidate` sends bounded relevant excerpts and compact enrichment. `resolveOfficialSource` bounds observed link metadata. `detailPassages` budgets focused passages. `GROQ_EXTRACTION_MODEL` defaults to GPT-OSS 20B; existing provider fallback/scheduling is preserved. |
+| One Arjun summary per change | Document, GitHub and public-profile summaries could appear separately or repeat | `profileReviewSignature`, `enrichProfile`, `shared/status-messages.js:statusMessageKey`: one combined summary per profile/document revision; identical fresh runs reuse cached facts. |
+| Name spelling / real conflicts | Model-reported case differences could block research | `realProfileConflict` compares names without case/punctuation differences; Arjun adopts supported document spelling. Different CGPAs and actual names still block. |
+| Grade / funding controls | Free text only | Shared field component in starter and profile editor. `/10`, `/4`, `%` preserve original scale with bounds validation; funding none/partial/full plus optional amount/details. No invented scale or currency conversion. |
+| Attached: reserve finalization calls | Source work could spend the calls needed for drafting | `server/pipeline-state.js:laterPhaseReserve`, `consumeRunTool`, `orderedPipeline`: 14 calls by default, capped at 15% of run budget, reserved from discovery/eligibility for rank/draft. Tiny budgets do not starve. |
+| Attached: ordinary chat | Nova/Sage role instructions still described a full ten-candidate task in chat | `server/agents.js:ROLES`: focused chat work; full discovery/verification belongs to Start research. Ordinary verification preserves the saved shortlist. |
+| Attached: chat robustness | Malformed coordinator JSON threw; URLs containing `?` could remove a cited sentence; date froze at module load | `planTurn` safe fallback, `focusedReply` URL-aware question filtering, `baseText` evaluated per turn. |
+
+## Validation
+
+- Final automated validation: **131 backend tests, 45 browser tests, typed contracts, production build and whitespace checks pass**. New regressions cover intake exclusions, exact grade scale, genuine conflicts, one summary per change, GitHub provenance, LinkedIn restrictions, evidence retained as Partial, caveated verification, URL cache/failure injection, bounded Sage context, reserved finalization calls and URL query-string citations.
+- Existing strict pipeline, provider recovery/scheduling, Save partial results, deletion, chat scrolling, document/match/application tabs, theme persistence, landing light reload and ambient-motion checks remain in the full suites.
+- Live current-profile runner: `scripts/check-current-profile.mjs --workspace=<consented workspace ID> --intake-term=Summer`. It clones the existing profile and uploaded document into private isolated storage, starts fresh discovery, records real SSE milestones, checks terminal Resume, and opens actual Matches in Chromium. The original session file is hash checked before/after.
+- Baseline saved pack: **0 fully verified, 4 recommendations**. The user explicitly selected **Summer 2027** for validation; graduation remains May 2027. Original saved preferences are not silently edited.
+- First diagnostic pass: 10 discovered, 10 bounded checks, 59 logical calls, 272.5 seconds, 0 fully verified and no independently verified recommendations/draft. Provider daily/size limits prevented independent audit; no invented results were supplied. `artifacts/current-profile-evidence-before-compaction.json` is diagnostic, not evidence of completed research. Remaining request bloat was then removed and a new pass started.
+- Second diagnostic with the old Sage key: 10 discovered and checked, 66 logical calls, 250.1 seconds, one identity-confirmed conditional recommendation and a labelled scaffold; 0 fully verified. All workflow checks passed, but delivery goals were not met. Diagnostic report: `artifacts/current-profile-evidence-before-key-update.json`.
+- The user then supplied a replacement key. A real GPT-OSS 20B request through Sage succeeded without a quota event. A third isolated validation uses that replacement. Final live results in `artifacts/current-profile-evidence-validation.json`: **10 found, 10 checked, 2 conditional recommendations, 0 fully verified (before: 0)**. Two recommendation fields are Verified and six Missing. The run finished Partial in **347,986 ms (5m48s)** with **67/100 logical calls** and a labelled profile scaffold. All 17 workflow checks passed, including phase order, once-only lifecycle events, no work after done, bounded retries/time, Nova stopping at ten, one Arjun summary, one final summary, real Matches labels, terminal Resume no-op and unchanged original-session hash. Two new Sage **tokens-per-minute** responses occurred; no daily-limit response occurred on the replacement key. The remaining five-match/full-evidence/AI-reviewed-SOP delivery goal is **not met**. A workflow can finish correctly with a Partial delivery; this does not satisfy the five fully evidenced recommendations goal. Partial claims must never be counted as verified.
+
+## Files changed for this task
+
+Backend: `server/agents.js`, `server/pipeline-state.js`, `server/profile.js`, `server/profile-facts.js`, `server/intake-dates.js`, `server/research.js`, `server/research-details.js`, `server/research-quality.js`, `server/tools.js`, `server/official-source.js`.
+
+Shared: `shared/profile-options.js`, `shared/models.js`, `shared/models.d.ts`, `shared/status-messages.js`, `shared/match-planning.js`.
+
+Frontend: `src/ProfileFieldInput.jsx`, `src/ProfileStart.jsx`, `src/profileFields.js`, `src/App.jsx`, `src/profile-start.css`, `src/MatchDetails.jsx`, `src/Matches.jsx`.
+
+Checks: `tests/profile-evidence.test.js`, `tests/budget-reserve.test.js`, `tests/conversation.test.js`, `tests/verification-flow.test.js`, `tests/browser/profile-start.spec.js`, `tests/browser/enhancements.spec.js`, `scripts/check-current-profile.mjs`.
+
+Configuration/docs: `.env.example`, `README.md`, this file, `docs/RESUME_CHECKPOINT.md`, redacted live reports under `artifacts/`. Only the Sage credential in ignored `.env` was changed at the user’s explicit request; no secret is included in the reports.
+
+## Quick demonstration
+
+1. Open a new profile: choose Summer, 2027, graduation May 2027, grade 3.5 with `/4`, and Full funding; save. The stored grade remains 3.5 / 4. A Spring 2027 request is not recommended before that graduation.
+2. Open Matches → per-field labels / Source evidence: Partial retains its actual source and caveat, separately from Missing and Verified (with note).
+3. Supply a public GitHub URL and uploaded transcript: Arjun posts one summary, repository facts link to repos, restricted LinkedIn content is explained, case-only name spelling is adopted. A different CGPA still requires correction.
+4. Research run: Nova hands off at ten; Mira and Leo retain finalization calls after source budget exhaustion. A finished run stays finished on manual Resume.

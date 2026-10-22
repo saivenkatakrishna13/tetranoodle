@@ -1,0 +1,386 @@
+/* ScholarX — Obsidian Gold. Presentation only; legacy token names are aliases. */
+:root{background:#090a0c;color:#f4f0e8;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+:root[data-theme=dark]{background:#090a0c;color:#f4f0e8}
+:root[data-theme=light]{background:#f4f0e8;color:#26231e}
+.app-shell{
+ --gold:var(--scholar-gold);--gold-bright:#a17b3f;--gold-wash:#9c78480d;
+ --bg:var(--scholar-surface);--surface:var(--scholar-card);--hover:#eae4d9;--line:#9c784826;
+ --text:var(--scholar-text);--muted:var(--scholar-muted);--subtle:#74695d;--chat:#f4f0e8;
+ --bubble:#fcfaf6;--outgoing:#eee5d4;--selected:#b18d5614;
+ --green:var(--gold);--accent:var(--gold);--rail:#0c0d10;
+ background:var(--bg);color:var(--text);font-size:13px;letter-spacing:-.1px;
+ grid-template-columns:70px 290px minmax(0,1fr);
+ --ease:cubic-bezier(.22,1,.36,1);
+}
+.app-shell.theme-dark{
+ --gold:var(--scholar-gold);--gold-bright:#dfc58f;--gold-wash:#c6a66b0b;
+ --bg:var(--scholar-surface);--surface:var(--scholar-card);--hover:#202126;--line:var(--scholar-line);
+ --text:var(--scholar-text);--muted:var(--scholar-muted);--subtle:#93939b;--chat:var(--scholar-bg);
+ --bubble:#15171c;--outgoing:#262219;--selected:#c6a66b12;
+ --green:var(--gold);--accent:var(--gold);--rail:#0c0d10;
+}
+.app-shell button,.app-shell a,.app-shell input,.app-shell textarea,.app-shell select{transition:color 200ms,background-color 200ms,border-color 200ms,box-shadow 200ms,transform 250ms var(--ease)}
+.app-shell button:focus-visible,.app-shell a:focus-visible,.app-shell select:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+.app-shell input:focus-visible,.app-shell textarea:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+.app-shell ::selection{background:#c6a66b40;color:var(--text)}
+.app-shell input::placeholder,.app-shell textarea::placeholder{color:var(--subtle);opacity:1}
+.app-shell input,.app-shell textarea,.app-shell select{transition:border-color 200ms,box-shadow 200ms}
+.app-shell .icon-button{color:var(--muted);border-radius:9px}
+.app-shell .icon-button:hover{color:var(--gold);background:var(--selected)}
+.app-shell .primary-button,.app-shell .profile-start-cta,.app-shell .research-button{
+ background:#c6a66b;color:#14120e;border:1px solid #d4b67d;border-radius:8px;
+ box-shadow:inset 0 1px #f8e2b42b;font-weight:600;
+}
+.app-shell .primary-button:hover,.app-shell .profile-start-cta:hover,.app-shell .research-button:hover{background:#d7b981;color:#14120e;box-shadow:inset 0 1px #fff4;transform:translateY(-1px)}
+.app-shell .secondary-button{background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:8px}
+.app-shell .secondary-button:hover{border-color:var(--gold);background:var(--selected)}
+.app-shell .rail{background:#0c0d10;border-color:#c6a66b1c;padding-top:25px}
+.app-shell .brand-symbol{background:transparent;color:#d9be87;border:1px solid #c6a66b55;border-radius:11px;box-shadow:none;font-size:29px;font-weight:550;width:39px;height:39px;letter-spacing:-3px}
+.app-shell .rail .icon-button{color:#9b9790}
+.app-shell .rail-items{gap:14px;margin-top:34px}
+.app-shell .rail-items .active{background:#c6a66b13;color:#d7b981;box-shadow:none}
+.app-shell .rail .icon-button:hover{background:#c6a66b12;color:#dfc58f}
+.app-shell .nav-count{background:#c6a66b;color:#14120e;font-weight:600}
+.app-shell .rail .user-avatar{background:#28231b;color:#dec38e;border-color:#c6a66b47}
+.app-shell .sidebar{
+ --bg:#111317;--surface:#181a1f;--hover:#202126;--line:#c6a66b20;--text:#f4f0e8;
+ --muted:#a3a3aa;--subtle:#93939b;--gold:#c6a66b;--green:#c6a66b;--accent:#c6a66b;--selected:#c6a66b12;
+ background:#111317;border-right:1px solid #c6a66b20;
+}
+.sidebar .sidebar-header{padding:29px 18px 25px 23px}
+.sidebar .sidebar-header h1{font-size:29px;letter-spacing:-1.3px;font-weight:550;color:#f4f0e8}
+.sidebar .small-brand{font-size:7px;letter-spacing:2.2px;color:#bc9f6b;font-weight:500}
+.sidebar .sidebar-header .icon-button{color:#93939b}
+.sidebar .search-field{background:#181a1f;border:1px solid #c6a66b1c;border-radius:7px;margin:0 17px;padding:11px 12px;color:#a3a3aa}
+.sidebar .search-field input{color:#eee9df;font-size:10px}
+.sidebar .search-field>span{font-size:9px;color:#84817a}
+.sidebar .sidebar-tabs{padding:18px 17px;gap:7px}
+.sidebar .sidebar-tabs>button{font-size:10px;background:transparent;color:#aaa7a1;border-color:#c6a66b1c;border-radius:6px;padding:7px 12px}
+.sidebar .sidebar-tabs>button.selected{background:#c6a66b16;border-color:#c6a66b42;color:#e0c58f}
+.sidebar .conversation{margin:0 12px;width:calc(100% - 24px);padding:17px 11px;border-radius:9px}
+.sidebar .conversation.selected{background:#1a1b1f;border-color:#c6a66b29}
+.sidebar .conversation-title strong{font-size:12px;color:#e7e2d7;font-weight:550}
+.sidebar .conversation-title time{color:#99938a}
+.sidebar .conversation p{color:#b2ada5}
+.sidebar .conversation small{color:#99958d}
+.sidebar .team-mark{background:#c6a66b0e;border-color:#c6a66b2b;color:#c6a66b}
+.sidebar .sidebar-team{padding:28px 22px 18px}
+.sidebar .section-caption{color:#8e8980;font-size:8px;letter-spacing:1.8px}
+.sidebar .section-caption>button{color:#baa37c;font-size:8px}
+.sidebar .team-person{padding:12px 2px}
+.sidebar .team-person:hover{background:#ffffff03}
+.sidebar .team-person strong{font-size:12px;font-weight:500;color:#e7e2d7}
+.sidebar .team-person small{font-size:9px;color:#aaa59d}
+.sidebar .team-person strong>span{color:#b19c76;border-color:#c6a66b29}
+.sidebar .team-person>svg{color:#7d7568}
+.app-shell .avatar{box-shadow:none;border:1px solid #c6a66b24;background:var(--agent-background);color:var(--agent-color)}
+.sidebar .sidebar-bottom{border-top:1px solid #c6a66b1a;padding:17px 20px}
+.sidebar .student-workspace-button small{color:#a3947b;font-size:7px;letter-spacing:1.7px}
+.sidebar .student-workspace-button strong{color:#ede6d9;font-size:10px}
+.sidebar .student-workspace-initial{background:#2a251c;color:#d6ba81}
+.sidebar .workspace-connection{color:#e3ddd1;font-size:11px}
+.sidebar .workspace-connection small{color:#a39b8e;font-size:8px}
+.sidebar .workspace-connection>.icon-button{color:#aa9470}
+.app-shell .connection-light.live{background:var(--gold);box-shadow:0 0 0 3px #c6a66b0d}
+.sidebar .local-note{color:#a39987;font-size:8px}
+.sidebar .research-button{padding:13px 12px;font-size:11px}
+.app-shell .participant-working{background:var(--gold);box-shadow:0 0 0 4px #c6a66b10}
+
+/* One bounded, click-through canvas across every real workspace. */
+.app-shell .main-panel{position:relative;isolation:isolate;background:var(--chat);overflow:hidden}
+.app-shell .ambient-field{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;opacity:1;filter:none}
+.ambient-field>canvas,.ambient-field>.ambient-static{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block}
+.ambient-static{fill:none;stroke:#c6a66b;stroke-width:.65;opacity:.18}
+.ambient-static circle{fill:#c6a66b;stroke:none}
+.ambient-field[data-renderer=canvas]>.ambient-static{display:none}
+.ambient-field[data-renderer=static]>canvas{display:none}
+.main-panel>.profile-start,.main-panel>.workspace-view{position:relative;z-index:1}
+.main-panel>.chat-header{z-index:8}
+.main-panel>.composer-area{z-index:6}
+.app-shell .chat-header{background:var(--bg);border-bottom:1px solid var(--line);padding:0 27px}
+.app-shell .group-heading h2{font-weight:550;font-size:15px;letter-spacing:-.35px;color:var(--text)}
+.app-shell .group-heading p{font-size:10px;color:var(--muted)}
+.app-shell .team-mark{background:var(--selected);color:var(--gold);border:1px solid var(--line);box-shadow:none}
+.app-shell .team-mark>i{background:var(--gold);border-color:var(--bg);color:#15120d}
+.app-shell .research-live{color:var(--gold);font-size:10px}
+.app-shell .research-live>i{background:var(--gold)}
+.app-shell .workspace-progress{padding:15px 25px;gap:12px;background:var(--bg);border-bottom:1px solid var(--line)}
+.app-shell .journey-step{padding:6px;gap:10px;border-radius:7px}
+.app-shell .journey-step strong{font-size:10px;font-weight:500}
+.app-shell .journey-step small{font-size:8px;color:var(--muted)}
+.app-shell .journey-step-icon{border-radius:7px;width:30px;height:30px;color:var(--subtle)}
+.app-shell .journey-step.done .journey-step-icon{border-color:var(--line);color:var(--gold);background:var(--selected)}
+.app-shell .journey-step-number{font-size:8px;color:var(--gold)}
+.app-shell .chat-scroll{background:transparent;background-image:none;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.app-shell .chat-content{max-width:1120px;padding:22px 36px 32px}
+.app-shell .day-divider>span{color:var(--subtle);background:transparent;letter-spacing:2px;font-size:8px}
+.app-shell .workspace-note{color:var(--muted);border-color:var(--line);background:var(--bg);box-shadow:none;font-size:9px;padding:11px 13px}
+.app-shell .bubble{background:var(--bubble);border:1px solid var(--line);box-shadow:0 4px 20px #00000004;padding:15px 18px 10px;border-radius:3px 13px 13px 13px;max-width:90%}
+.app-shell .mine>.bubble{background:var(--outgoing);border-radius:13px 3px 13px 13px}
+.app-shell .message-text{font-size:13px;line-height:1.85;color:var(--text)}
+.app-shell .message-text a,.app-shell .application-paper a{color:var(--gold);text-underline-offset:4px;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--gold) 40%,transparent)}
+.app-shell .message-author{color:var(--gold);font-size:11px;font-weight:600;letter-spacing:.1px}
+.app-shell .message-author>span{font-size:9px;font-weight:400;color:var(--muted)}
+.app-shell .message-meta{color:var(--subtle);font-size:8px}
+.app-shell .read-ticks{color:var(--gold)}
+.app-shell .message-actions{background:var(--surface);border:1px solid var(--line);border-radius:7px;box-shadow:0 4px 14px #0002}
+.app-shell .typing-text,.app-shell .typing-bubble>span{color:var(--gold)}
+.app-shell .typing-dots i{background:var(--gold)}
+.app-shell .conversation-starters>button{background:var(--bg);color:var(--gold);border-color:var(--line)}
+.app-shell .quoted-message,.app-shell .reply-preview{background:var(--selected);border-left-color:var(--gold)}
+.app-shell .quoted-message strong,.app-shell .reply-preview strong{color:var(--gold)}
+.app-shell .composer-area{background:var(--bg);border-top:1px solid var(--line);padding:13px 23px 9px}
+.app-shell .composer{background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:none;padding:6px}
+.app-shell .composer:focus-within{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold-wash)}
+.app-shell .composer textarea{background:transparent;color:var(--text);font-size:13px;padding:10px 12px;outline:none}
+.app-shell .send-button{background:#c6a66b;color:#17130c;border-radius:7px}
+.app-shell .send-button:disabled{background:var(--hover);color:var(--muted);opacity:.7}
+.app-shell .composer-hint{font-size:8px;color:var(--subtle);letter-spacing:.15px}
+.app-shell .run-strip{background:var(--bg);border-color:var(--line);padding:13px 26px}
+.app-shell .run-strip strong{font-size:11px;font-weight:500}
+.app-shell .run-strip small{font-size:9px;color:var(--muted);line-height:1.6}
+.app-shell .run-strip-icon,.app-shell .text-button{color:var(--gold)}
+.app-shell .run-progress{background:var(--surface);height:2px}
+.app-shell .run-progress>span{background:var(--gold)}
+.app-shell .finish-results-button{background:var(--selected);color:var(--gold);border-color:var(--line);border-radius:6px}
+.app-shell .popover,.app-shell .chat-menu,.app-shell .attach-menu{background:var(--surface);border:1px solid var(--line);box-shadow:0 12px 45px #0003;border-radius:9px}
+.app-shell .popover button:hover,.app-shell .popover a:hover{background:var(--hover)}
+.app-shell .jump-to-latest{background:var(--surface);color:var(--gold);border:1px solid var(--line);box-shadow:0 6px 22px #0002}
+
+/* Editorial profile and compact collaboration diagram; no sculpture or globe. */
+.app-shell .profile-start{background:transparent;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:clamp(28px,4vw,64px);padding:46px clamp(26px,3.6vw,66px) 55px}
+.app-shell .profile-intro{position:sticky;display:block;top:0;padding:15px 0 0;min-width:0}
+.app-shell .profile-eyebrow{color:var(--gold);font-size:8px;font-weight:500;letter-spacing:1.7px}
+.app-shell .profile-eyebrow>span{width:4px;height:4px;background:var(--gold);box-shadow:none}
+.app-shell .profile-intro h1{font-size:clamp(40px,3.8vw,65px);font-weight:450;letter-spacing:-2.8px;line-height:1.12;margin:29px 0 23px;max-width:530px}
+.app-shell .profile-intro h1 em,.app-shell .hero-copy h2 em{font-family:Georgia,"Times New Roman",serif;font-style:italic;font-weight:400;color:var(--gold);letter-spacing:-1.8px}
+.app-shell .profile-intro-copy>p{font-size:12px;line-height:1.9;color:var(--muted);max-width:330px}
+.app-shell .intro-route{gap:11px;margin-top:27px;color:var(--muted);font-size:8px}
+.app-shell .intro-route i{color:var(--gold)}
+.app-shell .profile-team{margin-top:23px;padding-top:21px;border-color:var(--line);gap:13px}
+.app-shell .profile-team p{font-size:10px}.app-shell .profile-team p span{font-size:9px;color:var(--muted)}
+.app-shell .profile-team>div>span{border-color:var(--chat)}
+.app-shell .profile-chat-link{font-size:10px;color:var(--muted);padding-top:22px;line-height:1.7}
+.app-shell .profile-chat-link:hover{color:var(--gold)}
+.app-shell .profile-start-form{background:var(--bg);backdrop-filter:none;padding:30px;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 70px #00000007}
+.app-shell .profile-step-label{font-size:8px;letter-spacing:1.8px;color:var(--gold)}
+.app-shell .profile-start-form h2{font-size:30px;font-weight:450;letter-spacing:-1.1px;margin:19px 0 11px}
+.app-shell .profile-start-form header>p{font-size:11px;line-height:1.85;color:var(--muted)}
+.app-shell .profile-readiness{font-size:8px;color:var(--muted);margin-top:23px}
+.app-shell .profile-readiness>div{background:var(--line);height:2px;width:85px}
+.app-shell .profile-readiness>div>span{background:var(--gold)}
+.app-shell .profile-start-form fieldset{margin-top:27px;padding-top:24px;border-color:var(--line)}
+.app-shell .profile-start-form legend{font-size:12px;font-weight:500}
+.app-shell .profile-start-form legend>span{border-color:var(--line);color:var(--gold);border-radius:5px;font-size:8px}
+.app-shell .profile-start-form fieldset>p{font-size:9px;line-height:1.7;color:var(--muted)}
+.app-shell .profile-start-fields{gap:18px 15px}
+.app-shell .profile-start-fields label{font-size:11px;gap:8px}
+.app-shell .profile-start-fields small{background:var(--surface);color:var(--muted);border-color:var(--line);font-size:6px;letter-spacing:.8px}
+.app-shell .profile-start-fields input{background:var(--surface);border-color:var(--line);border-radius:6px;padding:12px 11px;font-size:12px;line-height:1.6;color:var(--text)}
+.app-shell .profile-start-fields input:focus{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold-wash)}
+.app-shell .profile-file-drop{background:var(--gold-wash);border-color:var(--line);color:var(--gold);border-radius:8px;padding:19px 15px}
+.app-shell .profile-file-drop:hover{background:var(--selected);border-color:var(--gold)}
+.app-shell .profile-file-drop strong{font-size:11px}.app-shell .profile-file-drop small{font-size:8px;color:var(--muted)}
+.app-shell .profile-file-row,.app-shell .profile-start-form footer>p{color:var(--muted);font-size:9px}
+.app-shell .profile-start-form footer{border-color:var(--line)}
+.app-shell .profile-start-cta{font-size:11px;padding:15px 13px}
+.app-shell .profile-saved-link{font-size:9px;color:var(--muted)}
+.agent-constellation{position:relative;isolation:isolate;width:100%;min-width:0;margin:32px 0 0;border:1px solid var(--line);border-radius:10px;background:var(--gold-wash);color:var(--text)}
+.constellation-topline{padding:17px 17px 0;display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:6.5px;letter-spacing:1.4px}
+.constellation-topline>span:last-child{color:var(--gold);font-variant-numeric:tabular-nums;white-space:nowrap}
+.constellation-map{position:relative;height:244px;margin:9px 7px 0}
+.constellation-map>svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.constellation-thread{fill:none;stroke-width:.65}
+.constellation-highlight{fill:none;stroke:#c6a66b;stroke-width:1;stroke-dasharray:9 640;animation:constellation-travel 24s linear infinite;opacity:.75}
+.constellation-node{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;min-width:82px;gap:5px;text-align:center}
+.constellation-node>span{position:relative;display:grid;place-items:center;width:31px;height:31px;border:1px solid var(--line);border-radius:50%;background:var(--bg);color:var(--gold);font-size:11px;font-weight:500}
+.constellation-node>span>i{position:absolute;right:-1px;bottom:0;width:5px;height:5px;border-radius:50%;background:var(--subtle);border:1px solid var(--bg)}
+.constellation-node>strong{font-size:10px;font-weight:550;color:var(--text)}
+.constellation-node>small{font-size:8px;color:var(--muted)}
+.constellation-node.is-working>span{border-color:var(--gold);box-shadow:0 0 0 5px var(--gold-wash)}
+.constellation-node.is-working>span>i{background:var(--gold);animation:constellation-pulse 2.5s ease-in-out infinite}
+.agent-constellation[data-ambient=true] .constellation-map{animation:constellation-float 12s ease-in-out infinite;transform-origin:50% 50%}
+.agent-constellation[data-ambient=true] .constellation-node>span{animation:constellation-node-float 6s ease-in-out var(--float-delay,0s) infinite}
+.agent-constellation[data-ambient=true] .constellation-highlight{stroke-dasharray:12 24;opacity:.4;animation:constellation-stream 5s linear infinite}
+.agent-constellation[data-waiting=true] .constellation-node.is-working>span>i{animation:none}
+.constellation-coordinate{position:absolute;left:12px;bottom:3px;font-size:5.5px;color:var(--subtle);letter-spacing:1.4px;pointer-events:none}
+.constellation-caption{padding:14px 16px;display:flex;align-items:center;gap:7px;border-top:1px solid var(--line);font-size:8px;color:var(--muted);line-height:1.6}
+.constellation-caption>span:first-child{width:4px;height:4px;background:var(--subtle);border-radius:50%;flex-shrink:0}
+.constellation-caption>span.is-live{background:var(--gold)}
+.constellation-caption>span:last-child{margin-left:auto;color:var(--gold);font-family:Georgia,serif;font-style:italic;font-size:10px}
+.app-shell .welcome-hero{grid-template-columns:minmax(0,1.2fr) minmax(240px,1fr);margin:32px 0 37px;gap:27px}
+.app-shell .hero-copy h2{font-weight:450;letter-spacing:-2.1px;line-height:1.15;font-size:clamp(34px,3.4vw,54px);margin:23px 0 18px}
+.app-shell .hero-eyebrow{color:var(--gold);font-size:7px;letter-spacing:1.5px}
+.app-shell .hero-copy p{max-width:330px;color:var(--muted);font-size:11px;line-height:1.9}
+.app-shell .hero-team-link{color:var(--gold);font-size:10px;margin-top:13px;gap:12px}
+.welcome-hero .agent-constellation{margin:0;max-width:360px;justify-self:end}
+.welcome-hero .constellation-map{height:224px}
+
+/* Sourced results, application drafts and every existing dialog. */
+.app-shell .workspace-view{background:transparent;padding:39px 40px 48px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.app-shell .view-heading h1{font-weight:450;letter-spacing:-1.6px;font-size:36px;line-height:1.2}
+.app-shell .overline{font-size:8px;color:var(--gold);letter-spacing:1.8px}
+.app-shell .view-heading p{color:var(--muted);font-size:12px;line-height:1.7}
+.app-shell .research-stats{border-color:var(--line);background:var(--bg);border-radius:10px;box-shadow:none}
+.app-shell .research-stats>div{padding:23px;border-color:var(--line)}
+.app-shell .research-stats strong{font-size:35px;font-weight:400;letter-spacing:-1.6px;color:var(--text)}
+.app-shell .research-stats strong small{color:var(--gold)}
+.app-shell .research-stats>div>span{font-size:10px;color:var(--muted)}
+.app-shell .research-stats>div>svg{color:var(--gold)}
+.app-shell .draft-notice{background:var(--selected);color:var(--muted);border:1px solid var(--line);border-radius:8px;line-height:1.8;font-size:11px}
+.app-shell .draft-notice svg{color:var(--gold)}
+.app-shell .segmented{background:var(--surface);border:1px solid var(--line);border-radius:7px}
+.app-shell .segmented>button{font-size:11px;color:var(--muted);border-radius:5px}
+.app-shell .segmented>.selected{background:var(--bg);color:var(--gold);box-shadow:0 1px 4px #0000000a}
+.app-shell .segmented span{background:var(--selected);color:var(--gold)}
+.app-shell .match-toolbar select,.app-shell .match-search{background:var(--bg);border-color:var(--line);border-radius:7px}
+.app-shell .match-search input{font-size:12px}.app-shell .match-search>button{color:var(--gold)}
+.app-shell .opportunity-card{background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:26px;box-shadow:0 5px 22px #00000004;transition:border-color 250ms,box-shadow 250ms;animation:studio-enter 420ms var(--ease) both}
+.app-shell .opportunity-card:hover{border-color:color-mix(in srgb,var(--gold) 50%,var(--line));box-shadow:0 8px 32px #00000009}
+.app-shell .opportunity-card h2{font-size:24px;font-weight:500;line-height:1.35;letter-spacing:-.8px}
+.app-shell .rank-badge{background:var(--selected);color:var(--gold);border:1px solid var(--line);border-radius:4px;font-size:7px;letter-spacing:1.1px}
+.app-shell .institution-line,.app-shell .institution-country{color:var(--muted)}
+.app-shell .opportunity-key-facts{border-color:var(--line)}
+.app-shell .opportunity-key-facts strong{font-size:12px;line-height:1.7;color:var(--text);font-weight:500}
+.app-shell .opportunity-key-facts span{color:var(--muted)}
+.app-shell .match-reason{font-size:12px;line-height:1.85;color:var(--muted)}
+.app-shell .match-details{border-color:var(--line)}
+.app-shell .match-details>summary{font-size:11px;padding:14px 0;color:var(--text)}
+.app-shell .match-details>summary:hover{color:var(--gold)}
+.app-shell .match-details[open]>:not(summary){animation:studio-fade 220ms ease-out}
+.app-shell .card-actions{border-color:var(--line)}
+.app-shell .card-actions>a,.app-shell .source-evidence a{color:var(--gold)}
+.app-shell .status-pill{background:var(--selected);border:1px solid var(--line);color:var(--gold);font-size:8px;letter-spacing:.15px}
+.app-shell .status-pill.not_eligible,.app-shell .status-pill.not_met{color:#c3867b;background:#b06f6610;border-color:#b06f6633}
+.app-shell:not(.theme-dark) .status-pill.not_eligible,.app-shell:not(.theme-dark) .status-pill.not_met{color:#9a5145}
+.app-shell .status-pill.outside_preferences{color:var(--muted);background:var(--surface);border-color:var(--line)}
+.app-shell .source-evidence blockquote,.app-shell .evidence-quote{border-left-color:var(--gold);background:var(--selected);color:var(--muted)}
+.app-shell .comparison-wrap,.app-shell .comparison-table{background:var(--bg);border-color:var(--line)}
+.app-shell .comparison-table td,.app-shell .comparison-table th{border-color:var(--line)}
+.app-shell .application-paper{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:36px;font-size:13px;line-height:1.95;box-shadow:0 6px 24px #00000005}
+.app-shell .application-paper h1{font-family:Georgia,"Times New Roman",serif;font-size:29px;font-weight:400;letter-spacing:-.5px;color:var(--text)}
+.app-shell .application-paper blockquote{border-color:var(--gold);color:var(--muted);background:var(--selected)}
+.app-shell .upload-zone,.app-shell .document-list>article{background:var(--bg);border-color:var(--line);border-radius:10px}
+.app-shell .upload-zone:hover{border-color:var(--gold);background:var(--selected)}
+.app-shell .document-ready{color:var(--gold)}
+.app-shell .modal-backdrop{background:#030406b8;backdrop-filter:none;z-index:100;animation:studio-fade 180ms ease-out}
+.app-shell .modal{background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:13px;box-shadow:0 30px 100px #0006;padding:30px;animation:studio-enter 250ms var(--ease)}
+.app-shell .modal>header h2{font-size:25px;font-weight:450;letter-spacing:-.9px}
+.app-shell .modal>header p{color:var(--muted);font-size:11px;line-height:1.8}
+.app-shell .modal.is-closing{animation:studio-leave 160ms ease-in both}
+.app-shell .modal-backdrop.is-closing{animation:studio-fade-out 160ms ease-in both}
+.app-shell .profile-form label,.app-shell .new-student-form label{color:var(--text);font-size:11px}
+.app-shell .profile-form input,.app-shell .new-student-form input:not([type=file]),.app-shell .new-student-form textarea{background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:6px;font-size:12px;padding:12px;line-height:1.5}
+.app-shell .profile-form input:focus,.app-shell .new-student-form input:focus,.app-shell .new-student-form textarea:focus{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold-wash)}
+.app-shell .profile-form footer,.app-shell .new-student-form footer{border-color:var(--line)}
+.app-shell .saved-student,.app-shell .saved-student.current{background:var(--surface);border-color:var(--line)}
+.app-shell .saved-student.current{box-shadow:inset 2px 0 var(--gold)}
+.app-shell .student-tabs>.selected{color:var(--gold);background:var(--selected)}
+.app-shell .student-initial{background:var(--selected);color:var(--gold)}
+.app-shell .current-student-label,.app-shell .new-student-button{color:var(--gold)}
+.app-shell .about-team strong,.app-shell .about-team strong>span{color:var(--gold)}
+.app-shell .details-panel{background:var(--bg);border-color:var(--line);box-shadow:-15px 0 55px #0002;z-index:30}
+.app-shell .details-panel>header{border-color:var(--line)}
+.app-shell .details-panel .team-mark,.app-shell .you-avatar{color:var(--gold);background:var(--selected)}
+.app-shell .group-profile dd,.app-shell .group-members strong{color:var(--text)}
+.app-shell .group-profile,.app-shell .group-members,.app-shell .drawer-link{border-color:var(--line)}
+.app-shell .toast{background:var(--surface);color:var(--text);border:1px solid var(--line);box-shadow:0 8px 28px #0003}
+.app-shell .appearance-option{background:var(--surface);border-color:var(--line)}
+.app-shell .appearance-option.is-selected{border-color:var(--gold)}
+.app-shell .appearance-preview{background:#eee8dc;border-color:#bca37633}
+.app-shell .preview-header{background:#f9f6ee}
+.app-shell .preview-header>i:first-child{background:#b89c65}.app-shell .preview-header>i:last-child{background:#aea292}
+.app-shell .preview-message{background:#fffdf7}.app-shell .outgoing-preview{background:#e1d2b4}
+.app-shell .preview-composer{background:#fdfbf7}
+.app-shell .preview-dark{background:#090a0c}
+.app-shell .preview-dark .preview-header,.app-shell .preview-dark .preview-composer{background:#181a1f}
+.app-shell .preview-dark .preview-message{background:#24252a}.app-shell .preview-dark .outgoing-preview{background:#3b3222}
+.app-shell .preview-system{background:linear-gradient(90deg,#eee8dc 50%,#090a0c 50%)}
+.app-shell .preview-system .preview-header{background:linear-gradient(90deg,#f9f6ee 50%,#181a1f 50%)}
+.app-shell .appearance-check{color:var(--gold)}
+.app-shell .ambient-setting{font-size:10px}
+.app-shell .workspace-view,.app-shell .profile-intro-copy{animation:studio-enter 420ms var(--ease) both}
+@keyframes studio-enter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes studio-leave{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(5px)}}
+@keyframes studio-fade{from{opacity:0}to{opacity:1}}
+@keyframes studio-fade-out{from{opacity:1}to{opacity:0}}
+@keyframes constellation-travel{from{stroke-dashoffset:649}to{stroke-dashoffset:0}}
+@keyframes constellation-pulse{50%{opacity:.35}}
+@keyframes constellation-float{0%,100%{transform:perspective(700px) translate3d(0,3px,0) rotateX(2deg) rotateY(-3deg) rotate(-.6deg)}50%{transform:perspective(700px) translate3d(0,-6px,0) rotateX(-2deg) rotateY(3deg) rotate(.6deg)}}
+@keyframes constellation-node-float{0%,100%{transform:translate3d(0,2px,0)}50%{transform:translate3d(0,-4px,0)}}
+@keyframes constellation-stream{to{stroke-dashoffset:-72}}
+
+@media(min-width:1650px){.app-shell{grid-template-columns:76px 310px minmax(0,1fr)}.app-shell .profile-start{padding-top:56px;gap:68px}.app-shell .profile-start-form{padding:36px}.app-shell .profile-intro h1{font-size:68px}.constellation-map{height:270px}.app-shell .chat-content{padding-left:46px;padding-right:46px}}
+@media(max-width:1200px){.app-shell{grid-template-columns:60px 265px minmax(0,1fr)}.app-shell .profile-start{grid-template-columns:1fr;padding:33px;gap:32px}.app-shell .profile-intro{position:relative;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0 25px;align-items:center}.app-shell .profile-intro h1{font-size:45px;letter-spacing:-2.2px}.profile-intro>.agent-constellation{margin:0}.app-shell .profile-team,.app-shell .profile-chat-link{grid-column:1/-1}.app-shell .profile-start-form{width:100%;max-width:760px;justify-self:center}.app-shell .welcome-hero{grid-template-columns:1fr;gap:28px}.welcome-hero .agent-constellation{max-width:420px;justify-self:start}.welcome-hero .constellation-map{height:215px}.app-shell .hero-copy h2{font-size:44px}.app-shell .workspace-progress{padding:12px 16px;gap:4px}.app-shell .journey-step-number,.app-shell .journey-arrow{display:none}.app-shell .chat-content{padding:22px 25px 30px}.app-shell .workspace-view{padding:31px 27px}}
+@media(max-width:850px) and (min-width:701px){.app-shell{grid-template-columns:54px 238px minmax(0,1fr)}.app-shell .profile-intro{display:block}.profile-intro>.agent-constellation{margin-top:28px}.app-shell .profile-intro h1{font-size:43px}.app-shell .profile-start{padding:27px 22px}.app-shell .profile-start-fields{grid-template-columns:1fr}.app-shell .chat-header{padding:0 12px}.app-shell .group-heading h2{font-size:13px}.app-shell .group-heading p{font-size:8px}.app-shell .header-actions .icon-button{width:29px}.app-shell .sidebar-team{padding:22px 15px}.app-shell .sidebar-header{padding-left:17px}.app-shell .sidebar-header h1{font-size:25px}.app-shell .sidebar-bottom{padding:15px}.app-shell .journey-step{gap:6px}.app-shell .journey-step strong{font-size:9px}.app-shell .journey-step small{font-size:7px}.app-shell .hero-copy h2{font-size:38px}.app-shell .research-button{font-size:10px}}
+@media(max-width:700px){
+ .agent-constellation[data-ambient=true] .constellation-map{animation-name:constellation-float-mobile}
+ .app-shell{grid-template-columns:minmax(0,1fr)}
+ .app-shell .chat-header{padding:0 8px 0 3px;height:66px;min-height:66px}
+ .app-shell .group-heading{gap:8px}.app-shell .group-heading h2{font-size:13px}.app-shell .group-heading p{font-size:8px;max-width:170px}
+ .app-shell .header-actions{gap:0}.app-shell .header-actions .icon-button{width:30px;height:34px}.app-shell .header-actions .icon-button>svg{width:18px}
+ .app-shell .workspace-progress{padding:9px 10px;gap:4px}
+ .app-shell .journey-step{gap:6px;padding:5px 2px}.app-shell .journey-step strong{font-size:8px}.app-shell .journey-step small{font-size:6px;margin-top:4px}
+ .app-shell .journey-step-icon{width:23px;height:26px;border-radius:5px}.app-shell .journey-step-icon>svg{width:12px}
+ .app-shell .profile-start{padding:30px 21px 36px;gap:31px}
+ .app-shell .profile-intro{display:block;position:relative;padding:0}
+ .app-shell .profile-eyebrow{font-size:7px;letter-spacing:1.6px}
+ .app-shell .profile-intro h1{font-size:46px;letter-spacing:-2.3px;margin:25px 0 20px}
+ .app-shell .profile-intro h1 em{letter-spacing:-1.4px}
+ .app-shell .profile-intro-copy>p{font-size:12px;max-width:330px}
+ .app-shell .intro-route{font-size:8px;gap:9px;margin-top:23px}.app-shell .intro-route i{display:inline;font-size:7px}
+ .profile-intro>.agent-constellation{margin-top:28px}
+ .constellation-map{height:235px}.constellation-node{min-width:76px}.constellation-node>small{font-size:6.5px}.constellation-coordinate{font-size:5px}
+ .app-shell .profile-team{margin-top:22px;padding-top:19px}.app-shell .profile-team p{font-size:10px}.app-shell .profile-team p span{font-size:8px}.app-shell .profile-chat-link{font-size:10px}
+ .app-shell .profile-start-form{padding:25px 20px;border-radius:10px}.app-shell .profile-start-form h2{font-size:29px}
+ .app-shell .profile-start-fields{grid-template-columns:1fr;gap:18px}.app-shell .profile-start-fields label>span{font-size:11px}
+ .app-shell .profile-start-fields input{font-size:16px;padding:12px}.app-shell .profile-start-fields input::placeholder{font-size:12px}
+ .app-shell .profile-start-fields small{font-size:6px}.app-shell .profile-start-form fieldset>p{font-size:10px}
+ .app-shell .profile-file-drop{padding:17px 12px}.app-shell .profile-file-drop strong{font-size:10px}.app-shell .profile-file-drop small{font-size:7px}
+ .app-shell .profile-start-cta{font-size:10px;padding:15px 10px}
+ .app-shell .chat-content{padding:16px 16px 27px}.app-shell .bubble{max-width:calc(100% - 33px);padding:12px 13px 8px}
+ .app-shell .message-text{font-size:12px;line-height:1.85}.app-shell .message-row{gap:7px}.app-shell .message-author>span{display:none}
+ .app-shell .welcome-hero{margin:24px 0 30px;gap:25px}.app-shell .hero-copy h2{font-size:42px;letter-spacing:-1.9px}.app-shell .hero-copy p{font-size:11px}.app-shell .hero-eyebrow{font-size:6px;letter-spacing:1.4px}
+ .app-shell .composer-area{padding:8px 9px max(8px,env(safe-area-inset-bottom))}.app-shell .composer{padding:4px;border-radius:9px}.app-shell .composer textarea{font-size:14px;line-height:21px;padding:9px 10px}
+ .app-shell .composer-hint{font-size:6.5px}.app-shell .send-button{width:35px;height:35px}
+ .app-shell .run-strip{padding:10px 13px;gap:7px}.app-shell .run-strip strong{font-size:10px}.app-shell .run-strip small{font-size:8px}
+ .app-shell .workspace-view{padding:29px 20px 38px}.app-shell .view-heading h1{font-size:31px}.app-shell .view-heading p{font-size:11px}
+ .app-shell .research-stats>div{padding:20px 17px}.app-shell .research-stats strong{font-size:31px}.app-shell .research-stats>div>span{font-size:8px}
+ .app-shell .opportunity-card{padding:22px 19px}.app-shell .opportunity-card h2{font-size:22px}.app-shell .match-reason{font-size:11px}
+ .app-shell .segmented>button{font-size:10px}.app-shell .draft-notice{font-size:10px}
+ .app-shell .application-paper{padding:23px 20px;font-size:12px}.app-shell .application-paper h1{font-size:24px}
+ .app-shell .modal-backdrop{padding:13px}.app-shell .modal{padding:24px 20px;max-height:92dvh;border-radius:11px}
+ .app-shell .modal>header h2{font-size:23px}.app-shell .profile-form input,.app-shell .new-student-form input:not([type=file]),.app-shell .new-student-form textarea{font-size:16px}
+ .app-shell .sidebar{inset:0 0 57px}.app-shell .sidebar-header{padding:24px 23px}.app-shell .sidebar-header h1{font-size:29px}.app-shell .sidebar-header .small-brand{font-size:7px;letter-spacing:1.5px}
+ .app-shell .sidebar-team{padding:25px 23px 18px}.app-shell .team-person{padding:12px 2px}.app-shell .team-person small{font-size:10px}.app-shell .team-person strong{font-size:13px}
+ .app-shell .sidebar-bottom{padding:18px 22px}.app-shell .sidebar .research-button{font-size:12px}.app-shell .sidebar .student-workspace-button strong{font-size:11px}
+}
+@keyframes constellation-float-mobile{0%,100%{transform:translate3d(0,1px,0)}50%{transform:translate3d(0,-2px,0)}}
+@media(max-width:370px){.app-shell .header-actions>.ambient-toggle{display:none}.app-shell .group-heading p{max-width:170px}.app-shell .profile-start{padding:27px 17px 32px}.app-shell .profile-intro h1{font-size:40px}.app-shell .profile-start-form{padding:23px 17px}.constellation-node{min-width:70px}.constellation-node>small{font-size:6px}.constellation-topline{font-size:6px;padding-left:13px;padding-right:13px}.constellation-caption{font-size:6px;padding-left:13px;padding-right:13px}.app-shell .profile-team{gap:9px}.app-shell .profile-team>div>span{width:23px;height:23px}.app-shell .workspace-progress{padding-left:7px;padding-right:7px}.app-shell .journey-step-icon{width:20px}.app-shell .journey-step strong{font-size:7px}.app-shell .chat-content{padding-left:12px;padding-right:12px}.app-shell .hero-copy h2{font-size:36px}}
+@media(max-height:700px) and (min-width:701px){.sidebar .sidebar-header{padding-top:17px;padding-bottom:16px}.sidebar .sidebar-team{padding-top:18px}.sidebar .team-person{padding:7px 2px}.sidebar .sidebar-bottom{padding-top:12px;padding-bottom:12px}}
+@media(prefers-reduced-motion:reduce){.app-shell *,.app-shell *:before,.app-shell *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Semantic states use the same restrained palette in both appearances. */
+.app-shell .status-pill:is(.conditional,.unknown,.appears_eligible,.met){background:var(--selected);border-color:var(--line);color:var(--gold)}
+.app-shell .preview-system .outgoing-preview{background:#8e7549}
+.app-shell .preview-system .preview-composer{background:linear-gradient(90deg,#fffdf7 50%,#24252a 50%)}
+
+/* Keep the profile form close to the first fold on phones. The compact team
+   still shows all five names; full role descriptions remain in the sidebar. */
+@media(max-width:700px){
+ .app-shell .profile-intro h1{font-size:36px;letter-spacing:-1.7px;margin:22px 0 17px}
+ .app-shell .profile-intro h1 em{letter-spacing:-1px}
+ .profile-intro .agent-constellation{margin-top:23px}
+ .profile-intro .constellation-map{display:flex;align-items:center;justify-content:space-around;height:79px;margin:7px 7px 0}
+ .profile-intro .constellation-node{position:relative;left:auto!important;top:auto!important;transform:none;min-width:0;gap:5px}
+ .profile-intro .constellation-node>span{width:26px;height:26px;font-size:10px}
+ .profile-intro .constellation-node>strong{font-size:8px}
+ .profile-intro .constellation-node>small,.profile-intro .constellation-coordinate{display:none}
+ .profile-intro .constellation-map>svg{opacity:.25}
+ .profile-intro .constellation-topline{font-size:6px;padding-top:13px}
+ .profile-intro .constellation-caption{font-size:7px;padding:10px 13px}
+ .app-shell .profile-intro>.profile-team{display:none}
+ .app-shell .profile-chat-link{padding-top:16px;font-size:9px}
+ .welcome-hero .agent-constellation{margin-top:23px}
+}
+@media(max-width:370px){.app-shell .profile-intro h1{font-size:32px;letter-spacing:-1.5px}}

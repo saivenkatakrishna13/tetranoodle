@@ -4,6 +4,15 @@ import {cleanProfile,studyLevels,researchBrief,missingEssentials,discoveryQuerie
 import {validateReview,runResearch} from '../server/research.js';
 const science={name:'Rahul',degree:'Final-year B.Tech Computer Science',target_degree:'Master’s in Computer Science',countries:'Canada, Germany',cgpa:'8.2/10'};
 const art={name:'Meera',degree:'Final-year B.Des. Communication Design',target_degree:'Master’s in Interaction Design',countries:'Finland, Sweden',cgpa:'8.6/10'};
+test('a subject-only goal and year-only current studies require clarification before research',()=>{
+ assert.deepEqual(missingEssentials({degree:'final eyar',target_degree:'cse',countries:'canada'}),['degree','target_degree']);
+ assert.deepEqual(missingEssentials({...science,target_degree:'cse'}),['target_degree']);
+ assert.deepEqual(missingEssentials(science),[]);
+});
+test('single-country discovery has distinct queries available for a replacement pass',()=>{
+ const queries=discoveryQueries([],researchBrief({...science,countries:'Canada'}),9);
+ assert.equal(new Set(queries).size,9);assert.equal(queries.filter(q=>!queries.slice(0,6).includes(q)).length,3);
+});
 test('the same profile engine supports bachelor, master and doctorate goals without assuming CS',()=>{
  for(const [goal,level] of [['Bachelor of Biology','bachelor'],['Master’s in Interaction Design','master'],['PhD Environmental Science','doctorate']]){
   const brief=researchBrief({...art,target_degree:goal});assert.equal(brief.level,level);
@@ -15,10 +24,10 @@ test('the same profile engine supports bachelor, master and doctorate goals with
  assert.equal(researchBrief({degree:"B.Sc. Economics; seeking a master's in public policy",countries:'Netherlands'}).level,'master');
 });
 test('changing the same student’s goal clears all prior research, public enrichment and draft state',()=>{
- const session={profile:{...science},documents:[{id:'own-document'}],messages:[{agent:'you',content:'A saved conversation'}],opportunities:[{name:'MSc CS'}],run:{status:'completed',candidates:['old candidate']},draft:'old SOP',draftMeta:{},facts:[{value:'old grade'}],searchResults:{old:['old result']},reviewAudit:[{}],evidence:new Map([['old',{}]]),github:{username:'old'},enrichment:{skills:['old']},publicProfileFacts:[{}],pendingQuestion:'cgpa'};
+ const session={profile:{...science},documents:[{id:'own-document'}],messages:[{agent:'you',content:'A saved conversation'}],opportunities:[{name:'MSc CS'}],run:{status:'completed',candidates:['old candidate']},draft:'old SOP',draftMeta:{},profileAssessment:{fields:[{key:'degree',value:'old degree'}]},facts:[{value:'old grade'}],searchResults:{old:['old result']},reviewAudit:[{}],evidence:new Map([['old',{}]]),github:{username:'old'},enrichment:{skills:['old']},publicProfileFacts:[{}],pendingQuestion:'cgpa'};
  assert.equal(changeProfile(session,{target_degree:art.target_degree,countries:art.countries}),true);
  for(const key of ['opportunities','reviewAudit','facts','publicProfileFacts'])assert.deepEqual(session[key],[]);
- assert.deepEqual(session.searchResults,{});assert.equal(session.evidence.size,0);assert.equal(session.draft,'');assert.equal(session.run,null);assert.equal(session.github,null);assert.equal(session.pendingQuestion,null);assert.equal(session.documents[0].id,'own-document');assert.equal(session.profile.cgpa,'8.2/10');
+ assert.deepEqual(session.searchResults,{});assert.equal(session.evidence.size,0);assert.equal(session.draft,'');assert.equal(session.run,null);assert.equal(session.profileAssessment,null);assert.equal(session.github,null);assert.equal(session.pendingQuestion,null);assert.equal(session.documents[0].id,'own-document');assert.equal(session.profile.cgpa,'8.2/10');
  assert.equal(changeProfile(session,{countries:art.countries}),false);
 });
 test('profile imports preserve original facts, accept country arrays, and ignore operational fields',async()=>{
@@ -30,6 +39,16 @@ test('a PhD applicant cannot receive a master-only program as a recommendation',
  const url='https://example.edu/master';const identity={value:'MSc Biology',quote:'Master of Science in Biology is a two-year degree.',url};const evidence=new Map([[url,{url,title:'MSc Biology',text:identity.quote,retrieved_at:'2026-10-20'}]]);
  const result=validateReview({name:'MSc Biology',url},{source_kind:'degree_program',publisher_is_official:true,name:'MSc Biology',university:'Example University',identity,match_components:{academic:30,funding:35,preferences:20,evidence:15}},evidence,researchBrief({degree:'MSc Biology',target_degree:'PhD Biology',countries:'Sweden'}));
  assert.equal(result.eligibility,'not_eligible');assert.ok(result.criteria.some(c=>c.label==='Intended study level'&&c.status==='not_met'));
+});
+test('an evidenced opportunity level excludes a conflicting goal even when its title is generic',()=>{
+ const url='https://example.edu/award',quote='The Computing Excellence Award is offered by Example University.';
+ const result=validateReview({url,name:'Computing Excellence Award'},{source_kind:'scholarship',publisher_is_official:true,name:'Computing Excellence Award',level:'undergraduate',identity:{value:'Computing Excellence Award',quote,url}},new Map([[url,{url,text:quote}]]),researchBrief(science));
+ assert.equal(result.eligibility,'not_eligible');
+});
+test('foreign nationality alone does not disprove a permanent-resident eligibility route',()=>{
+ const url='https://example.edu/award',quote='Applicants must be Canadian citizens or permanent residents of Canada.';
+ const result=validateReview({url,name:'Computing Award'},{source_kind:'scholarship',publisher_is_official:true,name:'Computing Award',identity:{value:'Computing Award',quote:'Example University offers the Computing Award.',url},criteria:[{label:'Nationality',value:'Canadian citizens or permanent residents of Canada',quote,url,student_value:'Indian',status:'not_met'}]},new Map([[url,{url,text:'Example University offers the Computing Award. '+quote}]]),researchBrief({...science,nationality:'Indian'}));
+ assert.equal(result.eligibility,'conditional');assert.equal(result.criteria[0].status,'unknown');assert.match(result.missing_information.join(' '),/residency not supplied/);assert.ok(result.score<=45);
 });
 test('missing intended study asks one question without searching or silently choosing a master',async()=>{
  const session={id:'missing-target-unit-test',profile:{degree:'B.Sc. Biology',countries:'Sweden'},documents:[],facts:[],messages:[],events:[],evidence:new Map(),run:{status:'running',profileReviewed:true}};const events=[];

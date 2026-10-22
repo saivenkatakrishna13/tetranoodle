@@ -1,0 +1,96 @@
+/* Every selector is local to the introduction. The workspace's scroll/controls
+   and theme remain owned by the existing app. */
+.scholar-landing{--bg:var(--scholar-bg);--fg:var(--scholar-text);--muted:var(--scholar-muted);--gold:var(--scholar-gold);--line:var(--scholar-line);--card:var(--scholar-card);position:relative;isolation:isolate;height:100dvh;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scroll-behavior:smooth;scroll-padding-top:105px;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,sans-serif;scrollbar-width:thin;scrollbar-color:var(--gold) var(--bg)}
+.scholar-landing *, .scholar-landing *::before,.scholar-landing *::after{box-sizing:border-box}
+.scholar-landing ::selection{background:#c6a66b40}
+.scholar-landing a:focus-visible,.scholar-landing button:focus-visible{outline:2px solid var(--gold);outline-offset:5px}
+.scholar-landing h1:focus{outline:none}
+.scholar-landing .landing-skip{position:absolute;top:8px;left:8px;transform:translateY(-150%);z-index:30;padding:12px 18px;background:var(--card);border:1px solid var(--gold);border-radius:8px}
+.scholar-landing .landing-skip:focus{transform:none}
+.scholar-landing .landing-scene{position:sticky;top:0;width:100%;height:100dvh;margin-bottom:-100dvh;z-index:0;pointer-events:none;overflow:hidden}
+.scholar-landing .landing-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;opacity:1;transition:opacity .5s}
+.scholar-landing .landing-scene-fallback{position:absolute;inset:0;background:radial-gradient(ellipse at 74% 44%,#c6a66b10,transparent 50%)}
+.scholar-landing .landing-scene-fallback span{position:absolute;top:20%;left:60%;width:32vw;aspect-ratio:1;border:1px solid #c6a66b25;border-radius:50%;transform:rotate(-30deg) scaleY(.6)}
+.scholar-landing .landing-scene-fallback span:nth-child(2){transform:rotate(35deg) scaleY(.65)}
+.scholar-landing .landing-scene-fallback span:nth-child(3){transform:rotate(85deg) scaleY(.7)}
+.scholar-landing[data-scene=webgl] .landing-scene-fallback span{display:none}
+.scholar-landing[data-scene=fallback] .landing-canvas{display:none}
+.scholar-landing .landing-tags{position:absolute;inset:0;pointer-events:none}
+.scholar-landing .landing-tag{position:absolute;font-size:10px;letter-spacing:.02em;padding:6px 10px;line-height:1.5;border-radius:99px;border:1px solid var(--line);background:color-mix(in srgb,var(--bg) 90%,transparent);color:var(--muted);white-space:nowrap;transform:translate(-50%,-50%);will-change:transform;pointer-events:none}
+.scholar-landing .landing-tag b{color:var(--gold);font-weight:500}
+.scholar-landing .landing-nav{position:sticky;top:0;z-index:10;margin-bottom:-85px;display:flex;justify-content:space-between;align-items:center;min-height:85px;padding:18px max(5vw,20px);padding-top:max(18px,env(safe-area-inset-top));background:color-mix(in srgb,var(--bg) 98%,transparent);border-bottom:1px solid var(--line)}
+.scholar-landing .landing-logo{font-family:Georgia,'Times New Roman',serif;font-size:29px;letter-spacing:-1.1px;line-height:1.3}
+.scholar-landing .landing-logo i{font-style:normal;color:var(--gold)}
+.scholar-landing .landing-nav nav{display:flex;gap:15px;align-items:center}
+.scholar-landing .landing-nav-story{font-size:11px;color:var(--muted);margin-right:16px}
+.scholar-landing .landing-nav-story:hover{color:var(--gold)}
+.scholar-landing .landing-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);color:var(--muted);padding:0}
+.scholar-landing .landing-icon:hover{color:var(--gold);background:var(--card)}
+.scholar-landing .landing-btn{display:inline-flex;align-items:center;justify-content:center;gap:24px;min-height:49px;padding:14px 25px;border-radius:99px;background:#c6a66b;color:#17140e;font-weight:550;text-decoration:none;font-size:12px;border:1px solid #d8bc87;cursor:pointer;transition:transform .25s,box-shadow .25s,background .25s;white-space:nowrap}
+.scholar-landing .landing-btn:hover{transform:translateY(-2px);background:#d8bc87;box-shadow:0 8px 28px -12px #c6a66b77}
+.scholar-landing .landing-nav-launch{min-height:40px;padding:10px 20px;font-size:11px;gap:18px}
+.scholar-landing .landing-section{position:relative;z-index:1;min-height:85svh;padding:120px 6vw;display:flex;flex-direction:column;justify-content:center;max-width:1800px;margin:auto;scroll-margin-top:30px}
+.scholar-landing .landing-hero{min-height:100svh;align-items:flex-start;padding-top:150px;padding-bottom:125px}
+.scholar-landing .landing-hero-copy{max-width:600px;width:48%;position:relative;z-index:2}
+.scholar-landing .landing-eyebrow{font-size:10px;letter-spacing:3px;line-height:1.8;color:var(--gold);font-weight:500;margin-bottom:24px;display:flex;gap:10px;align-items:center}
+.scholar-landing .landing-eyebrow>span{height:1px;width:22px;background:var(--gold)}
+.scholar-landing h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(62px,7.5vw,115px);line-height:1.02;margin:0 0 27px;letter-spacing:-4px;color:var(--fg)}
+.scholar-landing h1 em,.scholar-landing h2 em{font-style:italic;font-weight:400;color:var(--gold)}
+.scholar-landing h2{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(36px,4.1vw,64px);line-height:1.12;letter-spacing:-1.8px;margin:0 0 24px;max-width:1000px;color:var(--fg)}
+.scholar-landing .landing-lead{font-size:clamp(14px,1.2vw,17px);line-height:1.9;color:var(--muted);max-width:540px;margin:0 0 32px}
+.scholar-landing .landing-hero .landing-lead{max-width:435px}
+.scholar-landing .landing-actions{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+.scholar-landing .landing-text-link{display:flex;align-items:center;gap:9px;font-size:11px;color:var(--muted);padding:12px 0}
+.scholar-landing .landing-text-link:hover{color:var(--gold)}
+.scholar-landing .landing-trust{display:flex;gap:19px;margin-top:26px;color:var(--muted);font-size:9px;letter-spacing:.2px}
+.scholar-landing .landing-trust>span{display:flex;gap:6px;align-items:center}
+.scholar-landing .landing-trust svg{color:var(--gold)}
+.scholar-landing .landing-scroll{position:absolute;bottom:38px;left:6vw;display:flex;gap:20px;align-items:center;color:var(--muted);font-size:8px;letter-spacing:2px;padding:12px 0}
+.scholar-landing .landing-scene-caption{position:absolute;bottom:100px;right:7vw;color:var(--gold);font-size:10px;letter-spacing:.2px;line-height:1.6;max-width:40%;text-align:right}
+.scholar-landing .landing-scene-caption small{display:block;font-size:8px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-top:6px}
+.scholar-landing .landing-scene-dot{display:inline-block;width:4px;height:4px;background:var(--gold);border-radius:50%;margin-right:8px;vertical-align:middle}
+.scholar-landing .landing-team,.scholar-landing .landing-journey,.scholar-landing .landing-recovery{background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 93%,transparent),var(--bg) 22%,var(--bg) 85%,color-mix(in srgb,var(--bg) 93%,transparent));border-top:1px solid var(--line)}
+.scholar-landing .landing-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-top:30px}
+.scholar-landing .landing-card{--tilt-x:0deg;--tilt-y:0deg;background:color-mix(in srgb,var(--card) 95%,transparent);border:1px solid var(--line);border-radius:14px;padding:25px;transform:perspective(700px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));transition:transform .3s,border-color .3s;min-width:0}
+.scholar-landing .landing-card:hover{border-color:var(--gold)}
+.scholar-landing .landing-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.scholar-landing .landing-avatar{height:39px;width:39px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;font-family:Georgia,serif;font-size:19px;color:var(--gold);background:#c6a66b08}
+.scholar-landing .landing-index{font-size:9px;color:var(--muted);letter-spacing:1px}
+.scholar-landing .landing-card h3{font-size:17px;letter-spacing:-.4px;line-height:1.4;margin:0 0 5px;font-weight:500;color:var(--fg)}
+.scholar-landing .landing-role{font-size:10px;line-height:1.7;color:var(--gold)}
+.scholar-landing .landing-card p{font-size:11px;line-height:1.9;color:var(--muted);margin:16px 0 0}
+.scholar-landing .landing-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:28px}
+.scholar-landing .landing-steps .landing-card{padding:32px}
+.scholar-landing .landing-step-number{color:var(--gold);font-size:11px;letter-spacing:2px;display:flex;justify-content:space-between;margin-bottom:38px}
+.scholar-landing .landing-recovery{display:grid;grid-template-columns:1fr 1.1fr;gap:7vw;align-items:center}
+.scholar-landing .landing-recovery-copy{max-width:450px}
+.scholar-landing .landing-example-note{font-size:9px;line-height:1.9;color:var(--muted);display:block;max-width:320px}
+.scholar-landing .landing-terminal{background:var(--scholar-surface);border:1px solid var(--line);border-radius:13px;padding:23px;min-width:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;line-height:1.9;color:var(--fg)}
+.scholar-landing .landing-terminal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:20px;color:var(--muted);font-size:8px;letter-spacing:1.1px}
+.scholar-landing .landing-terminal-head>span:first-child{display:flex;gap:5px}
+.scholar-landing .landing-terminal-head i{height:6px;width:6px;border-radius:50%;background:var(--line)}
+.scholar-landing .landing-terminal-head i:first-child{background:var(--gold)}
+.scholar-landing .landing-log-line{opacity:0;transform:translateY(6px);transition:opacity .5s,transform .5s;overflow-wrap:anywhere;padding-bottom:10px}
+.scholar-landing .landing-log-line.is-visible{opacity:1;transform:none}
+.scholar-landing .landing-log-line b{color:var(--gold);font-weight:500}
+.scholar-landing .landing-success{color:#a6bd9c}
+.scholar-landing .landing-error{color:#e39b87}
+.scholar-landing[data-theme=light] .landing-success{color:#416c43}
+.scholar-landing[data-theme=light] .landing-error{color:#a64938}
+.scholar-landing .landing-terminal-cursor{color:var(--gold);animation:landing-blink 1.5s steps(2) infinite}
+.scholar-landing .landing-launch{min-height:75svh;align-items:center;text-align:center;padding-bottom:100px}
+.scholar-landing .landing-launch .landing-eyebrow{justify-content:center}
+.scholar-landing .landing-launch h2{font-size:clamp(40px,5vw,76px);max-width:1000px}
+.scholar-landing .landing-launch .landing-lead{max-width:100%}
+.scholar-landing .landing-footer{position:relative;z-index:1;border-top:1px solid var(--line);background:var(--bg);display:flex;align-items:center;justify-content:space-between;gap:20px;padding:30px 6vw max(30px,env(safe-area-inset-bottom))}
+.scholar-landing .landing-footer p{color:var(--muted);font-size:9px;line-height:1.8;text-align:center;margin:0}
+.scholar-landing .landing-footer>span{font-size:8px;letter-spacing:2px;color:var(--gold)}
+.scholar-landing .landing-reveal{opacity:0;translate:0 22px;transition:opacity .7s var(--reveal-delay,0s),translate .7s var(--reveal-delay,0s)}
+.scholar-landing .landing-reveal.is-visible{opacity:1;translate:0 0}
+@keyframes landing-blink{50%{opacity:0}}
+@media(min-width:1700px){.scholar-landing .landing-hero-copy{width:50%}}
+@media(max-width:1100px){.scholar-landing .landing-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.scholar-landing .landing-hero-copy{width:53%}.scholar-landing h1{font-size:clamp(58px,7.8vw,90px);letter-spacing:-3px}.scholar-landing .landing-recovery{gap:30px}.scholar-landing .landing-card{padding:22px}}
+@media(max-width:800px){.scholar-landing .landing-nav-story{display:none}.scholar-landing .landing-section{padding:85px 7vw;min-height:auto}.scholar-landing .landing-hero{padding-top:330px;min-height:100svh;padding-bottom:115px;justify-content:flex-end}.scholar-landing .landing-hero-copy{width:100%;max-width:570px;background:linear-gradient(180deg,transparent,var(--bg) 24%)}.scholar-landing h1{font-size:clamp(55px,10vw,80px);letter-spacing:-2.8px}.scholar-landing .landing-hero .landing-lead{max-width:500px}.scholar-landing .landing-eyebrow{font-size:9px;margin-bottom:15px;letter-spacing:2px}.scholar-landing .landing-scene-caption{bottom:44px;right:7vw;font-size:8px;max-width:42%}.scholar-landing .landing-scene-caption small{font-size:6px;letter-spacing:.6px}.scholar-landing .landing-scroll{bottom:36px;left:7vw;font-size:7px;max-width:43%;line-height:1.8;gap:9px}.scholar-landing .landing-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.scholar-landing .landing-agent-card:last-child{grid-column:1/-1}.scholar-landing .landing-card-top{margin-bottom:20px}.scholar-landing .landing-steps{grid-template-columns:1fr;gap:12px}.scholar-landing .landing-step-number{margin-bottom:20px}.scholar-landing .landing-steps .landing-card{padding:25px}.scholar-landing .landing-recovery{grid-template-columns:1fr;gap:30px}.scholar-landing .landing-recovery-copy{max-width:100%}.scholar-landing .landing-terminal{font-size:10px;padding:20px}.scholar-landing .landing-footer{flex-wrap:wrap;justify-content:center;padding:25px}.scholar-landing .landing-footer p{width:100%;order:2}.scholar-landing .landing-scene-fallback span{left:25%;top:8%;width:60vw}}
+@media(max-width:440px){.scholar-landing .landing-nav{padding:15px 6vw;min-height:75px;margin-bottom:-75px}.scholar-landing .landing-logo{font-size:25px}.scholar-landing .landing-nav nav{gap:8px}.scholar-landing .landing-icon{width:30px;height:30px}.scholar-landing .landing-nav-launch{padding:10px 13px;gap:9px;font-size:10px;min-height:38px}.scholar-landing .landing-hero{padding-top:300px;padding-bottom:110px}.scholar-landing h1{font-size:58px}.scholar-landing .landing-lead{font-size:13px;line-height:1.8;margin-bottom:25px}.scholar-landing .landing-actions{gap:23px}.scholar-landing .landing-btn{padding:13px 21px;font-size:11px;gap:18px;min-height:45px}.scholar-landing .landing-nav-launch{padding:10px 13px;gap:9px;font-size:10px;min-height:38px}.scholar-landing .landing-card{padding:20px}.scholar-landing h2{font-size:36px;letter-spacing:-1px}.scholar-landing .landing-trust{font-size:8px;gap:14px}.scholar-landing .landing-hero .landing-eyebrow{font-size:8px}.scholar-landing .landing-tag{font-size:8px;padding:4px 7px}.scholar-landing .landing-tag span{display:none}.scholar-landing .landing-footer>span{font-size:7px}}
+@media(max-width:350px){.scholar-landing h1{font-size:50px}.scholar-landing .landing-grid{grid-template-columns:1fr}.scholar-landing .landing-actions{gap:17px}.scholar-landing .landing-hero{padding-top:280px}}
+@media(prefers-reduced-motion:reduce){.scholar-landing{scroll-behavior:auto}.scholar-landing *{animation:none!important;transition:none!important}.scholar-landing .landing-reveal,.scholar-landing .landing-log-line{opacity:1;translate:none;transform:none}.scholar-landing .landing-card{transform:none!important}.scholar-landing .landing-btn:hover{transform:none}}

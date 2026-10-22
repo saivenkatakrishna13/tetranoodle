@@ -1,0 +1,7 @@
+export function recordMetric(emit,agent,model,started,usage,ok){
+ const input=Number(usage?.prompt_tokens),output=Number(usage?.completion_tokens);
+ let price;try{price=JSON.parse(process.env.MODEL_PRICING_JSON||'{}')[model];}catch{/* Unknown pricing stays Missing. */}
+ const priced=price&&/^https:\/\//.test(price.source||'')&&Number.isFinite(price.input)&&price.input>=0&&Number.isFinite(price.output)&&price.output>=0&&Number.isFinite(input)&&Number.isFinite(output);
+ emit?.({type:'metric',agent,model,label:`${agent} request ${ok?'completed':'failed'}`,latencyMs:Math.max(0,Date.now()-started),inputTokens:Number.isFinite(input)?input:null,outputTokens:Number.isFinite(output)?output:null,cost:priced?(input*price.input+output*price.output)/1000000:null,pricingSource:priced?price.source:null,ok});
+}
+export function aggregateMetrics(events){const agents={};for(const event of events||[]){if(event.type!=='metric')continue;const m=agents[event.agent]||={requests:0,inputTokens:0,outputTokens:0,latencyMs:0,unknownUsage:0,cost:0,unknownCost:0,pricingSources:[],models:[]};if(event.pricingSource&&!m.pricingSources.includes(event.pricingSource))m.pricingSources.push(event.pricingSource);if(event.model&&!m.models.includes(event.model))m.models.push(event.model);m.requests++;m.latencyMs+=event.latencyMs||0;if(event.inputTokens===null||event.outputTokens===null)m.unknownUsage++;m.inputTokens+=event.inputTokens||0;m.outputTokens+=event.outputTokens||0;if(event.cost===null)m.unknownCost++;else m.cost+=event.cost;}return agents;}
