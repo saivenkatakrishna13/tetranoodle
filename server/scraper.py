@@ -111,7 +111,7 @@ def parse_pdf(args):
 
 def search(args):
     from ddgs import DDGS
-    results = list(DDGS(timeout=15).text(args['query'], max_results=min(int(args.get('limit', 6)), 10)))
+    results = list(DDGS(timeout=8).text(args['query'], max_results=min(int(args.get('limit', 6)), 10)))
     if not results:
         raise ValueError('Search returned no results. Rephrase the query or use a supplied official URL.')
     return {'results': [{'title': r.get('title'), 'url': r.get('href'), 'snippet': r.get('body')} for r in results], 'provider': 'ddgs', 'note': 'Discovery only. Read the official page before making verified claims.'}

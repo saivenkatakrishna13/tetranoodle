@@ -203,7 +203,7 @@ export async function discover(session,emit,signal,target=10,extra=false){
   const needed=extra?target:Math.max(0,10-existing.length);
   if(!needed)return [];
   const brief=session.researchBrief||researchBrief(session.profile);
-  const queries=discoveryQueries([],brief,9).filter(q=>!(session.run.queries||[]).includes(q)).slice(0,extra?3:6);
+  const queries=discoveryQueries([],brief,9).filter(q=>!(session.run.queries||[]).includes(q)).slice(0,extra?2:3);
   session.run.discoveryPasses=(session.run.discoveryPasses||0)+1;session.searchResults||={};
   const known=new Set(existing.map(c=>sourceKey(c.url))),selected=[];
   const attempted=new Set(session.run.attempted||[]);
@@ -213,7 +213,7 @@ export async function discover(session,emit,signal,target=10,extra=false){
     while(results.length>1&&JSON.stringify(results).length>11500)results.shift();
     if(!results.length)return;
     const left=needed-selected.length;
-    const data=await structured('nova',`Discover up to ${left} DISTINCT real university degree programmes or scholarship opportunities suitable for the supplied profile. Return {candidates:[{name,university,country,url,reason}],rejected:[{url,reason}]}. Copy URLs exactly from supplied search results. Identify the specific programme/award from the result; exclude homepages, unrelated fields/levels and ranking articles. Prefer actual universities/funders. Do not verify eligibility, invent funding, rank or repeat a programme under a different URL. Missing funding is NOT a reason to reject a programme. Sage will verify official details.`,{profile:session.profile,research_brief:brief,already_found:[...existing,...selected].map(c=>({name:c.name,university:c.university})),results},{signal,emit,maxTokens:2200});
+    const data=await structured('nova',`Discover up to ${left} DISTINCT real university degree programmes or scholarship opportunities suitable for the supplied profile. Return {candidates:[{name,university,country,url,reason}],rejected:[{url,reason}]}. Copy URLs exactly from supplied search results. Identify the specific programme/award from the result; exclude homepages, unrelated fields/levels and ranking articles. Prefer actual universities/funders. Do not verify eligibility, invent funding, rank or repeat a programme under a different URL. Missing funding is NOT a reason to reject a programme. Sage will verify official details.`,{profile:session.profile,research_brief:brief,already_found:[...existing,...selected].map(c=>({name:c.name,university:c.university})),results},{signal,emit,maxTokens:1600,timeoutMs:25000,maxAttempts:1});
     const urls=new Set(results.map(r=>r.url));
     for(const c of Array.isArray(data.candidates)?data.candidates:[]){
       if(selected.length>=needed)break;
@@ -227,7 +227,7 @@ export async function discover(session,emit,signal,target=10,extra=false){
   for(const query of queries){
     signal.throwIfAborted();if(selected.length>=needed)break;
     try{
-      const found=await executeTool('search_web',{query,limit:8},session,emit,'nova',signal);
+      const found=await executeTool('search_web',{query,limit:10},session,emit,'nova',signal);
       session.searchResults[query]=found.results||[];session.run.queries=[...(session.run.queries||[]),query];
       pool.push(...(found.results||[]));await choose();saveSession(session);
     }catch(e){if(signal.aborted||e.code==='RUN_BUDGET'||e.code==='AGENT_SCOPE')throw e;label(emit,'nova','A search was unavailable. Trying the next bounded query.');}

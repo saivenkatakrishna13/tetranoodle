@@ -15,7 +15,10 @@ export function worker(action, args, signal) {
   return new Promise((resolve, reject) => {
     const child = spawn(python(), [path.join(root, 'server/scraper.py')], { cwd: root, stdio: ['pipe', 'pipe', 'pipe'], signal });
     let stdout = '', stderr = '', settled = false;
-    const timer = setTimeout(() => { child.kill(); finish(new Error('Web request timed out. Try another official source.')); }, 65000);
+    // Discovery is useful only when it is quick. A stalled search should move
+    // to the configured fallback instead of making Nova look frozen.
+    const timeoutMs = action === 'search_web' ? 14000 : 65000;
+    const timer = setTimeout(() => { child.kill(); finish(new Error('Web request timed out. Try another official source.')); }, timeoutMs);
     const finish = (err, data) => { if (settled) return; settled = true; clearTimeout(timer); err ? reject(err) : resolve(data); };
     child.stdout.on('data', chunk => { stdout += chunk; if (stdout.length > 2000000) { child.kill(); finish(new Error('Source exceeded the extraction size limit.')); } });
     child.stderr.on('data', chunk => { stderr = (stderr + chunk).slice(-1500); });
@@ -77,7 +80,7 @@ export async function executeTool(name, args, session, emit, agent, signal,{sear
       try {
         injectFailure(session,'search',emit,agent);
         emit({type:'activity',agent,label:`${agent === 'sage'?'Sage':'Nova'} is using Groq live browser search.`});
-        const response=await searchCompletion([{role:'system',content:'You are a search tool. Perform ONE live browser search for the supplied query. Return search results only, with their exact URLs. Do not open individual pages, do not do follow-up searches, do not invent URLs. The app uses Scrapling to read the pages separately.'},{role:'user',content:`Find up to ${Math.min(args.limit||8,10)} search results for: ${args.query}. Search only; no page opening.`}],{tools:[{type:'browser_search'}],modelOverride:process.env.GROQ_SEARCH_MODEL||'openai/gpt-oss-20b',agent,signal,emit,maxTokens:1800});
+        const response=await searchCompletion([{role:'system',content:'You are a search tool. Perform ONE live browser search for the supplied query. Return search results only, with their exact URLs. Do not open individual pages, do not do follow-up searches, do not invent URLs. The app uses Scrapling to read the pages separately.'},{role:'user',content:`Find up to ${Math.min(args.limit||8,10)} search results for: ${args.query}. Search only; no page opening.`}],{tools:[{type:'browser_search'}],modelOverride:process.env.GROQ_SEARCH_MODEL||'openai/gpt-oss-20b',agent,signal,emit,maxTokens:1200,timeoutMs:20000,maxAttempts:1});
         const collected=[];
         const collect=value=>{if(!value||typeof value!=='object')return;if(typeof value.url==='string'&&/^https?:/.test(value.url))collected.push({url:value.url,title:value.title||value.name||value.url,snippet:String(value.content||value.snippet||value.text||'').slice(0,800)});for(const child of Object.values(value))if(child&&typeof child==='object')Array.isArray(child)?child.forEach(collect):collect(child);};
         for(const tool of response.executed_tools||[])collect(tool.search_results);

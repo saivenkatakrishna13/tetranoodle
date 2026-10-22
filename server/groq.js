@@ -43,24 +43,24 @@ export async function completion(messages, options = {}) {
   const cancelled=new Promise((_,reject)=>{stopped=()=>reject(new DOMException('Stopped','AbortError'));options.signal.addEventListener('abort',stopped,{once:true});});
   try{return await Promise.race([turn,cancelled]);}finally{options.signal.removeEventListener('abort',stopped);}
 }
-async function request(messages, { tools, json = false, signal, emit, agent = 'mira', modelOverride, fallbackUsed = false, maxTokens = json ? 2200 : 3500 } = {}) {
+async function request(messages, { tools, json = false, signal, emit, agent = 'mira', modelOverride, fallbackUsed = false, maxTokens = json ? 2200 : 3500, timeoutMs = 90000, maxAttempts = 5 } = {}) {
   const model = modelOverride || process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
   let quotaNotified=false;
-  for (let attempt = 0; attempt < 5; attempt++) {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
     signal?.throwIfAborted();
     const budgetKey=`${agentKey(agent)}\0${model}`;
     const pacing=tokenWait(budgetKey,estimateRequestTokens(messages,maxTokens,tools));
     if(pacing){
-      emit?.({type:'activity',agent,model,label:`Scheduling ${agent[0].toUpperCase()+agent.slice(1)}’s next request within its ${pacing.limit.toLocaleString('en-US')} tokens/min allowance. Findings are saved.`,waitUntil:Date.now()+pacing.milliseconds,waitReason:'Provider token allowance',attempt:attempt+1,maxAttempts:5});
+      emit?.({type:'activity',agent,model,label:`Scheduling ${agent[0].toUpperCase()+agent.slice(1)}’s next request within its ${pacing.limit.toLocaleString('en-US')} tokens/min allowance. Findings are saved.`,waitUntil:Date.now()+pacing.milliseconds,waitReason:'Provider token allowance',attempt:attempt+1,maxAttempts});
       await delay(pacing.milliseconds,signal);
     }
     let response;const requestStarted=Date.now();
     try {
-      response = await fetch(BASE_URL, { method: 'POST', signal: AbortSignal.any([signal || new AbortController().signal, AbortSignal.timeout(90000)]), headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${agentKey(agent)}` }, body: JSON.stringify({ model, messages, temperature: json ? 0.15 : 0.45, max_tokens: maxTokens, ...(model.startsWith('openai/gpt-oss') ? { reasoning_effort: 'low' } : model.startsWith('qwen/') ? { reasoning_effort: 'none' } : {}), ...(tools?.length ? { tools, tool_choice: 'auto' } : {}), ...(json ? { response_format: { type: 'json_object' } } : {}) }) });
+      response = await fetch(BASE_URL, { method: 'POST', signal: AbortSignal.any([signal || new AbortController().signal, AbortSignal.timeout(timeoutMs)]), headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${agentKey(agent)}` }, body: JSON.stringify({ model, messages, temperature: json ? 0.15 : 0.45, max_tokens: maxTokens, ...(model.startsWith('openai/gpt-oss') ? { reasoning_effort: 'low' } : model.startsWith('qwen/') ? { reasoning_effort: 'none' } : {}), ...(tools?.length ? { tools, tool_choice: 'auto' } : {}), ...(json ? { response_format: { type: 'json_object' } } : {}) }) });
     } catch (e) {
       recordMetric(emit,agent,model,requestStarted,null,false);
       if (signal?.aborted) throw e;
-      if (attempt === 4) throw new Error('Groq could not be reached after retries. Your progress is saved.');
+      if (attempt === maxAttempts - 1) throw new Error('Groq could not be reached after retries. Your progress is saved.');
       emit?.({ type: 'activity', agent, label: 'Connection interrupted. Retrying Groq…' });
       await delay(1000 * (attempt + 1), signal); continue;
     }
@@ -80,7 +80,7 @@ async function request(messages, { tools, json = false, signal, emit, agent = 'm
     if(response.status===400&&json&&/json_validate_failed|failed to generate json/i.test(`${data.error?.code} ${data.error?.message}`)){
       emit?.({type:'activity',agent,label:'The provider returned malformed JSON. Repairing the specialist response.'});
       if(typeof data.error?.failed_generation==='string'&&data.error.failed_generation.trim())return {role:'assistant',content:data.error.failed_generation};
-      if(attempt<4){messages=[...messages,{role:'user',content:'Return exactly one valid JSON object in the requested shape. Escape every string correctly. No Markdown fences or commentary.'}];continue;}
+      if(attempt<maxAttempts-1){messages=[...messages,{role:'user',content:'Return exactly one valid JSON object in the requested shape. Escape every string correctly. No Markdown fences or commentary.'}];continue;}
     }
     if(response.status===429&&/tokens per day|requests per day|\bTPD\b|\bRPD\b/i.test(data.error?.message||'')){
       const retrySeconds=Number(response.headers.get('retry-after'))||300;
@@ -88,19 +88,19 @@ async function request(messages, { tools, json = false, signal, emit, agent = 'm
       const fallback=process.env.GROQ_DAILY_FALLBACK_MODEL||'qwen/qwen3.8-27b';
       if(!fallbackUsed&&fallback!==model){
         emit?.({type:'activity',agent,label:`${agent[0].toUpperCase()+agent.slice(1)} reached the model’s daily allowance. Continuing with ${fallback}.`});
-        return completion(messages,{tools,json,signal,emit,agent,maxTokens,modelOverride:fallback,fallbackUsed:true});
+        return completion(messages,{tools,json,signal,emit,agent,maxTokens,modelOverride:fallback,fallbackUsed:true,timeoutMs,maxAttempts});
       }
       throw new Error('Groq’s daily allowance is exhausted for this step and its fallback. Progress is saved; resume after the allowance resets or update the configured models.');
     }
     if(response.status===429 && /request too large|expected output tokens exceed/i.test(data.error?.message||'')){
       const fallback=process.env.GROQ_FALLBACK_MODEL||'openai/gpt-oss-120b';
-      if(!fallbackUsed && fallback!==model){emit?.({type:'activity',agent,label:`${agent[0].toUpperCase()+agent.slice(1)} is switching to the fallback model to fit this research step.`});return completion(messages,{tools,json,signal,emit,agent,maxTokens,modelOverride:fallback,fallbackUsed:true});}
+      if(!fallbackUsed && fallback!==model){emit?.({type:'activity',agent,label:`${agent[0].toUpperCase()+agent.slice(1)} is switching to the fallback model to fit this research step.`});return completion(messages,{tools,json,signal,emit,agent,maxTokens,modelOverride:fallback,fallbackUsed:true,timeoutMs,maxAttempts});}
       throw new Error('The configured model cannot fit this research step within its account token limits. Choose a compatible model in .env or reduce document size.');
     }
-    if ([429, 500, 502, 503].includes(response.status) && attempt < 4) {
+    if ([429, 500, 502, 503].includes(response.status) && attempt < maxAttempts - 1) {
       const suggested = Number(response.headers.get('retry-after')) || Number(data.error?.message?.match(/try again in ([\d.]+)s/i)?.[1]) || 5 * (attempt + 1);
       const seconds = Math.min(Math.max(suggested + 1, 2), 90);
-      emit?.({ type: 'activity', agent, label: `Groq is busy. Progress is saved; retrying in ${Math.ceil(seconds)}s…`,waitUntil:Date.now()+seconds*1000,waitReason:response.status===429?'Groq rate limit':'Groq service retry',attempt:attempt+1,maxAttempts:5,model });
+      emit?.({ type: 'activity', agent, label: `Groq is busy. Progress is saved; retrying in ${Math.ceil(seconds)}s…`,waitUntil:Date.now()+seconds*1000,waitReason:response.status===429?'Groq rate limit':'Groq service retry',attempt:attempt+1,maxAttempts,model });
       await delay(seconds * 1000, signal); continue;
     }
     if (response.status === 401) throw new Error(`Groq rejected ${agent}’s API key. Check the matching role key in .env.`);
