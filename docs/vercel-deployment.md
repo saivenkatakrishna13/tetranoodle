@@ -6,7 +6,7 @@ Vercel Functions are not used for the research API: a research run continues aft
 
 ## 1. Deploy the API
 
-Create a Render Web Service from the same GitHub repository. `render.yaml` supplies the build and start commands.
+Create a Render Web Service from the same GitHub repository. Select **Docker** as the runtime. The included `Dockerfile` fixes the runtime to Node 22 and Debian's compatible Python 3.11, so Render cannot auto-select Python 3.14 for the OCR dependencies.
 
 Add a persistent disk mounted at `/var/data`, then add these environment variables in Render:
 

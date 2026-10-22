@@ -1,14 +1,10 @@
 services:
   - type: web
     name: scholarx-api
-    runtime: node
-    buildCommand: npm ci && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && npm run build
-    startCommand: npm start
+    runtime: docker
     healthCheckPath: /api/status
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PYTHON_PATH
-        value: .venv/bin/python
       - key: TETRA_DATA_DIR
         value: /var/data/sessions
