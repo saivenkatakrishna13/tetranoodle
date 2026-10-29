@@ -14,7 +14,7 @@ import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { runSwarm, preview } from './agents.js';
 import { scraperReady, worker } from './tools.js';
-import { liveReady, agentKey, agentModel } from './groq.js';
+import { liveReady, agentReady, agentModel } from './groq.js';
 import { sessionFor, snapshot, saveSession, record, listStudents, validId, deleteSession, deletedStudentIds } from './store.js';
 import { startResearch, pauseResearch, stopResearch, createDraft, reportMarkdown } from './research.js';
 import {cleanProfile,changeProfile,parseStudentText,resetResearchData} from './profile.js';
@@ -38,7 +38,7 @@ app.use((req,res,next)=>{
   next();
 });
 app.use(express.json({limit:'1mb'}));
-app.get('/api/status',async(req,res)=>res.json({live:liveReady(),agents:Object.fromEntries(['mira','arjun','nova','sage','leo'].map(id=>[id,!!agentKey(id)])),models:Object.fromEntries(['mira','arjun','nova','sage','leo'].map(id=>[id,agentModel(id)])),provider:'Groq',model:process.env.GROQ_MODEL||'openai/gpt-oss-120b',scrapling:await scraperReady(),storage:'local-disk'}));
+app.get('/api/status',async(req,res)=>res.json({live:liveReady(),agents:Object.fromEntries(['mira','arjun','nova','sage','leo'].map(id=>[id,agentReady(id)])),models:Object.fromEntries(['mira','arjun','nova','sage','leo'].map(id=>[id,agentModel(id)])),provider:'Groq',model:process.env.GROQ_MODEL||'openai/gpt-oss-120b',scrapling:await scraperReady(),storage:'local-disk'}));
 app.get('/api/demo-profile',async(req,res,next)=>{try{const profile=JSON.parse(await readFile(path.join(root,'fixtures/rahul-profile.json'),'utf8'));assertStudentProfile(profile);res.json({profile,fictional:true});}catch(e){next(e);}});
 app.get('/api/sessions/:id/insights',(req,res)=>{const state=snapshot(sessionFor(req.params.id));res.json({cursor:state.cursor,draftDocument:state.draftDocument,metrics:state.metrics,runHistory:state.runHistory,checklist:state.checklist,profileStrength:state.profileStrength,draftOptions:state.draftOptions,demoFailures:state.demoFailures,draftMeta:state.draftMeta,languages:Object.entries(draftLanguages).map(([id,l])=>({id,name:l.name}))});});
 app.post('/api/sessions/:id/demo-failures',(req,res)=>{const session=sessionFor(req.params.id);session.demoFailures={searchOnce:req.body.searchOnce===true,sourceOnce:req.body.sourceOnce===true};record(session,{type:'activity',agent:'mira',demo:true,label:'DEMO failure controls updated. Armed failures affect only this workspace’s next matching tool call.'});saveSession(session,true);res.json(snapshot(session));});

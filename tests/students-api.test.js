@@ -9,7 +9,7 @@ import net from 'node:net';
 test('new student workspaces isolate profiles, documents, conversation and stored research',async()=>{
  const directory=await mkdtemp(path.join(os.tmpdir(),'tetranoodle-students-'));
  const address=net.createServer();await new Promise(resolve=>address.listen(0,'127.0.0.1',resolve));const port=address.address().port;await new Promise(resolve=>address.close(resolve));
- const server=spawn(process.execPath,['server/index.js'],{cwd:process.cwd(),env:{...process.env,TETRA_DATA_DIR:directory,PORT:String(port),GROQ_API_KEY:'',...Object.fromEntries(['MIRA','ARJUN','NOVA','SAGE','LEO'].map(role=>[`GROQ_API_KEY_${role}`,'']))},stdio:'ignore'});
+ const server=spawn(process.execPath,['server/index.js'],{cwd:process.cwd(),env:{...process.env,TETRA_DATA_DIR:directory,PORT:String(port),GROQ_API_KEY:'',GROQ_KEYS:'',...Object.fromEntries(['MIRA','ARJUN','NOVA','SAGE','LEO'].map(role=>[`GROQ_API_KEY_${role}`,'']))},stdio:'ignore'});
  const base=`http://127.0.0.1:${port}`;
  async function request(url,body,method='POST'){const r=await fetch(base+url,{method,headers:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});const data=await r.json();assert.ok(r.ok,JSON.stringify(data));return data;}
  try{

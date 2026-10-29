@@ -44,6 +44,46 @@ npm start
 
 Open **http://127.0.0.1:3001/**.
 
+## Groq key pool
+
+All five agents draw their Groq key from one shared pool instead of one key per agent, so a
+rate-limited key never blocks a specialist.
+
+```dotenv
+# comma-separated, no spaces required; 10 keys from GROQ_KEYS
+GROQ_KEYS=key-one,key-two,key-three
+```
+
+Set `GROQ_KEYS` in `.env` and restart the server. When it is set it wins over the per-role
+`GROQ_API_KEY_*` keys (which can stay as a fallback or be removed); keys stay server-side,
+`.env` is ignored by Git, and key **indices** — never key values — appear in logs.
+
+**Use keys from different Groq accounts.** Several keys created on the same account usually
+share that account’s single rate limit, so rotating between them buys no headroom; separate
+accounts each contribute their own RPM/TPM/TPD budget.
+
+How rotation and cooldown work:
+
+- Every request takes the next key in round-robin order, so load spreads evenly.
+- A `429` marks **that key only** as cooling down until the response’s `Retry-After` time
+  (default 60 seconds) and immediately retries with the next key.
+- Cooling keys are skipped. If every key is cooling, the request waits for the earliest one in
+  slices of at most 5 seconds (a 30-second wait budget for the whole request, so a turn can
+  never hang), then retries.
+- After `number of keys × 2` attempts the last `429` is returned to the existing quota logic,
+  which still handles daily-allowance fallback, request-size fallback and the in-app notice.
+
+Check that rotation works:
+
+```sh
+node scripts/key-rotation-check.mjs --simulate   # no network, no quota: two keys answer 429
+node scripts/key-rotation-check.mjs              # 20 real parallel requests, logs the key index per request
+node scripts/key-rotation-check.mjs --calls=40   # heavier load
+```
+
+Each run prints `request N → key K`, the distinct keys used and per-key counts. Tests live in
+`tests/key-pool.test.js` and run with `npm test`.
+
 ## Deploy with Vercel
 
 The frontend is ready for Vercel. The research API stays on a persistent Node/Python service so Scrapling, live agent events, and saved workspaces remain reliable. Follow the [Vercel deployment guide](docs/vercel-deployment.md) to deploy the Vercel frontend and the companion API from this same GitHub repository.

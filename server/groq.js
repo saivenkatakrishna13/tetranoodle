@@ -1,9 +1,12 @@
 import {recordMetric} from './run-metrics.js';
 import {consumeRunTool} from './pipeline-state.js';
-const BASE_URL = 'https://api.groq.com/openai/v1/chat/completions';
+import {groqChat} from './groqClient.js';
+import {poolSize} from './keyPool.js';
 import {rememberTokenBudget,tokenWait,estimateRequestTokens,clearTokenBudgets} from './provider-budget.js';
 export const agentKey = (agent = 'mira') => process.env[`GROQ_API_KEY_${agent.toUpperCase()}`]?.trim() || process.env.GROQ_API_KEY?.trim();
-export const liveReady = () => ['mira', 'arjun', 'nova', 'sage', 'leo'].every(id => !!agentKey(id));
+// A configured shared pool satisfies every agent, so status/connectivity checks accept either.
+export const agentReady = (agent) => poolSize() > 0 || !!agentKey(agent);
+export const liveReady = () => ['mira', 'arjun', 'nova', 'sage', 'leo'].every(id => agentReady(id));
 export function delay(ms, signal) {
   return new Promise((resolve, reject) => {
     if (signal?.aborted) return reject(new DOMException('Stopped', 'AbortError'));
@@ -49,14 +52,18 @@ async function request(messages, { tools, json = false, signal, emit, agent = 'm
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     signal?.throwIfAborted();
     const budgetKey=`${agentKey(agent)}\0${model}`;
-    const pacing=tokenWait(budgetKey,estimateRequestTokens(messages,maxTokens,tools));
+    // With a shared GROQ_KEYS pool groqChat() picks the bearer token per request, so an
+    // agent-keyed budget describes an account that may never answer this call: skip that
+    // pre-emptive pacing and let pool rotation on real 429s absorb bursts instead.
+    // No pool configured -> identical to the original per-account pacing.
+    const pacing=poolSize()>0?null:tokenWait(budgetKey,estimateRequestTokens(messages,maxTokens,tools));
     if(pacing){
       emit?.({type:'activity',agent,model,label:`Scheduling ${agent[0].toUpperCase()+agent.slice(1)}’s next request within its ${pacing.limit.toLocaleString('en-US')} tokens/min allowance. Findings are saved.`,waitUntil:Date.now()+pacing.milliseconds,waitReason:'Provider token allowance',attempt:attempt+1,maxAttempts});
       await delay(pacing.milliseconds,signal);
     }
     let response;const requestStarted=Date.now();
     try {
-      response = await fetch(BASE_URL, { method: 'POST', signal: AbortSignal.any([signal || new AbortController().signal, AbortSignal.timeout(timeoutMs)]), headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${agentKey(agent)}` }, body: JSON.stringify({ model, messages, temperature: json ? 0.15 : 0.45, max_tokens: maxTokens, ...(model.startsWith('openai/gpt-oss') ? { reasoning_effort: 'low' } : model.startsWith('qwen/') ? { reasoning_effort: 'none' } : {}), ...(tools?.length ? { tools, tool_choice: 'auto' } : {}), ...(json ? { response_format: { type: 'json_object' } } : {}) }) });
+      response = await groqChat({ model, messages, temperature: json ? 0.15 : 0.45, max_tokens: maxTokens, ...(model.startsWith('openai/gpt-oss') ? { reasoning_effort: 'low' } : model.startsWith('qwen/') ? { reasoning_effort: 'none' } : {}), ...(tools?.length ? { tools, tool_choice: 'auto' } : {}), ...(json ? { response_format: { type: 'json_object' } } : {}) }, { signal: AbortSignal.any([signal || new AbortController().signal, AbortSignal.timeout(timeoutMs)]), apiKey: agentKey(agent) });
     } catch (e) {
       recordMetric(emit,agent,model,requestStarted,null,false);
       if (signal?.aborted) throw e;
